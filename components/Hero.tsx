@@ -1,0 +1,145 @@
+'use client';
+
+import { useState } from 'react';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
+import { ArrowRight, ChevronRight } from 'lucide-react';
+import Image from 'next/image';
+
+const slides = [
+    {
+        id: 1,
+        image: 'https://images.unsplash.com/photo-1706495227612-fde52c357c69??q=80&w=2670&auto=format&fit=crop',
+        title: 'Integrated Automotive,\nService Solutions.',
+        subtitle: 'We provide integrated automotive solutions encompassing vehicle sales, rental services, maintenance, and used car operations to support sustainable business growth.',
+    },
+    {
+        id: 2,
+        image: 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?q=80&w=2670&auto=format&fit=crop', // Car service / maintenance
+        title: 'Expert Maintenance\nFor Your Fleet.',
+        subtitle: 'Our certified technicians ensure your vehicles remain in peak condition with comprehensive maintenance and repair services designed for reliability.',
+    },
+    {
+        id: 3,
+        image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=2670&auto=format&fit=crop', // Showroom
+        title: 'Premium Selection,\nUnmatched Quality.',
+        subtitle: 'Browse our extensive collection of certified used and new vehicles. We guarantee quality and transparency in every transaction.',
+    },
+];
+
+export default function Hero() {
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [direction, setDirection] = useState(0); // 1 for next, -1 for prev (though only next is requested)
+
+    const handleNext = () => {
+        setDirection(1);
+        setCurrentIndex((prev) => (prev + 1) % slides.length);
+    };
+
+    const slideVariants: Variants = {
+        hidden: (direction: number) => ({
+            x: direction > 0 ? '100%' : '-100%',
+        }),
+        visible: {
+            x: 0,
+            transition: {
+                x: { type: 'tween', ease: 'easeInOut', duration: 0.8 },
+            },
+        },
+        exit: (direction: number) => ({
+            x: direction > 0 ? '-100%' : '100%',
+            transition: {
+                x: { type: 'tween', ease: 'easeInOut', duration: 0.8 },
+            },
+        }),
+    };
+
+    const textVariants: Variants = {
+        hidden: { y: 20, opacity: 0 },
+        visible: (custom: number) => ({
+            y: 0,
+            opacity: 1,
+            transition: { delay: 0.2 + custom * 0.1, duration: 0.5, ease: 'easeOut' },
+        }),
+    };
+
+    return (
+        <div className="relative w-full h-[600px] md:h-[700px] overflow-hidden rounded-3xl mt-6">
+            <AnimatePresence initial={false} custom={direction}>
+                <motion.div
+                    key={currentIndex}
+                    custom={direction}
+                    variants={slideVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    className="absolute inset-0 w-full h-full"
+                >
+                    {/* Background Image */}
+                    <div className="relative w-full h-full">
+                        <Image
+                            src={slides[currentIndex].image}
+                            alt={slides[currentIndex].title}
+                            fill
+                            className="object-cover"
+                            priority
+                        />
+                        {/* Overlay */}
+                        <div className="absolute inset-0 bg-black/40 bg-gradient-to-r from-black/70 to-transparent" />
+                    </div>
+
+                    {/* Content */}
+                    <div className="absolute inset-0 flex items-center">
+                        <div className="container mx-auto px-8 md:px-16">
+                            <div className="max-w-[768px] flex flex-col gap-8 text-white">
+                                <div className="flex flex-col gap-4">
+                                    <motion.h1
+                                        custom={0}
+                                        variants={textVariants}
+                                        initial="hidden"
+                                        animate="visible"
+                                        className="font-sans font-bold text-5xl md:text-[62px] leading-[1.1] md:leading-[85px] whitespace-pre-wrap"
+                                    >
+                                        {slides[currentIndex].title}
+                                    </motion.h1>
+
+                                    <motion.div
+                                        custom={1}
+                                        variants={textVariants}
+                                        initial="hidden"
+                                        animate="visible"
+                                        className="font-sans font-normal text-base md:text-lg tracking-wide opacity-90 max-w-[600px]"
+                                    >
+                                        <p>{slides[currentIndex].subtitle}</p>
+                                    </motion.div>
+                                </div>
+
+                                <motion.button
+                                    custom={2}
+                                    variants={textVariants}
+                                    initial="hidden"
+                                    animate="visible"
+                                    onClick={() => document.getElementById('about-us')?.scrollIntoView({ behavior: 'smooth' })}
+                                    className="bg-[#5a80b9] hover:bg-[#4a6d9e] transition-colors cursor-pointer flex gap-4 items-center pl-6 pr-3 py-3 w-fit rounded-full group"
+                                >
+                                    <span className="font-medium text-white text-lg">Get Started</span>
+                                    <div className="bg-white/20 rounded-full p-1 group-hover:bg-white/30 transition-colors">
+                                        <ArrowRight className="w-6 h-6 text-white" />
+                                    </div>
+                                </motion.button>
+                            </div>
+                        </div>
+                    </div>
+                </motion.div>
+            </AnimatePresence>
+
+            {/* Next Navigation Button */}
+            <button
+                onClick={handleNext}
+                className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur-md p-4 rounded-full text-white border border-white/30 transition-all hover:scale-110 active:scale-95 group cursor-pointer shadow-lg"
+                aria-label="Next slide"
+            >
+                <ChevronRight className="w-8 h-8 group-hover:translate-x-1 transition-transform" />
+            </button>
+        </div>
+    );
+}
