@@ -1,4 +1,4 @@
-name: Deploy Apollo Landing
+name: Deploy Apollo CMS
 
 on:
   push:
@@ -14,7 +14,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
 
       - name: Build Landing
         run: |
@@ -25,11 +25,13 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
+          username: ${{ secrets.VPS_NAME }}
           key: ${{ secrets.VPS_KEY }}
+          port: 22
+          request_pty: true
           script: |
             cd ~/apollo/apollo-web-landing
             git pull
             npm install
             npm run build
-            pm2 restart apollo-landing
+            pm2 restart apollo-cms
