@@ -29,7 +29,7 @@ const services = [
 
 export default function Services() {
     return (
-        <section className="w-full bg-[#FAFAFA] py-10 md:py-20 px-4 md:px-10 overflow-hidden">
+        <section id="services" className="w-full bg-[#FAFAFA] py-10 md:py-20 px-4 md:px-10 overflow-hidden scroll-mt-24">
             <div className="mx-auto max-w-[1440px]">
                 {/* Header Section */}
                 <div className="flex flex-col gap-6 md:gap-10 mb-16 relative">

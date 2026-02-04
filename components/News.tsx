@@ -65,7 +65,7 @@ export default function News() {
     }, []);
 
     return (
-        <section className="w-full bg-white py-16 md:py-24">
+        <section id="news" className="w-full bg-white py-16 md:py-24 scroll-mt-24">
             <div className="mx-auto flex max-w-[1440px] flex-col items-center gap-12 px-4 md:px-10">
 
                 {/* Header */}

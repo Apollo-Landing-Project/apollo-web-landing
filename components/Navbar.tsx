@@ -35,6 +35,7 @@ export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isLangOpen, setIsLangOpen] = useState(false);
     const [currentLang, setCurrentLang] = useState(languages[0]);
+    const [activeSection, setActiveSection] = useState("");
     const langRef = useRef<HTMLDivElement>(null);
 
     // Close dropdown when clicking outside
@@ -47,6 +48,58 @@ export default function Navbar() {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+
+    // Intersection Observer for Active Section on Home Page
+    useEffect(() => {
+        if (pathname !== "/") {
+            setActiveSection("");
+            return;
+        }
+
+        const sections = ["home", "about-us", "services", "news", "contact"];
+        const observerOptions = {
+            root: null,
+            rootMargin: "-20% 0px -50% 0px", // Adjust to trigger when section is properly in view
+            threshold: 0.2
+        };
+
+        const observerCallback = (entries: IntersectionObserverEntry[]) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    setActiveSection(entry.target.id);
+                }
+            });
+        };
+
+        const observer = new IntersectionObserver(observerCallback, observerOptions);
+        sections.forEach((id) => {
+            const element = document.getElementById(id);
+            if (element) observer.observe(element);
+        });
+
+        return () => observer.disconnect();
+    }, [pathname]);
+
+    const isActiveLink = (link: typeof navLinks[0]) => {
+        // Special case for News/CSR subpages
+        if (link.name === "News" && (pathname.startsWith("/news") || pathname.startsWith("/csr"))) {
+            return true;
+        }
+
+        // Home page scroll active logic
+        if (pathname === "/") {
+            if (link.href === "/" && activeSection === "home") return true;
+            if (link.href === "/about" && activeSection === "about-us") return true;
+            if (link.href === "/services" && activeSection === "services") return true;
+            if (link.href === "/news" && activeSection === "news") return true;
+            if (link.href === "/#contact" && activeSection === "contact") return true;
+
+            // Fallback for contact hash directly
+            if (link.href === "/#contact" && window.location.hash === "#contact") return true;
+        }
+
+        return pathname === link.href;
+    };
 
     return (
         <>
@@ -81,7 +134,7 @@ export default function Navbar() {
                                 <Link
                                     key={link.name}
                                     href={link.href}
-                                    className={`relative py-1 text-[16px] font-medium transition-colors hover:text-[#5a80b9] ${pathname === link.href
+                                    className={`relative py-1 text-[16px] font-medium transition-colors hover:text-[#5a80b9] ${isActiveLink(link)
                                         ? "text-[#5a80b9] after:absolute after:bottom-0 after:left-1/2 after:h-[3px] after:w-6 after:-translate-x-1/2 after:rounded-full after:bg-[#5a80b9]"
                                         : "text-[#323441]"
                                         }`}

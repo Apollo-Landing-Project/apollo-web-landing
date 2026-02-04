@@ -67,7 +67,7 @@ export default function Hero() {
     };
 
     return (
-        <div className="w-full max-w-[1440px] mx-auto px-4 md:px-10 mt-6 md:mt-10">
+        <div id="home" className="w-full max-w-[1440px] mx-auto px-4 md:px-10 mt-6 md:mt-10 scroll-mt-32">
             <div className="relative w-full h-[600px] md:h-[700px] overflow-hidden rounded-3xl">
                 <AnimatePresence initial={false} custom={direction}>
                     <motion.div
