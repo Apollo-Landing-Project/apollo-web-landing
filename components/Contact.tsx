@@ -90,7 +90,7 @@ export default function Contact() {
                 )}
             </AnimatePresence>
 
-            <div className="mx-auto flex max-w-[1440px] flex-col gap-12 lg:flex-row">
+            <div className="mx-auto flex max-w-[1440px] flex-col-reverse gap-12 lg:flex-row">
                 {/* Left: Contact Form */}
                 <div className="flex-1">
                     <div className="mb-10 flex flex-col gap-4">
@@ -178,7 +178,7 @@ export default function Contact() {
                         <button
                             type="submit"
                             disabled={isSending}
-                            className="flex w-full items-center justify-center gap-2 rounded-full bg-[#5a80b9] py-4 text-base font-medium text-white transition-colors hover:bg-[#4a6d9e] disabled:bg-[#5a80b9]/70 disabled:cursor-not-allowed"
+                            className="cursor-pointer flex w-full items-center justify-center gap-2 rounded-full bg-[#5a80b9] py-4 text-base font-medium text-white transition-colors hover:bg-[#4a6d9e] disabled:bg-[#5a80b9]/70 disabled:cursor-not-allowed"
                         >
                             {isSending ? "Sending..." : "Send"}
                         </button>
@@ -188,7 +188,7 @@ export default function Contact() {
                 {/* Right: Info & Map */}
                 <div className="flex flex-1 flex-col gap-8">
                     <div className="flex flex-col gap-4">
-                        <h3 className="text-2xl font-semibold text-[#323441] md:text-[28px]">
+                        <h3 className="text-[34px] font-semibold text-[#323441] lg:text-[28px]">
                             PT Apollo Global Interactive
                         </h3>
                         <a href="mailto:cs@bintangotoglobal.com" className="flex items-center gap-3 text-[#5A5A5A] transition-colors hover:text-[#5a80b9]">

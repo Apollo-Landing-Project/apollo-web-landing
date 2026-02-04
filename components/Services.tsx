@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 import { Car, Key, Wrench, Tag } from 'lucide-react';
 
 const services = [
@@ -28,7 +29,7 @@ const services = [
 
 export default function Services() {
     return (
-        <section className="w-full bg-[#FAFAFA] py-20 px-4 md:px-10 overflow-hidden">
+        <section className="w-full bg-[#FAFAFA] py-10 md:py-20 px-4 md:px-10 overflow-hidden">
             <div className="mx-auto max-w-[1440px]">
                 {/* Header Section */}
                 <div className="flex flex-col gap-6 md:gap-10 mb-16 relative">
@@ -48,7 +49,7 @@ export default function Services() {
                 </div>
 
                 {/* Cards Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     {services.map((service, index) => (
                         <motion.div
                             key={index}
@@ -57,7 +58,7 @@ export default function Services() {
                             viewport={{ once: true, margin: "-50px" }}
                             transition={{ delay: index * 0.1, duration: 0.5 }}
                             whileHover={{ y: -8, transition: { duration: 0.3, ease: "easeOut" } }}
-                            className="bg-white rounded-[32px] p-8 min-h-[320px] flex flex-col justify-between group hover:shadow-[0_20px_40px_-5px_rgba(0,0,0,0.05)] transition-shadow duration-300"
+                            className="bg-white rounded-[32px] p-8 lg:min-h-[320px] flex flex-col justify-between group hover:shadow-[0_20px_40px_-5px_rgba(0,0,0,0.05)] transition-shadow duration-300"
                         >
                             <div className="flex flex-col gap-6">
                                 {/* Icon Container */}
@@ -76,6 +77,16 @@ export default function Services() {
                             </div>
                         </motion.div>
                     ))}
+                </div>
+
+                {/* See More Button */}
+                <div className="flex justify-center mt-12">
+                    <Link
+                        href="/services"
+                        className="rounded-full border border-gray-200 bg-white px-8 py-3 text-base font-medium text-[#323441] shadow-sm transition-colors hover:bg-[#e7e7e7] focus:outline-none focus:ring-2 focus:ring-[#5a80b9] focus:ring-offset-2"
+                    >
+                        See More Services
+                    </Link>
                 </div>
             </div>
         </section>

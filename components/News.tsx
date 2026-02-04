@@ -110,16 +110,20 @@ export default function News() {
                                 {/* Content */}
                                 <div className="flex flex-col gap-3">
                                     <span className="text-sm text-[#767676]">{news.date}</span>
-                                    <h3 className="text-xl font-bold leading-tight text-[#323441]">
-                                        {news.title}
-                                    </h3>
+                                    <Link href={`/news/${news.id}`} className="block">
+                                        <h3 className="text-xl font-bold leading-tight text-[#323441] hover:text-[#5a80b9] transition-colors">
+                                            {news.title}
+                                        </h3>
+                                    </Link>
                                     <p className="text-base text-[#767676]">
                                         {news.description}
                                     </p>
-                                    <button className="group mt-2 flex w-fit items-center gap-2 rounded-full bg-[#5a80b9] px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#4a6d9e]">
-                                        Read More
-                                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                                    </button>
+                                    <Link href={`/news/${news.id}`}>
+                                        <button className="group mt-2 cursor-pointer flex w-fit items-center gap-2 rounded-full bg-[#5a80b9] px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#4a6d9e]">
+                                            Read More
+                                            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                                        </button>
+                                    </Link>
                                 </div>
                             </motion.div>
                         ))}
@@ -129,7 +133,7 @@ export default function News() {
                 {/* See More Button */}
                 <Link
                     href="/news"
-                    className="mt-4 rounded-full border border-gray-200 bg-white px-8 py-3 text-base font-medium text-[#323441] shadow-sm transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#5a80b9] focus:ring-offset-2"
+                    className="mt-4 rounded-full border border-gray-200 bg-white px-8 py-3 text-base font-medium text-[#323441] shadow-sm transition-colors hover:bg-[#e7e7e7] focus:outline-none focus:ring-2 focus:ring-[#5a80b9] focus:ring-offset-2"
                 >
                     See More News
                 </Link>

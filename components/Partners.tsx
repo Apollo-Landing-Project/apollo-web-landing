@@ -12,21 +12,21 @@ type Partner = {
 };
 
 const insurancePartners: Partner[] = [
-    { id: 1, name: 'Fairfax', logo: 'https://www.google.com/s2/favicons?domain=fairfax.ca&sz=128' },
-    { id: 2, name: 'Allianz', logo: 'https://www.google.com/s2/favicons?domain=allianz.co.id&sz=128' },
-    { id: 3, name: 'BCA Insurance', logo: 'https://www.google.com/s2/favicons?domain=bcainsurance.co.id&sz=128' },
-    { id: 4, name: 'Jasindo', logo: 'https://www.google.com/s2/favicons?domain=jasindo.co.id&sz=128' },
-    { id: 5, name: 'Sompo', logo: 'https://www.google.com/s2/favicons?domain=sompo.co.id&sz=128' },
-    { id: 6, name: 'Tokio Marine', logo: 'https://www.google.com/s2/favicons?domain=tokiomarine.com&sz=128' },
+    { id: 1, name: 'Fairfax', logo: "/assets/partners/fairfax.png" },
+    { id: 2, name: 'Allianz', logo: "/assets/partners/allianz.png" },
+    { id: 3, name: 'BCA Insurance', logo: "/assets/partners/bca-insurance.png" },
+    { id: 4, name: 'Jasindo', logo: "/assets/partners/jasindo.png" },
+    { id: 5, name: 'Sompo', logo: "/assets/partners/sompo.png" },
+    { id: 6, name: 'Tokio Marine', logo: "/assets/partners/tokio-marine.png" },
 ];
 
 const fundingPartners: Partner[] = [
-    { id: 1, name: 'BCA Finance', logo: 'https://www.google.com/s2/favicons?domain=bcafinance.co.id&sz=128' },
-    { id: 2, name: 'CIMB Niaga', logo: 'https://www.google.com/s2/favicons?domain=cimbniaga.co.id&sz=128' },
-    { id: 3, name: 'KKB BCA', logo: 'https://www.google.com/s2/favicons?domain=bca.co.id&sz=128' },
-    { id: 4, name: 'Mizuho', logo: 'https://www.google.com/s2/favicons?domain=mizuhogroup.com&sz=128' },
-    { id: 5, name: 'Mandiri Tunas', logo: 'https://www.google.com/s2/favicons?domain=mtf.co.id&sz=128' },
-    { id: 6, name: 'Adira', logo: 'https://www.google.com/s2/favicons?domain=adira.co.id&sz=128' },
+    { id: 1, name: 'BCA Finance', logo: "/assets/partners/bca-finance.png" },
+    { id: 2, name: 'CIMB Niaga', logo: "/assets/partners/cimb-niaga.png" },
+    { id: 3, name: 'KKB BCA', logo: "/assets/partners/kkb-bca.png" },
+    { id: 4, name: 'Mizuho', logo: "/assets/partners/mizuho.png" },
+    { id: 5, name: 'Mandiri Tunas', logo: "/assets/partners/mandiri-tunas.png" },
+    { id: 6, name: 'Adira', logo: "/assets/partners/adira.png" },
 ];
 
 const CarouselSection = ({ title, partners }: { title: string; partners: Partner[] }) => {
@@ -100,7 +100,7 @@ const CarouselSection = ({ title, partners }: { title: string; partners: Partner
                                         src={partner.logo}
                                         alt={partner.name}
                                         fill
-                                        className="object-contain"
+                                        className={`object-contain ${partner.name === 'Mandiri Tunas' || partner.name === 'Adira' ? 'scale-125' : ''}`}
                                     />
                                 </div>
                             </div>

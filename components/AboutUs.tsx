@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 type StatCard = {
     id: string;
@@ -15,7 +16,7 @@ const stats: StatCard[] = [
         id: "experience",
         count: "35+",
         label: "Years Experience",
-        icon: "/assets/about/experience.svg",
+        icon: "/assets/about/products.svg"
     },
     {
         id: "products",
@@ -67,13 +68,13 @@ export default function AboutUs() {
                         </p>
                     </div>
 
-                    <button className="mt-4 rounded-full bg-[#7a95c3] px-8 py-3 text-base font-medium text-white transition-colors hover:bg-[#5a80b9]">
+                    <Link href="/about" className="mt-4 rounded-full bg-[#7a95c3] px-8 py-3 text-base font-medium text-white transition-colors hover:bg-[#5a80b9] cursor-pointer">
                         Learn More
-                    </button>
+                    </Link>
                 </div>
 
                 {/* Right Content - Stats Grid */}
-                <div className="grid w-full flex-1 grid-cols-1 gap-6 sm:grid-cols-2 lg:max-w-xl">
+                <div className="grid w-full flex-1 grid-cols-1 gap-6 min-[400px]:grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 lg:max-w-xl">
                     {stats.map((stat) => (
                         <div
                             key={stat.id}

@@ -18,7 +18,7 @@ const Footer = () => {
         { name: 'Our Services', href: '/services' },
         { name: 'News', href: '/news' },
         { name: 'Investor Relation', href: '/investor-relation' },
-        { name: 'Contact Us', href: '/contact' },
+        { name: 'Contact Us', href: '/#contact' },
     ];
 
     const socialLinks = [
@@ -29,8 +29,8 @@ const Footer = () => {
     ];
 
     return (
-        <footer className="w-full bg-gradient-to-br from-[#5A80B9] to-[#2D476E] text-white pt-20 pb-8 px-6 md:px-20 relative mt-20">
-            <div className="mx-auto max-w-[1440px] flex flex-col gap-16">
+        <footer className="w-full bg-gradient-to-br from-[#5A80B9] to-[#2D476E] text-white pt-20 pb-8 px-6 md:px-20 relative mt-20 z-40">
+            <div className="mx-auto max-w-[1440px] flex flex-col sm:gap-16 gap-8">
 
                 {/* Top Section */}
                 <div className="flex flex-col lg:flex-row justify-between items-start gap-12 lg:gap-20">
@@ -43,12 +43,12 @@ const Footer = () => {
                         <p className="text-white/80 text-lg leading-relaxed">
                             Reach out to us for service information, strategic partnerships, or other business-related inquiries.
                         </p>
-                        <button
-                            onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+                        <Link
+                            href="/#contact"
                             className="bg-white text-[#5A80B9] font-medium rounded-full px-8 py-3 w-fit hover:bg-gray-100 transition-colors cursor-pointer"
                         >
                             Contact
-                        </button>
+                        </Link>
                     </div>
 
                     {/* Middle Column: Links & Location */}
@@ -76,10 +76,10 @@ const Footer = () => {
                             </div>
 
                             <a
-                                href="https://maps.google.com"
+                                href="https://www.google.com/maps/search/?api=1&query=Honda+Sukun+Malang+(Official)"
                                 target="_blank"
                                 rel="noreferrer"
-                                className="flex items-center gap-2 border border-white/30 rounded-full px-5 py-2.5 w-fit hover:bg-white/10 transition-colors text-white"
+                                className="flex items-center justify-center md:justify-start gap-2 border border-white/30 rounded-full px-5 py-2.5 w-full md:w-fit hover:bg-white/10 transition-colors text-white"
                             >
                                 <span className="text-sm font-medium">Use Navigation</span>
                                 <ArrowRight className="w-4 h-4" />
@@ -103,12 +103,18 @@ const Footer = () => {
                 <div className="w-full h-px bg-white/20" />
 
                 {/* Bottom Section */}
-                <div className="flex flex-col-reverse gap-6 items-center text-center">
-                    <p className="text-white/80 text-sm md:text-base">
+                {/* Bottom Section */}
+                <div className="flex flex-col-reverse lg:grid lg:grid-cols-3 gap-6 items-center w-full">
+                    {/* Left Spacer (Desktop only) */}
+                    <div className="hidden lg:block" />
+
+                    {/* Center: Copyright */}
+                    <p className="text-white/80 text-sm lg:text-base text-center w-full min-w-[300px]">
                         © 2017 - {new Date().getFullYear()} PT Apollo Global Interactive Tbk. All Rights Reserved
                     </p>
 
-                    <div className="flex gap-6">
+                    {/* Right: Socials */}
+                    <div className="flex gap-6 justify-center lg:justify-end w-full">
                         {socialLinks.map((social, index) => (
                             <a
                                 key={index}
@@ -122,10 +128,10 @@ const Footer = () => {
                 </div>
 
                 {/* Mobile Back To Top (Visible only on smaller screens) */}
-                <div className="lg:hidden flex justify-center">
+                <div className="lg:hidden flex justify-center w-full lg:mb-0 mb-12">
                     <button
                         onClick={scrollToTop}
-                        className="bg-white/10 text-white backdrop-blur-md border border-white/20 flex items-center gap-2 px-6 py-3 rounded-full font-medium hover:bg-white hover:text-[#5A80B9] transition-all duration-300 cursor-pointer group"
+                        className="bg-white/10 text-white backdrop-blur-md border border-white/20 flex items-center justify-center gap-2 px-6 py-3 rounded-full font-medium hover:bg-white hover:text-[#5A80B9] transition-all duration-300 cursor-pointer group w-full sm:w-auto"
                     >
                         <span>Back To Top</span>
                         <ArrowUp className="w-4 h-4 group-hover:-translate-y-1 transition-transform" />
