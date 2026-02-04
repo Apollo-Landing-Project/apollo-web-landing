@@ -95,7 +95,7 @@ export default function Navbar() {
             if (link.href === "/#contact" && activeSection === "contact") return true;
 
             // Fallback for contact hash directly
-            if (link.href === "/#contact" && window.location.hash === "#contact") return true;
+            if (link.href === "/#contact" && typeof window !== 'undefined' && window.location.hash === "#contact") return true;
         }
 
         return pathname === link.href;
