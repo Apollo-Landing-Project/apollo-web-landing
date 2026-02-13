@@ -8,16 +8,16 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const languages = [
     {
-        code: "en",
-        label: "English",
-        shortLabel: "Eng",
-        flag: "https://flagcdn.com/w40/gb.png",
-    },
-    {
         code: "id",
         label: "Bahasa Indonesia",
         shortLabel: "Ind",
         flag: "https://flagcdn.com/w40/id.png",
+    },
+    {
+        code: "en",
+        label: "English",
+        shortLabel: "Eng",
+        flag: "https://flagcdn.com/w40/gb.png",
     },
 ];
 
@@ -30,13 +30,27 @@ const navLinks = [
     { name: "Contact Us", href: "/#contact" },
 ];
 
-export default function Navbar() {
+export default function Navbar({ lang = "en" }: { lang?: string }) {
     const pathname = usePathname();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isLangOpen, setIsLangOpen] = useState(false);
-    const [currentLang, setCurrentLang] = useState(languages[0]);
     const [activeSection, setActiveSection] = useState("");
     const langRef = useRef<HTMLDivElement>(null);
+
+    const isId = lang === "id";
+
+    // Dynamic Navigation Links
+    const navLinks = [
+        { name: isId ? "Beranda" : "Home", href: "/" },
+        { name: isId ? "Tentang Kami" : "About Us", href: "/about" },
+        { name: isId ? "Layanan Kami" : "Our Services", href: "/services" },
+        { name: isId ? "Berita" : "News", href: "/news" },
+        { name: isId ? "Hubungan Investor" : "Investor Relations", href: "/investor-relation" },
+        { name: isId ? "Hubungi Kami" : "Contact Us", href: "/#contact" },
+    ];
+
+    // Current Language Display
+    const currentLang = languages.find(l => l.code === lang) || languages[1];
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -48,6 +62,24 @@ export default function Navbar() {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+
+    // ... scroll observer effect ...
+
+    const getSwitchedPath = (newLang: string) => {
+        if (!pathname) return `/${newLang}`;
+        const segments = pathname.split('/').filter(Boolean);
+        if (segments.length === 0) return `/${newLang}`;
+
+        // If first segment is a lang code, replace it
+        if (['en', 'id'].includes(segments[0])) {
+            segments[0] = newLang;
+        } else {
+            // Should not happen with middleware, but fallback prepending
+            segments.unshift(newLang);
+        }
+        return `/${segments.join('/')}`;
+    };
+
 
     // Intersection Observer for Active Section on Home Page
     useEffect(() => {
@@ -81,24 +113,41 @@ export default function Navbar() {
     }, [pathname]);
 
     const isActiveLink = (link: typeof navLinks[0]) => {
-        // Special case for News/CSR subpages
-        if (link.name === "News" && (pathname.startsWith("/news") || pathname.startsWith("/csr"))) {
-            return true;
+        const pathSegments = pathname.split('/').filter(Boolean);
+        const currentLang = pathSegments[0] || 'id';
+
+        // pathWithoutLang logic:
+        // if pathname is /en/about -> segments: ['en', 'about'] -> slice(1) -> ['about'] -> /about
+        // if pathname is /en -> segments: ['en'] -> slice(1) -> [] -> /
+        const pathRest = pathSegments.slice(1);
+        const pathWithoutLang = pathRest.length > 0 ? '/' + pathRest.join('/') : '/';
+
+        // 1. Special case for News/CSR subpages (e.g. /en/news/detail-1, /en/csr/detail-2)
+        if (link.name === "News") {
+            // Check if current path (without lang) starts with /news or /csr
+            if (pathWithoutLang.startsWith("/news") || pathWithoutLang.startsWith("/csr")) {
+                return true;
+            }
         }
 
-        // Home page scroll active logic
-        if (pathname === "/") {
+        // 2. Home Page Scroll Logic
+        // This applies when we are EXACTLY at the language root (e.g. /en or /id)
+        if (pathWithoutLang === '/') {
             if (link.href === "/" && activeSection === "home") return true;
             if (link.href === "/about" && activeSection === "about-us") return true;
             if (link.href === "/services" && activeSection === "services") return true;
             if (link.href === "/news" && activeSection === "news") return true;
             if (link.href === "/#contact" && activeSection === "contact") return true;
 
-            // Fallback for contact hash directly
-            if (link.href === "/#contact" && typeof window !== 'undefined' && window.location.hash === "#contact") return true;
+            // If just on home and no active section (top of page), highlight Home
+            if (link.href === "/" && !activeSection) return true;
+
+            return false;
         }
 
-        return pathname === link.href;
+        // 3. Standard Page Matching (e.g. /en/about vs link /about)
+        // Check exact match of the path part
+        return pathWithoutLang === link.href;
     };
 
     return (
@@ -116,7 +165,7 @@ export default function Navbar() {
                 <div className="mx-auto max-w-[1440px]">
                     <div className="flex h-[72px] items-center justify-between rounded-full border border-gray-100 bg-[#fdfdfd] px-6 py-2 shadow-[0px_2px_12px_0px_rgba(112,109,109,0.12)] md:px-8">
                         {/* Logo */}
-                        <Link href="/" className="flex items-center shrink-0">
+                        <Link href="/id" className="flex items-center shrink-0">
                             <div className="relative h-10 w-24 md:w-32">
                                 <Image
                                     src="/logo-new.png"
@@ -130,18 +179,22 @@ export default function Navbar() {
 
                         {/* Desktop Nav Links */}
                         <div className="hidden lg:flex items-center gap-8 xl:gap-12">
-                            {navLinks.map((link) => (
-                                <Link
-                                    key={link.name}
-                                    href={link.href}
-                                    className={`relative py-1 text-[16px] font-medium transition-colors hover:text-[#5a80b9] ${isActiveLink(link)
-                                        ? "text-[#5a80b9] after:absolute after:bottom-0 after:left-1/2 after:h-[3px] after:w-6 after:-translate-x-1/2 after:rounded-full after:bg-[#5a80b9]"
-                                        : "text-[#323441]"
-                                        }`}
-                                >
-                                    {link.name}
-                                </Link>
-                            ))}
+                            {navLinks.map((link) => {
+                                const langPath = pathname.split('/')[1] || 'en';
+                                const href = link.href === "/" ? `/${langPath}` : `/${langPath}${link.href}`;
+                                return (
+                                    <Link
+                                        key={link.name}
+                                        href={href}
+                                        className={`relative py-1 text-[16px] font-medium transition-colors hover:text-[#5a80b9] ${isActiveLink(link)
+                                            ? "text-[#5a80b9] after:absolute after:bottom-0 after:left-1/2 after:h-[3px] after:w-6 after:-translate-x-1/2 after:rounded-full after:bg-[#5a80b9]"
+                                            : "text-[#323441]"
+                                            }`}
+                                    >
+                                        {link.name}
+                                    </Link>
+                                );
+                            })}
                         </div>
 
                         {/* Right Section: Language Dropdown & Mobile Menu */}
@@ -182,27 +235,27 @@ export default function Navbar() {
                                 {/* Dropdown Menu */}
                                 {isLangOpen && (
                                     <div className=" absolute right-0 mt-2 w-56 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-xl">
-                                        {languages.map((lang) => (
-                                            <button
-                                                key={lang.code}
+                                        {languages.map((langOption) => (
+                                            <Link
+                                                key={langOption.code}
+                                                href={getSwitchedPath(langOption.code)}
                                                 onClick={() => {
-                                                    setCurrentLang(lang);
                                                     setIsLangOpen(false);
                                                 }}
                                                 className="cursor-pointer flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-gray-50"
                                             >
                                                 <div className="relative h-6 w-8 overflow-hidden rounded-sm">
                                                     <Image
-                                                        src={lang.flag}
-                                                        alt={lang.label}
+                                                        src={langOption.flag}
+                                                        alt={langOption.label}
                                                         fill
                                                         className="object-cover"
                                                     />
                                                 </div>
                                                 <span className="text-[15px] font-medium text-[#323441]">
-                                                    {lang.label}
+                                                    {langOption.label}
                                                 </span>
-                                                {currentLang.code === lang.code && (
+                                                {currentLang.code === langOption.code && (
                                                     <svg
                                                         className="ml-auto h-4 w-4 text-[#5a80b9]"
                                                         fill="none"
@@ -217,7 +270,7 @@ export default function Navbar() {
                                                         />
                                                     </svg>
                                                 )}
-                                            </button>
+                                            </Link>
                                         ))}
                                     </div>
                                 )}
@@ -273,25 +326,30 @@ export default function Navbar() {
                                 className="mt-4 overflow-hidden rounded-3xl border border-gray-100 bg-white p-4 shadow-xl lg:hidden"
                             >
                                 <div className="flex flex-col gap-2">
-                                    {navLinks.map((link, i) => (
-                                        <motion.div
-                                            key={link.name}
-                                            initial={{ opacity: 0, x: -20 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: i * 0.05 + 0.1 }}
-                                        >
-                                            <Link
-                                                href={link.href}
-                                                onClick={() => setIsMenuOpen(false)}
-                                                className={`block w-full rounded-xl px-4 py-3 text-[16px] font-medium transition-colors ${pathname === link.href
-                                                    ? "bg-[#5a80b9]/10 text-[#5a80b9]"
-                                                    : "text-[#323441] hover:bg-gray-50"
-                                                    }`}
+                                    {navLinks.map((link, i) => {
+                                        const langPath = pathname.split('/')[1] || 'en';
+                                        const href = link.href === "/" ? `/${langPath}` : `/${langPath}${link.href}`;
+
+                                        return (
+                                            <motion.div
+                                                key={link.name}
+                                                initial={{ opacity: 0, x: -20 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                transition={{ delay: i * 0.05 + 0.1 }}
                                             >
-                                                {link.name}
-                                            </Link>
-                                        </motion.div>
-                                    ))}
+                                                <Link
+                                                    href={href}
+                                                    onClick={() => setIsMenuOpen(false)}
+                                                    className={`block w-full rounded-xl px-4 py-3 text-[16px] font-medium transition-colors ${isActiveLink(link)
+                                                        ? "bg-[#5a80b9]/10 text-[#5a80b9]"
+                                                        : "text-[#323441] hover:bg-gray-50"
+                                                        }`}
+                                                >
+                                                    {link.name}
+                                                </Link>
+                                            </motion.div>
+                                        )
+                                    })}
                                 </div>
                             </motion.div>
                         )}

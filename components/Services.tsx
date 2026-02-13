@@ -4,30 +4,37 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Car, Key, Wrench, Tag } from 'lucide-react';
 
-const services = [
-    {
-        title: 'Dealership',
-        description: 'Comprehensive sales and after sales service solutions for Honda brand new vehicles.',
-        icon: Car,
-    },
-    {
-        title: 'Auto Rental',
-        description: 'Complete transportation solutions in the form of vehicle rentals.',
-        icon: Key,
-    },
-    {
-        title: 'Auto Service',
-        description: 'Maintenance and repair facility solutions.',
-        icon: Wrench,
-    },
-    {
-        title: 'Used Car Retailer',
-        description: 'Solution for buying and selling used cars.',
-        icon: Tag,
-    },
-];
+export default function Services({ lang, data }: { lang: string, data: any }) {
+    const isId = lang === "id";
 
-export default function Services() {
+    const labels = {
+        pill: isId ? "Layanan Kami" : "Our Services",
+        seeMore: isId ? "Lihat Layanan Lainnya" : "See More Services",
+    };
+
+    const services = [
+        {
+            title: isId ? 'Dealer Mobil' : 'Dealership',
+            description: isId ? 'Solusi layanan penjualan dan purna jual yang komprehensif untuk kendaraan baru merek Honda.' : 'Comprehensive sales and after sales service solutions for Honda brand new vehicles.',
+            icon: Car,
+        },
+        {
+            title: isId ? 'Rental Kendaraan' : 'Auto Rental',
+            description: isId ? 'Solusi transportasi lengkap dalam bentuk penyewaan kendaraan.' : 'Complete transportation solutions in the form of vehicle rentals.',
+            icon: Key,
+        },
+        {
+            title: isId ? 'Layanan Servis' : 'Auto Service',
+            description: isId ? 'Solusi fasilitas perawatan dan perbaikan.' : 'Maintenance and repair facility solutions.',
+            icon: Wrench,
+        },
+        {
+            title: isId ? 'Jual Beli Mobil Bekas' : 'Used Car Retailer',
+            description: isId ? 'Solusi untuk jual beli mobil bekas.' : 'Solution for buying and selling used cars.',
+            icon: Tag,
+        },
+    ];
+
     return (
         <section id="services" className="w-full bg-[#FAFAFA] py-10 md:py-20 px-4 md:px-10 overflow-hidden scroll-mt-24">
             <div className="mx-auto max-w-[1440px]">
@@ -35,15 +42,15 @@ export default function Services() {
                 <div className="flex flex-col gap-6 md:gap-10 mb-16 relative">
                     <div className="flex flex-col gap-4 items-start max-w-3xl">
                         <div className="inline-flex items-center justify-center rounded-full bg-[#f2f7ff] px-4 py-1.5 text-sm font-medium text-[#5a80b9] ring-1 ring-inset ring-[#5a80b9]/15">
-                            Our Services
+                            {labels.pill}
                         </div>
 
                         <h2 className="text-4xl md:text-[54px] font-semibold text-[#323441] leading-tight">
-                            What We Can Do for You
+                            {data.title}
                         </h2>
 
                         <p className="text-lg text-[#323441]/80 leading-relaxed max-w-2xl">
-                            We deliver automotive solutions across sales, rental, service, and used car operations, focused on efficiency, reliability, and long-term value.
+                            {data.desc}
                         </p>
                     </div>
                 </div>
@@ -82,10 +89,10 @@ export default function Services() {
                 {/* See More Button */}
                 <div className="flex justify-center mt-12">
                     <Link
-                        href="/services"
+                        href={`/${lang}/services`}
                         className="rounded-full border border-gray-200 bg-white px-8 py-3 text-base font-medium text-[#323441] shadow-sm transition-colors hover:bg-[#e7e7e7] focus:outline-none focus:ring-2 focus:ring-[#5a80b9] focus:ring-offset-2"
                     >
-                        See More Services
+                        {labels.seeMore}
                     </Link>
                 </div>
             </div>

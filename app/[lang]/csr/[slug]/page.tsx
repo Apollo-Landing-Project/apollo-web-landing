@@ -1,13 +1,63 @@
-"use client";
-
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import CSRCarousel from "@/components/CSRCarousel";
 import CSRGallery from "@/components/CSRGallery";
+import { Metadata } from "next";
 
-export default function CSRDetailPage({ params }: { params: { slug: string } }) {
+// Mock function to simulate fetching metadata from Backend
+async function getCSRMetadata(slug: string, lang: string) {
+    // Simulate DB fetch
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    const isId = lang === 'id';
+
+    return {
+        title: isId
+            ? "Santunan Ramadhan Tahunan di Pesantren Mua'allamin Mua'allamat"
+            : "Annual Ramadan Charity at Pesantren Mua'allamin Mua'allamat",
+        description: isId
+            ? "Dalam semangat bulan suci Ramadhan, Apollo Global Interactive mengadakan acara amal tahunan 'Santunan Ramadhan'."
+            : "In the spirit of the holy month of Ramadan, Apollo Global Interactive held its annual charity event, 'Santunan Ramadhan'.",
+        image: "https://images.unsplash.com/photo-1593113598332-cd288d649433?q=80&w=2670&auto=format&fit=crop"
+    };
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string; slug: string }> }): Promise<Metadata> {
+    const { lang, slug } = await params;
+    const data = await getCSRMetadata(slug, lang);
+
+    return {
+        title: data.title,
+        description: data.description,
+        alternates: {
+            canonical: `https://apolloglobalinteractive.com/${lang}/csr/${slug}`,
+            languages: {
+                'id-ID': `https://apolloglobalinteractive.com/id/csr/${slug}`,
+                'en-US': `https://apolloglobalinteractive.com/en/csr/${slug}`,
+            },
+        },
+        openGraph: {
+            title: `${data.title} - Apollo`,
+            description: data.description,
+            url: `https://apolloglobalinteractive.com/${lang}/csr/${slug}`,
+            siteName: "Apollo",
+            images: [
+                {
+                    url: data.image,
+                    width: 1200,
+                    height: 630,
+                },
+            ],
+            locale: lang === 'id' ? 'id_ID' : 'en_US',
+            type: "article",
+        },
+    };
+}
+
+export default async function CSRDetailPage({ params }: { params: Promise<{ lang: string; slug: string }> }) {
+    const { lang, slug } = await params;
     // Layout based on News Detail but with specific modifications for CSR
 
     return (

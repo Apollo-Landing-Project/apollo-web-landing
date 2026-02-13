@@ -4,10 +4,55 @@ import NewsCategorySection from "@/components/NewsCategorySection";
 import AboutHeader from "@/components/AboutHeader";
 import { Metadata } from "next";
 
-export const metadata: Metadata = {
-    title: "News",
-    description: "Stay up to date with the latest news, updates, and corporate social responsibility activities from Apollo Global Interactive.",
-};
+// Mock function to simulate fetching metadata from Backend
+async function getMetadataFromBE(slug: string, lang: string) {
+    // Simulate DB fetch
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    if (lang === "id") {
+        return {
+            title: "Berita & CSR",
+            description: "Tetap terinformasi bersama Apollo Global Interactive. Baca berita perusahaan terbaru, pembaruan keuangan, dan inisiatif Tanggung Jawab Sosial Perusahaan (CSR) yang membawa perubahan positif.",
+        };
+    }
+
+    return {
+        title: "News & CSR",
+        description: "Stay informed with Apollo Global Interactive. Read our latest corporate news, financial updates, and Corporate Social Responsibility (CSR) initiatives driving positive change.",
+    };
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+    const { lang } = await params;
+    const data = await getMetadataFromBE("news-page", lang);
+
+    return {
+        title: data.title,
+        description: data.description,
+        alternates: {
+            canonical: `https://apolloglobalinteractive.com/${lang}/news`,
+            languages: {
+                'id-ID': 'https://apolloglobalinteractive.com/id/news',
+                'en-US': 'https://apolloglobalinteractive.com/en/news',
+            },
+        },
+        openGraph: {
+            title: `${data.title} - Apollo`,
+            description: data.description,
+            url: `https://apolloglobalinteractive.com/${lang}/news`,
+            siteName: "Apollo",
+            images: [
+                {
+                    url: "https://apolloglobalinteractive.com/og-news.jpg",
+                    width: 1200,
+                    height: 630,
+                },
+            ],
+            locale: lang === 'id' ? 'id_ID' : 'en_US',
+            type: "website",
+        },
+    };
+}
 
 const companyNewsItems = [
     {

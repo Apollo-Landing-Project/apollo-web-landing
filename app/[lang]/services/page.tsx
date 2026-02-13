@@ -4,11 +4,68 @@ import AboutSection from "@/components/AboutSection";
 import ServiceCarousel from "@/components/ServiceCarousel";
 import { Metadata } from "next";
 import { MapPin, Mail, Phone } from "lucide-react";
+import { dbFetch } from "@/lib/fetcher";
 
-export const metadata: Metadata = {
-    title: "Our Services",
-    description: "Explore our comprehensive automotive services including new car sales, service & parts, rental, and used car sales.",
-};
+// Helper to fetch data
+async function getServiceData(lang: string) {
+    const token = process.env.API_TOKEN;
+    try {
+        const data = await dbFetch(`client/service?lang=${lang}`, {
+            headers: {
+                'Cookie': `token=${token}`
+            }
+        });
+        return data;
+    } catch (error) {
+        console.error("Error fetching service data:", error);
+        return null;
+    }
+}
+
+import { SITE_URL } from "@/lib/constants";
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+    const { lang } = await params;
+
+    // Fetch data for metadata
+    const data = await getServiceData(lang);
+
+    // Console log for testing metadata fetch
+    console.log("Creating Metadata for Service Page:", { lang, data });
+
+    // Fallback if fetch fails or data structure doesn't match
+    const title = data?.data?.meta_title || (lang === "id" ? "Layanan Kami" : "Our Services");
+    const description = data?.data?.meta_description || (lang === "id"
+        ? "Solusi otomotif komprehensif yang disesuaikan untuk Anda."
+        : "Comprehensive automotive solutions tailored for you.");
+
+    return {
+        title: title,
+        description: description,
+        alternates: {
+            canonical: `${SITE_URL}/${lang}/services`,
+            languages: {
+                'id-ID': `${SITE_URL}/id/services`,
+                'en-US': `${SITE_URL}/en/services`,
+            },
+        },
+        openGraph: {
+            title: `${title} - Apollo`,
+            description: description,
+            url: `${SITE_URL}/${lang}/services`,
+            siteName: "Apollo",
+            images: [
+                {
+                    url: data?.data?.og_image || `${SITE_URL}/og-services.jpg`,
+                    width: 1200,
+                    height: 630,
+                },
+            ],
+            locale: lang === 'id' ? 'id_ID' : 'en_US',
+            type: "website",
+        },
+    };
+}
 
 const locations = {
     honda: [
@@ -41,17 +98,28 @@ const locations = {
     ]
 };
 
-export default function ServicesPage() {
+export default async function ServicesPage({ params }: { params: Promise<{ lang: string }> }) {
+    const { lang } = await params;
+
+    // Fetch data server-side
+    const serviceData = await getServiceData(lang);
+
+    // Log data for testing
+    console.log("========================================");
+    console.log(`[ServicePage] Fetching data for lang: ${lang}`);
+    console.log("[ServicePage] Data received:", JSON.stringify(serviceData, null, 2));
+    console.log("========================================");
+
     return (
         <main className="flex flex-col items-center">
             {/* Header */}
             <div className="w-full">
                 <AboutHeader
-                    title="Learn More About Apollo Global Interactive"
-                    subtitle="Comprehensive automotive solutions tailored to your needs, from purchasing to maintenance and beyond."
+                    title={serviceData?.data?.title || "Learn More About Apollo Global Interactive"}
+                    subtitle={serviceData?.data?.subtitle || "Comprehensive automotive solutions tailored to your needs, from purchasing to maintenance and beyond."}
                     backgroundImage="https://images.unsplash.com/photo-1517524285303-d6fc683dddf8?q=80&w=2070&auto=format&fit=crop"
                     targetId="services-content"
-                    badge="Our Services"
+                    badge={serviceData?.data?.badge || "Our Services"}
                 />
             </div>
 

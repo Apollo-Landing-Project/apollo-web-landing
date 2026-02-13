@@ -1,11 +1,62 @@
-"use client";
-
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { Metadata } from "next";
 
-export default function NewsDetailPage({ params }: { params: { slug: string } }) {
+// Mock function to simulate fetching metadata from Backend
+async function getNewsMetadata(slug: string, lang: string) {
+    // Simulate DB fetch
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    const isId = lang === 'id';
+
+    // In real app, fetch article by slug
+    return {
+        title: isId
+            ? "Ringkasan Risalah RUPSLB 2026"
+            : "Summary of Minutes of EGMS 2026",
+        description: isId
+            ? "Rapat Umum Pemegang Saham Luar Biasa (RUPSLB) 2026 Apollo Global Interactive berhasil diselenggarakan pada 23 Oktober 2026."
+            : "The Extraordinary General Meeting of Shareholders (EGMS) 2026 of Apollo Global Interactive was successfully convened on October 23, 2026.",
+        image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2670&auto=format&fit=crop"
+    };
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string; slug: string }> }): Promise<Metadata> {
+    const { lang, slug } = await params;
+    const data = await getNewsMetadata(slug, lang);
+
+    return {
+        title: data.title,
+        description: data.description,
+        alternates: {
+            canonical: `https://apolloglobalinteractive.com/${lang}/news/${slug}`,
+            languages: {
+                'id-ID': `https://apolloglobalinteractive.com/id/news/${slug}`,
+                'en-US': `https://apolloglobalinteractive.com/en/news/${slug}`,
+            },
+        },
+        openGraph: {
+            title: `${data.title} - Apollo`,
+            description: data.description,
+            url: `https://apolloglobalinteractive.com/${lang}/news/${slug}`,
+            siteName: "Apollo",
+            images: [
+                {
+                    url: data.image,
+                    width: 1200,
+                    height: 630,
+                },
+            ],
+            locale: lang === 'id' ? 'id_ID' : 'en_US',
+            type: "article",
+        },
+    };
+}
+
+export default async function NewsDetailPage({ params }: { params: Promise<{ lang: string; slug: string }> }) {
+    const { lang, slug } = await params;
     // In a real application, you would fetch data using params.slug
     // For now, we mock the content to match the design
 
@@ -14,7 +65,7 @@ export default function NewsDetailPage({ params }: { params: { slug: string } })
             {/* Back Button */}
             <div className="mb-8">
                 <Link
-                    href="/news"
+                    href={`/${lang}/news`}
                     className="inline-flex items-center gap-2 rounded-full border-[1.5px] border-[#d1d1d6] px-4 py-3 text-sm font-semibold text-[#323441] transition-colors hover:bg-gray-50"
                 >
                     <ArrowLeft className="h-5 w-5" />
@@ -64,7 +115,7 @@ export default function NewsDetailPage({ params }: { params: { slug: string } })
                 </p>
 
                 {/* Inline Image 1 */}
-                <div className="relative mb-8 h-[300px] md:h-[400px] w-full overflow-hidden rounded-[24px]">
+                <div className="relative mb-8 h-[300px] md:h-[400px] w-full md:w-[80%] mx-auto overflow-hidden rounded-[24px]">
                     <Image
                         src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=2670&auto=format&fit=crop"
                         alt="Meeting Discussion"
@@ -79,7 +130,7 @@ export default function NewsDetailPage({ params }: { params: { slug: string } })
                 </p>
 
                 {/* Inline Image 2 */}
-                <div className="relative mb-8 h-[300px] md:h-[400px] w-full overflow-hidden rounded-[24px]">
+                <div className="relative mb-8 h-[300px] md:h-[400px] w-full md:w-[80%] mx-auto overflow-hidden rounded-[24px]">
                     <Image
                         src="https://images.unsplash.com/photo-1544923246-77307dd654cb?q=80&w=2670&auto=format&fit=crop"
                         alt="Strategy Session"
@@ -93,7 +144,7 @@ export default function NewsDetailPage({ params }: { params: { slug: string } })
                 </p>
 
                 {/* Inline Image 3 */}
-                <div className="relative mb-8 h-[300px] md:h-[400px] w-full overflow-hidden rounded-[24px]">
+                <div className="relative mb-8 h-[300px] md:h-[400px] w-full md:w-[80%] mx-auto overflow-hidden rounded-[24px]">
                     <Image
                         src="https://images.unsplash.com/photo-1559136555-9303baea8ebd?q=80&w=2670&auto=format&fit=crop"
                         alt="Corporate Team"

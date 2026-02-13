@@ -5,28 +5,53 @@ import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 
-const slides = [
+interface Slide {
+    id: number;
+    image: string;
+    title: { en: string; id: string };
+    subtitle: { en: string; id: string };
+}
+
+const slides: Slide[] = [
     {
         id: 1,
         image: 'https://images.unsplash.com/photo-1706495227612-fde52c357c69??q=80&w=2670&auto=format&fit=crop',
-        title: 'Integrated Automotive,\nService Solutions.',
-        subtitle: 'We provide integrated automotive solutions encompassing vehicle sales, rental services, maintenance, and used car operations to support sustainable business growth.',
+        title: {
+            en: 'Integrated Automotive,\nService Solutions.',
+            id: 'Solusi Layanan\nOtomotif Terintegrasi.'
+        },
+        subtitle: {
+            en: 'We provide integrated automotive solutions encompassing vehicle sales, rental services, maintenance, and used car operations to support sustainable business growth.',
+            id: 'Kami menyediakan solusi otomotif terintegrasi yang mencakup penjualan kendaraan, layanan penyewaan, perawatan, dan operasi mobil bekas untuk mendukung pertumbuhan bisnis yang berkelanjutan.'
+        },
     },
     {
         id: 2,
         image: 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?q=80&w=2670&auto=format&fit=crop', // Car service / maintenance
-        title: 'Expert Maintenance\nFor Your Fleet.',
-        subtitle: 'Our certified technicians ensure your vehicles remain in peak condition with comprehensive maintenance and repair services designed for reliability.',
+        title: {
+            en: 'Expert Maintenance\nFor Your Fleet.',
+            id: 'Perawatan Ahli\nUntuk Armada Anda.'
+        },
+        subtitle: {
+            en: 'Our certified technicians ensure your vehicles remain in peak condition with comprehensive maintenance and repair services designed for reliability.',
+            id: 'Teknisi bersertifikat kami memastikan kendaraan Anda tetap dalam kondisi prima dengan layanan perawatan dan perbaikan komprehensif yang dirancang untuk keandalan.'
+        },
     },
     {
         id: 3,
         image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=2670&auto=format&fit=crop', // Showroom
-        title: 'Premium Selection,\nUnmatched Quality.',
-        subtitle: 'Browse our extensive collection of certified used and new vehicles. We guarantee quality and transparency in every transaction.',
+        title: {
+            en: 'Premium Selection,\nUnmatched Quality.',
+            id: 'Pilihan Premium,\nKualitas Tak Tertandingi.'
+        },
+        subtitle: {
+            en: 'Browse our extensive collection of certified used and new vehicles. We guarantee quality and transparency in every transaction.',
+            id: 'Jelajahi koleksi lengkap kendaraan bekas dan baru bersertifikat kami. Kami menjamin kualitas dan transparansi dalam setiap transaksi.'
+        },
     },
 ];
 
-export default function Hero() {
+export default function Hero({ lang = "en" }: { lang?: string }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [direction, setDirection] = useState(0); // 1 for next, -1 for prev (though only next is requested)
 
@@ -83,7 +108,7 @@ export default function Hero() {
                         <div className="relative w-full h-full">
                             <Image
                                 src={slides[currentIndex].image}
-                                alt={slides[currentIndex].title}
+                                alt={slides[currentIndex].title[lang as 'en' | 'id']}
                                 fill
                                 className="object-cover"
                                 priority
@@ -104,7 +129,7 @@ export default function Hero() {
                                             animate="visible"
                                             className="font-sans font-bold text-4xl sm:text-5xl md:text-[62px] leading-[1.1] md:leading-[85px] whitespace-pre-wrap"
                                         >
-                                            {slides[currentIndex].title}
+                                            {slides[currentIndex].title[lang as 'en' | 'id']}
                                         </motion.h1>
 
                                         <motion.div
@@ -114,7 +139,7 @@ export default function Hero() {
                                             animate="visible"
                                             className="font-sans font-normal text-sm sm:text-base md:text-lg tracking-wide opacity-90 max-w-[600px]"
                                         >
-                                            <p>{slides[currentIndex].subtitle}</p>
+                                            <p>{slides[currentIndex].subtitle[lang as 'en' | 'id']}</p>
                                         </motion.div>
                                     </div>
 
@@ -126,7 +151,9 @@ export default function Hero() {
                                         onClick={() => document.getElementById('about-us')?.scrollIntoView({ behavior: 'smooth' })}
                                         className="bg-[#5a80b9] hover:bg-[#4a6d9e] transition-colors cursor-pointer flex gap-4 items-center pl-6 pr-3 py-3 w-fit rounded-full group"
                                     >
-                                        <span className="font-medium text-white text-base md:text-lg">Get Started</span>
+                                        <span className="font-medium text-white text-base md:text-lg">
+                                            {lang === 'id' ? 'Mulai Sekarang' : 'Get Started'}
+                                        </span>
                                         <div className="bg-white/20 rounded-full p-1 group-hover:bg-white/30 transition-colors">
                                             <ArrowRight className="w-5 h-5 md:w-6 md:h-6 text-white" />
                                         </div>

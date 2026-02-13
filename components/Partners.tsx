@@ -117,7 +117,7 @@ const CarouselSection = ({ title, partners }: { title: string; partners: Partner
                             key={index}
                             className={`h-2 rounded-full transition-all duration-300 ${index === selectedIndex ? "w-8 bg-[#5a80b9]" : "w-2 bg-[#E4E7EC]"
                                 }`}
-                            onClick={() => scrollTo(index)}
+                            onClick={() => scrollTo(index)} // Using scrollTo helper
                         />
                     ))}
                 </div>
@@ -126,7 +126,15 @@ const CarouselSection = ({ title, partners }: { title: string; partners: Partner
     );
 };
 
-export default function Partners() {
+export default function Partners({ lang, data }: { lang: string, data: any }) {
+    const isId = lang === 'id';
+
+    const labels = {
+        pill: isId ? 'Mitra Kami' : 'Our Partners',
+        insurance: isId ? 'Mitra Asuransi' : 'Insurance Partners',
+        funding: isId ? 'Mitra Pembiayaan' : 'Funding Partners',
+    };
+
     return (
         <section className="w-full bg-white py-20 px-4 md:px-10 overflow-hidden">
             <div className="mx-auto max-w-[1440px] flex flex-col gap-16">
@@ -134,24 +142,24 @@ export default function Partners() {
                 {/* Header */}
                 <div className="flex flex-col items-center text-center gap-6 max-w-2xl mx-auto">
                     <div className="inline-flex items-center justify-center rounded-full bg-[#f2f7ff] px-4 py-1.5 text-sm font-medium text-[#5a80b9] ring-1 ring-inset ring-[#5a80b9]/15">
-                        Our Partners
+                        {labels.pill}
                     </div>
 
                     <div className="flex flex-col gap-4">
                         <h2 className="text-4xl md:text-[54px] font-semibold text-[#323441] leading-tight">
-                            We’re Stronger Together Through Collaboration.
+                            {data.title}
                         </h2>
 
                         <p className="text-lg text-[#323441]/80 leading-relaxed">
-                            We build strategic partnerships that strengthen our capabilities and sustainable, long-term growth.
+                            {data.desc}
                         </p>
                     </div>
                 </div>
 
                 {/* Content Sections */}
                 <div className="flex flex-col gap-16">
-                    <CarouselSection title="Insurance Partners" partners={insurancePartners} />
-                    <CarouselSection title="Funding Partners" partners={fundingPartners} />
+                    <CarouselSection title={labels.insurance} partners={insurancePartners} />
+                    <CarouselSection title={labels.funding} partners={fundingPartners} />
                 </div>
 
             </div>

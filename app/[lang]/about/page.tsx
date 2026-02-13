@@ -6,10 +6,55 @@ import TeamSection from "@/components/TeamSection";
 import CompanyStructure from "@/components/CompanyStructure";
 import { Metadata } from "next";
 
-export const metadata: Metadata = {
-    title: "About Us",
-    description: "Learn more about Apollo Global Interactive, our vision, mission, history, and leadership team.",
-};
+// Mock function to simulate fetching metadata from Backend
+async function getMetadataFromBE(slug: string, lang: string) {
+    // Simulate DB fetch
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    if (lang === "id") {
+        return {
+            title: "Tentang Kami",
+            description: "Temukan warisan keunggulan Apollo Global Interactive. Pelajari visi kami untuk mobilitas berkelanjutan, tim kepemimpinan yang berdedikasi, dan komitmen kami terhadap inovasi.",
+        };
+    }
+
+    return {
+        title: "About Us",
+        description: "Discover Apollo Global Interactive's legacy of excellence. Learn about our vision for sustainable mobility, our dedicated leadership team, and our commitment to automotive innovation.",
+    };
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+    const { lang } = await params;
+    const data = await getMetadataFromBE("about-page", lang);
+
+    return {
+        title: data.title,
+        description: data.description,
+        alternates: {
+            canonical: `https://apolloglobalinteractive.com/${lang}/about`,
+            languages: {
+                'id-ID': 'https://apolloglobalinteractive.com/id/about',
+                'en-US': 'https://apolloglobalinteractive.com/en/about',
+            },
+        },
+        openGraph: {
+            title: `${data.title} - Apollo`,
+            description: data.description,
+            url: `https://apolloglobalinteractive.com/${lang}/about`,
+            siteName: "Apollo",
+            images: [
+                {
+                    url: "https://apolloglobalinteractive.com/og-about.jpg",
+                    width: 1200,
+                    height: 630,
+                },
+            ],
+            locale: lang === 'id' ? 'id_ID' : 'en_US',
+            type: "website",
+        },
+    };
+}
 
 
 const commissioners = [
