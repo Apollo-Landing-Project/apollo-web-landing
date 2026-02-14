@@ -23,7 +23,7 @@ function isPublicFile(pathname: string) {
     return false
 }
 
-export function middleware(request: NextRequest) {
+export default function proxy(request: NextRequest) {
     const pathname = request.nextUrl.pathname
 
     // 1. Skip middleware for API routes, Next.js internals, and public files
