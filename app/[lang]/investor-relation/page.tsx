@@ -4,47 +4,70 @@ import InvestorHero from '@/components/InvestorRelation/InvestorHero';
 import StockChart from '@/components/InvestorRelation/StockChart';
 import StakeholderCharts from '@/components/InvestorRelation/StakeholderCharts';
 import ReportSection from '@/components/InvestorRelation/ReportSection';
+import { dbFetch } from "@/lib/fetcher";
+import { SITE_URL } from "@/lib/constants";
 
-// Mock function to simulate fetching metadata from Backend
-async function getMetadataFromBE(slug: string, lang: string) {
-    // Simulate DB fetch
-    await new Promise((resolve) => setTimeout(resolve, 50));
-
-    if (lang === "id") {
-        return {
-            title: "Hubungan Investor",
-            description: "Hubungan Investor: Akses data saham real-time, laporan keuangan, dan wawasan strategis. Bergabunglah dalam perjalanan pertumbuhan berkelanjutan dan kepemimpinan pasar kami.",
-        };
-    }
-
+// Helper to generate default data structure
+function getDefaultInvestorData(lang: string) {
+    const isId = lang === "id";
     return {
-        title: "Investor Relations",
-        description: "Investor Relations: Access real-time stock data, financial reports, and strategic insights. Join us in our journey of sustainable growth and market leadership.",
+        meta_title: isId ? "Hubungan Investor" : "Investor Relations",
+        meta_description: isId
+            ? "Hubungan Investor: Akses data saham real-time, laporan keuangan, dan wawasan strategis. Bergabunglah dalam perjalanan pertumbuhan berkelanjutan dan kepemimpinan pasar kami."
+            : "Investor Relations: Access real-time stock data, financial reports, and strategic insights. Join us in our journey of sustainable growth and market leadership.",
+        og_image: "/og-investor-relation.jpg"
     };
+}
+
+// Helper to fetch data
+async function getInvestorData(lang: string) {
+    const token = process.env.API_TOKEN;
+    try {
+        const data = await dbFetch(`client/investor-relation?lang=${lang}`, {
+            headers: {
+                'Cookie': `token=${token}`
+            }
+        });
+
+        if (data && data.data) {
+            return data;
+        }
+        throw new Error("Invalid data structure received");
+    } catch (error) {
+        console.error("Error fetching investor data, using default fallback:", error);
+        return { data: getDefaultInvestorData(lang) };
+    }
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
     const { lang } = await params;
-    const data = await getMetadataFromBE("investor-relation-page", lang);
+
+    const investorData = await getInvestorData(lang);
+    const data = investorData?.data;
+
+    const title = data?.meta_title || (lang === "id" ? "Hubungan Investor" : "Investor Relations");
+    const description = data?.meta_description || (lang === "id"
+        ? "Hubungan Investor: Akses data saham real-time, laporan keuangan, dan wawasan strategis."
+        : "Investor Relations: Access real-time stock data, financial reports, and strategic insights.");
 
     return {
-        title: data.title,
-        description: data.description,
+        title: title,
+        description: description,
         alternates: {
-            canonical: `https://apolloglobalinteractive.com/${lang}/investor-relation`,
+            canonical: `${SITE_URL}/${lang}/investor-relation`,
             languages: {
-                'id-ID': 'https://apolloglobalinteractive.com/id/investor-relation',
-                'en-US': 'https://apolloglobalinteractive.com/en/investor-relation',
+                'id-ID': `${SITE_URL}/id/investor-relation`,
+                'en-US': `${SITE_URL}/en/investor-relation`,
             },
         },
         openGraph: {
-            title: `${data.title} - Apollo`,
-            description: data.description,
-            url: `https://apolloglobalinteractive.com/${lang}/investor-relation`,
+            title: `${title} - Apollo`,
+            description: description,
+            url: `${SITE_URL}/${lang}/investor-relation`,
             siteName: "Apollo",
             images: [
                 {
-                    url: "https://apolloglobalinteractive.com/og-investor-relation.jpg",
+                    url: data?.og_image || `${SITE_URL}/og-investor-relation.jpg`,
                     width: 1200,
                     height: 630,
                 },
@@ -55,7 +78,12 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     };
 }
 
-export default function InvestorRelationPage() {
+export default async function InvestorRelationPage({ params }: { params: Promise<{ lang: string }> }) {
+    // We are fetching data here to ensure the mechanism exists, 
+    // even if we don't pass it to child components yet (as they might be static or self-fetching)
+    const { lang } = await params;
+    await getInvestorData(lang);
+
     return (
         <main className="flex flex-col w-full">
             <InvestorHero />

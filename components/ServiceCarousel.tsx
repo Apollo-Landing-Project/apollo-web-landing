@@ -5,33 +5,18 @@ import { motion, AnimatePresence, Variants } from "framer-motion";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const usedCars = [
-    {
-        id: 1,
-        name: "Honda CR-V 1.5L Turbo",
-        description: "A premium SUV designed for family comfort and powerful performance, offering advanced safety features and a spacious interior for every journey.",
-        image: "https://images.unsplash.com/photo-1568844293986-8d0400bd4745?q=80&w=2070&auto=format&fit=crop",
-    },
-    {
-        id: 2,
-        name: "Honda HR-V SE CVT",
-        description: "A compact and stylish SUV that blends efficiency with dynamic design, perfect for urban driving and weekend getaways alike.",
-        image: "https://images.unsplash.com/photo-1764020321651-99a07b33b9b1?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-        id: 3,
-        name: "Honda Brio Satya E",
-        description: "A compact and efficient designed for everyday urban mobility with responsive performance and modern styling. Offers a comfortable driving experience and reliable engineering.",
-        image: "https://images.unsplash.com/photo-1570303278489-041bd897a873?q=80&w=1064&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-        id: 4,
-        name: "Honda Civic Type R",
-        description: "A compact and efficient designed for everyday urban mobility with responsive performance and modern styling. Offers a comfortable driving experience and reliable engineering.",
-        image: "https://images.unsplash.com/photo-1636915860623-57b9b74133e6?q=80&w=927&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-];
+type CarouselItem = {
+    id: string | number;
+    title: string;
+    desc: string;
+    image: string;
+};
 
+type ServiceCarouselProps = {
+    title: string;
+    description: string;
+    items: CarouselItem[];
+};
 
 const CarouselImage = ({
     src,
@@ -67,7 +52,7 @@ const CarouselImage = ({
     );
 };
 
-export default function ServiceCarousel() {
+export default function ServiceCarousel({ title, description, items }: ServiceCarouselProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [direction, setDirection] = useState(0);
 
@@ -101,17 +86,19 @@ export default function ServiceCarousel() {
         setDirection(newDirection);
         setCurrentIndex((prevIndex) => {
             let nextIndex = prevIndex + newDirection;
-            if (nextIndex < 0) nextIndex = usedCars.length - 1;
-            if (nextIndex >= usedCars.length) nextIndex = 0;
+            if (nextIndex < 0) nextIndex = items.length - 1;
+            if (nextIndex >= items.length) nextIndex = 0;
             return nextIndex;
         });
     };
 
-    const currentCar = usedCars[currentIndex];
+    if (!items || items.length === 0) return null;
+
+    const currentCar = items[currentIndex];
 
     // Smart Pre-loading: Calculate next and previous indices
-    const nextIndex = (currentIndex + 1) % usedCars.length;
-    const prevIndex = (currentIndex - 1 + usedCars.length) % usedCars.length;
+    const nextIndex = (currentIndex + 1) % items.length;
+    const prevIndex = (currentIndex - 1 + items.length) % items.length;
 
     return (
         <section className="w-full py-12 md:py-20">
@@ -123,10 +110,10 @@ export default function ServiceCarousel() {
                             <span className="text-sm font-medium text-[#5a80b9]">Used Car Gallery</span>
                         </div>
                         <h2 className="text-3xl font-bold leading-tight text-[#323441] md:text-4xl">
-                            Our Available Used Car Collection
+                            {title}
                         </h2>
                         <p className="max-w-xl text-base text-gray-600 md:text-lg">
-                            Discover a selection of quality used cars with transparent information to support confident purchasing decisions.
+                            {description}
                         </p>
                     </div>
                 </div>
@@ -157,7 +144,7 @@ export default function ServiceCarousel() {
                             {/* Optimized Image with Skeleton */}
                             <CarouselImage
                                 src={currentCar.image}
-                                alt={currentCar.name}
+                                alt={currentCar.title}
                                 priority={currentIndex === 0} // LCP optimization for first slide
                             />
 
@@ -172,9 +159,9 @@ export default function ServiceCarousel() {
                                     transition={{ delay: 0.4 }}
                                     className="max-w-3xl"
                                 >
-                                    <h3 className="mb-3 text-3xl font-bold md:text-4xl">{currentCar.name}</h3>
+                                    <h3 className="mb-3 text-3xl font-bold md:text-4xl">{currentCar.title}</h3>
                                     <p className="text-base font-light leading-relaxed text-gray-200 md:text-lg">
-                                        {currentCar.description}
+                                        {currentCar.desc}
                                     </p>
                                 </motion.div>
                             </div>
@@ -199,7 +186,7 @@ export default function ServiceCarousel() {
 
                     {/* Pagination Dots - Bottom Center */}
                     <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 z-20">
-                        {usedCars.map((_, index) => (
+                        {items.map((_, index) => (
                             <button
                                 key={index}
                                 onClick={() => {
@@ -217,14 +204,14 @@ export default function ServiceCarousel() {
                 {/* Hidden Preloader for Next/Prev Images */}
                 <div className="hidden" aria-hidden="true">
                     <Image
-                        src={usedCars[nextIndex].image}
+                        src={items[nextIndex].image}
                         alt="preload next"
                         width={1}
                         height={1}
                         priority
                     />
                     <Image
-                        src={usedCars[prevIndex].image}
+                        src={items[prevIndex].image}
                         alt="preload prev"
                         width={1}
                         height={1}
