@@ -16,7 +16,12 @@ const galleryImages = [
     "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2670&auto=format&fit=crop",
 ];
 
-export default function CSRGallery() {
+interface CSRGalleryProps {
+    images?: string[];
+}
+
+export default function CSRGallery({ images }: CSRGalleryProps) {
+    const listImages = (images && images.length > 0) ? images : galleryImages;
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
     // Disable body scroll when modal is open
@@ -48,7 +53,7 @@ export default function CSRGallery() {
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                {galleryImages.map((src, index) => (
+                {listImages.map((src, index) => (
                     <motion.div
                         key={index}
                         layoutId={`gallery-item-${index}`}

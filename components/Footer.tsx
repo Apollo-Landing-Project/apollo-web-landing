@@ -4,7 +4,11 @@ import React from 'react';
 import Link from 'next/link';
 import { ArrowUp, MapPin, ArrowRight, Instagram, Twitter, Facebook, MessageCircle } from 'lucide-react';
 
-const Footer = () => {
+interface FooterProps {
+    lang?: string;
+}
+
+const Footer = ({ lang = 'en' }: FooterProps) => {
     const scrollToTop = () => {
         window.scrollTo({
             top: 0,
@@ -12,14 +16,49 @@ const Footer = () => {
         });
     };
 
-    const links = [
-        { name: 'Home', href: '/' },
-        { name: 'About Us', href: '/#about-us' },
-        { name: 'Our Services', href: '/services' },
-        { name: 'News', href: '/news' },
-        { name: 'Investor Relation', href: '/investor-relation' },
-        { name: 'Contact Us', href: '/#contact' },
-    ];
+    const content = {
+        en: {
+            heading: "Committed to Supporting Your Business",
+            description: "Reach out to us for service information, strategic partnerships, or other business-related inquiries.",
+            contactBtn: "Contact",
+            links: [
+                { name: 'Home', href: '/' },
+                { name: 'About Us', href: '/#about-us' },
+                { name: 'Our Services', href: '/services' },
+                { name: 'News', href: '/news' },
+                { name: 'Investor Relation', href: '/investor-relation' },
+                { name: 'Contact Us', href: '/#contact' },
+            ],
+            locationTitle: "Our Location",
+            address1: "S. Supriadi Street. No. 19-22",
+            address2: "Sukun, Malang - East Java",
+            navigationBtn: "Use Navigation",
+            backToTop: "Back To Top",
+            rights: "All Rights Reserved"
+        },
+        id: {
+            heading: "Berkomitmen Untuk Mendukung Bisnis Anda",
+            description: "Hubungi kami untuk informasi layanan, kemitraan strategis, atau pertanyaan terkait bisnis lainnya.",
+            contactBtn: "Hubungi Kami",
+            links: [
+                { name: 'Beranda', href: '/' },
+                { name: 'Tentang Kami', href: '/#about-us' },
+                { name: 'Layanan Kami', href: '/services' },
+                { name: 'Berita', href: '/news' },
+                { name: 'Hubungan Investor', href: '/investor-relation' },
+                { name: 'Hubungi Kami', href: '/#contact' },
+            ],
+            locationTitle: "Lokasi Kami",
+            address1: "Jl. S. Supriadi No. 19-22",
+            address2: "Sukun, Malang - Jawa Timur",
+            navigationBtn: "Gunakan Navigasi",
+            backToTop: "Kembali ke Atas",
+            rights: "Hak Cipta Dilindungi"
+        }
+    };
+
+    // Fallback to English if lang is not 'id' or 'en' (though it should be one of them)
+    const t = (lang === 'id' ? content.id : content.en);
 
     const socialLinks = [
         { icon: Facebook, href: '#' },
@@ -38,16 +77,16 @@ const Footer = () => {
                     {/* Left Column: CTA */}
                     <div className="flex flex-col gap-6 max-w-md">
                         <h2 className="text-3xl md:text-4xl font-semibold leading-tight">
-                            Committed to Supporting Your Business
+                            {t.heading}
                         </h2>
                         <p className="text-white/80 text-lg leading-relaxed">
-                            Reach out to us for service information, strategic partnerships, or other business-related inquiries.
+                            {t.description}
                         </p>
                         <Link
-                            href="/#contact"
+                            href={`/${lang}#contact`}
                             className="bg-white text-[#5A80B9] font-medium rounded-full px-8 py-3 w-fit hover:bg-gray-100 transition-colors cursor-pointer"
                         >
-                            Contact
+                            {t.contactBtn}
                         </Link>
                     </div>
 
@@ -56,10 +95,10 @@ const Footer = () => {
 
                         {/* Links */}
                         <div className="flex flex-col gap-4">
-                            {links.map((link) => (
+                            {t.links.map((link) => (
                                 <Link
                                     key={link.name}
-                                    href={link.href}
+                                    href={`/${lang}${link.href.startsWith('/') ? link.href.substring(1) : link.href}`}
                                     className="text-white/90 hover:text-white hover:translate-x-1 transition-all text-lg font-medium"
                                 >
                                     {link.name}
@@ -69,10 +108,10 @@ const Footer = () => {
 
                         {/* Location */}
                         <div className="flex flex-col gap-6 max-w-xs">
-                            <h4 className="text-lg font-medium text-white/80">Our Location</h4>
+                            <h4 className="text-lg font-medium text-white/80">{t.locationTitle}</h4>
                             <div className="flex flex-col gap-1 text-white/90 text-lg">
-                                <p>S. Supriadi Street. No. 19-22</p>
-                                <p>Sukun, Malang - East Java</p>
+                                <p>{t.address1}</p>
+                                <p>{t.address2}</p>
                             </div>
 
                             <a
@@ -81,7 +120,7 @@ const Footer = () => {
                                 rel="noreferrer"
                                 className="flex items-center justify-center md:justify-start gap-2 border border-white/30 rounded-full px-5 py-2.5 w-full md:w-fit hover:bg-white/10 transition-colors text-white"
                             >
-                                <span className="text-sm font-medium">Use Navigation</span>
+                                <span className="text-sm font-medium">{t.navigationBtn}</span>
                                 <ArrowRight className="w-4 h-4" />
                             </a>
                         </div>
@@ -93,7 +132,7 @@ const Footer = () => {
                             onClick={scrollToTop}
                             className="bg-white text-[#5A80B9] flex items-center gap-2 px-5 py-2.5 rounded-full font-medium transition-all duration-300 hover:bg-[#5A80B9] hover:text-white border border-white cursor-pointer group"
                         >
-                            <span>Back To Top</span>
+                            <span>{t.backToTop}</span>
                             <ArrowUp className="w-4 h-4 group-hover:-translate-y-1 transition-transform" />
                         </button>
                     </div>
@@ -103,14 +142,13 @@ const Footer = () => {
                 <div className="w-full h-px bg-white/20" />
 
                 {/* Bottom Section */}
-                {/* Bottom Section */}
                 <div className="flex flex-col-reverse lg:grid lg:grid-cols-3 gap-6 items-center w-full">
                     {/* Left Spacer (Desktop only) */}
                     <div className="hidden lg:block" />
 
                     {/* Center: Copyright */}
                     <p className="text-white/80 text-sm lg:text-base text-center w-full min-w-[300px]">
-                        © 2017 - {new Date().getFullYear()} PT Apollo Global Interactive Tbk. All Rights Reserved
+                        © 2017 - {new Date().getFullYear()} PT Apollo Global Interactive Tbk. {t.rights}
                     </p>
 
                     {/* Right: Socials */}
@@ -133,7 +171,7 @@ const Footer = () => {
                         onClick={scrollToTop}
                         className="bg-white/10 text-white backdrop-blur-md border border-white/20 flex items-center justify-center gap-2 px-6 py-3 rounded-full font-medium hover:bg-white hover:text-[#5A80B9] transition-all duration-300 cursor-pointer group w-full sm:w-auto"
                     >
-                        <span>Back To Top</span>
+                        <span>{t.backToTop}</span>
                         <ArrowUp className="w-4 h-4 group-hover:-translate-y-1 transition-transform" />
                     </button>
                 </div>

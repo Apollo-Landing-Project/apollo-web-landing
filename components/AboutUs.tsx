@@ -60,7 +60,7 @@ export default function AboutUs({ lang, data }: { lang: string, data: any }) {
                 {/* Left Content */}
                 <div className="flex flex-1 flex-col items-start gap-6">
                     <div className="inline-flex items-center justify-center rounded-full bg-[#f2f7ff] px-3 py-1 text-sm font-medium text-[#5a80b9] ring-1 ring-inset ring-[#5a80b9]/15">
-                        {labels.pill}
+                        {data.badge || labels.pill}
                     </div>
 
                     <h2 className="text-3xl font-bold leading-tight text-[#323441] md:text-4xl lg:text-[40px]">

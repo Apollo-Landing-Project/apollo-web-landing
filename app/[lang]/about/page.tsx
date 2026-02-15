@@ -1,5 +1,4 @@
 import React from "react";
-import Image from "next/image";
 import AboutHeader from "@/components/AboutHeader";
 import AboutSection from "@/components/AboutSection";
 import TeamSection from "@/components/TeamSection";
@@ -8,151 +7,256 @@ import { Metadata } from "next";
 import { dbFetch } from "@/lib/fetcher";
 import { SITE_URL } from "@/lib/constants";
 
+// Type definitions matching the API response
+interface TeamMember {
+    id: string;
+    name: string;
+    positionDesc: string;
+    photo: string;
+}
+
+interface StructureItem {
+    id: string;
+    name: string;
+    icon: string;
+}
+
+interface AboutPageData {
+    hero: {
+        badge: string;
+        title: string;
+        desc: string;
+        background: string;
+    };
+    vision: {
+        badge: string;
+        title: string;
+        desc: string;
+        quote: string;
+        list: string[];
+        imageParent: string;
+        imageChild: string;
+    };
+    mission: {
+        badge: string;
+        title: string;
+        desc: string;
+        quote: string;
+        list: string[];
+        imageParent: string;
+        imageChild: string;
+    };
+    history: {
+        badge: string;
+        title: string;
+        desc: string;
+        imageParent: string;
+        imageChild: string;
+    };
+    companyStructure: {
+        badge: string;
+        title: string;
+        desc: string;
+        items: StructureItem[];
+    };
+    boc: {
+        badge: string;
+        title: string;
+        desc: string;
+        members: TeamMember[];
+    };
+    bod: {
+        badge: string;
+        title: string;
+        desc: string;
+        members: TeamMember[];
+    };
+    metadata: {
+        title: string;
+        description: string;
+        og_image: string;
+    };
+}
+
 // Helper to generate default data structure
-function getDefaultAboutData(lang: string) {
+function getDefaultAboutData(lang: string): AboutPageData {
     const isId = lang === "id";
     return {
-        meta_title: isId ? "Tentang Kami" : "About Us",
-        meta_description: isId
-            ? "Temukan warisan keunggulan Apollo Global Interactive. Pelajari visi kami untuk mobilitas berkelanjutan, tim kepemimpinan yang berdedikasi, dan komitmen kami terhadap inovasi."
-            : "Discover Apollo Global Interactive's legacy of excellence. Learn about our vision for sustainable mobility, our dedicated leadership team, and our commitment to automotive innovation.",
-        og_image: "/og-about.jpg",
-        header: {
+        hero: {
+            badge: isId ? "Tentang Kami" : "About Us",
             title: isId ? "Pelajari Lebih Lanjut Tentang Apollo Global Interactive" : "Learn More About Apollo Global Interactive",
-            subtitle: isId
-                ? "PT Apollo Global Interactive Tbk (Perseroan) adalah perusahaan otomotif multidimensi yang berdedikasi melayani Anda melalui inovasi, layanan unggul, dan pertumbuhan berkelanjutan."
-                : "PT Apollo Global Interactive Tbk (The Company) is a multidimensional automotive company dedicated to serving you through innovation, superior service, and sustainable growth.",
-            badge: isId ? "Tentang Kami" : "About Us"
+            desc: isId
+                ? "PT Apollo Global Interactive Tbk adalah perusahaan otomotif terintegrasi yang menyediakan solusi dealer, penyewaan mobil, layanan servis, dan ritel mobil bekas melalui sistem layanan terpadu."
+                : "PT Apollo Global Interactive Tbk is an integrated automotive company providing dealership, auto rental, auto service, and used car retail solutions through an integrated service system.",
+            background: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327525-7zpn.jpg"
         },
         vision: {
-            tag: isId ? "Visi" : "Vision",
+            badge: isId ? "Visi" : "Vision",
             title: isId ? "Visi Kami" : "Our Vision",
             desc: isId
                 ? "Menjadi perusahaan otomotif terintegrasi terkemuka yang membentuk masa depan mobilitas melalui inovasi, keunggulan operasional, dan pertumbuhan berkelanjutan."
                 : "To be a leading integrated automotive company that shapes the future of mobility through innovation, operational excellence, and sustainable growth.",
-            listTitle: isId ? "Kami bertujuan untuk:" : "We aim to:",
-            points: isId ? [
-                "Memberikan solusi otomotif terintegrasi di seluruh siklus hidup kendaraan.",
-                "Membangun nilai jangka panjang bagi pelanggan, mitra, dan pemangku kepentingan.",
-                "Mendorong inovasi melalui teknologi dan keunggulan layanan.",
-                "Mempromosikan praktik bisnis yang berkelanjutan dan bertanggung jawab."
-            ] : [
-                "Deliver integrated automotive solutions across the entire vehicle lifecycle.",
-                "Build long-term value for customers, partners, and stakeholders.",
-                "Drive innovation through technology and service excellence.",
-                "Promote sustainable and responsible business practices."
-            ],
-            footer: isId
+            quote: isId
                 ? "Melalui visi ini, Perseroan berkomitmen untuk memperkuat kehadiran pasarnya sambil menciptakan nilai berkelanjutan bagi semua pemangku kepentingan."
-                : "Through this vision, the Company is committed to strengthening its market presence while creating sustainable value for all stakeholders."
+                : "Through this vision, the Company is committed to strengthening its market presence while creating sustainable value for all stakeholders.",
+            list: isId ? [
+                "Memberikan solusi otomotif terintegrasi di seluruh siklus hidup kendaraan",
+                "Membangun nilai jangka panjang bagi pelanggan, mitra, dan pemangku kepentingan",
+                "Mendorong inovasi melalui teknologi dan keunggulan layanan",
+                "Mempromosikan praktik bisnis yang berkelanjutan dan bertanggung jawab"
+            ] : [
+                "Deliver integrated automotive solutions across the entire vehicle lifecycle",
+                "Build long-term value for customers, partners, and stakeholders",
+                "Drive innovation through technology and service excellence",
+                "Promote sustainable and responsible business practices"
+            ],
+            imageParent: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327532-cb8a.jpg",
+            imageChild: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327532-ishp.jpg"
         },
         mission: {
-            tag: isId ? "Misi" : "Mission",
+            badge: isId ? "Misi" : "Mission",
             title: isId ? "Misi Kami" : "Our Mission",
             desc: isId
                 ? "Memberikan layanan otomotif terintegrasi dengan fokus kuat pada kualitas, keandalan, dan kepuasan pelanggan, didukung oleh manajemen profesional dan perbaikan berkelanjutan."
                 : "To deliver integrated automotive services with a strong focus on quality, reliability, and customer satisfaction, supported by professional management and continuous improvement.",
-            listTitle: isId ? "Kami berkomitmen untuk:" : "We are committed to:",
-            points: isId ? [
-                "Menyediakan solusi otomotif komprehensif di seluruh dealer, penyewaan, layanan, dan suku cadang.",
-                "Mempertahankan standar tinggi keunggulan operasional dan kualitas layanan.",
-                "Memperkuat kemitraan untuk mendukung pertumbuhan bisnis yang berkelanjutan.",
-                "Memanfaatkan inovasi dan teknologi untuk meningkatkan efisiensi dan kinerja."
-            ] : [
-                "Providing comprehensive automotive solutions across dealership, rental, service, and spare parts.",
-                "Maintaining high standards of operational excellence and service quality.",
-                "Strengthening partnerships to support sustainable business growth.",
-                "Leveraging innovation and technology to enhance efficiency and performance."
-            ],
-            footer: isId
+            quote: isId
                 ? "Melalui misi ini, Perseroan bertujuan untuk secara konsisten memberikan nilai, membangun kepercayaan, dan mendukung pertumbuhan jangka panjang bagi pelanggan, mitra, dan pemangku kepentingan."
-                : "Through this mission, the Company aims to consistently deliver value, build trust, and support long-term growth for customers, partners, and stakeholders."
+                : "Through this mission, the Company aims to consistently deliver value, build trust, and support long-term growth for customers, partners, and stakeholders.",
+            list: isId ? [
+                "Menyediakan solusi otomotif komprehensif di seluruh dealer, penyewaan, layanan, dan suku cadang",
+                "Mempertahankan standar tinggi keunggulan operasional dan kualitas layanan",
+                "Memperkuat kemitraan untuk mendukung pertumbuhan bisnis yang berkelanjutan",
+                "Memanfaatkan inovasi dan teknologi untuk meningkatkan efisiensi dan kinerja"
+            ] : [
+                "Providing comprehensive automotive solutions across dealership, rental, service, and used car operations",
+                "Maintaining high standards of operational excellence and service quality",
+                "Strengthening partnerships to support sustainable business growth",
+                "Leveraging innovation and technology to enhance efficiency and performance"
+            ],
+            imageParent: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327532-k690.jpg",
+            imageChild: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327533-r70d.jpg"
         },
         history: {
-            tag: isId ? "Sejarah" : "History",
+            badge: isId ? "Sejarah" : "History",
             title: isId ? "Sejarah Perusahaan" : "Company History",
-            p1: isId
-                ? "PT Apollo Global Interactive Tbk secara resmi mengadopsi identitas barunya setelah Rapat Umum Pemegang Saham Luar Biasa (RUPSLB) yang diadakan pada 31 Januari 2024, ketika PT Bintang Oto Global Tbk mengubah namanya dan memperbarui identitas korporatnya. Rebranding ini juga memperkenalkan logo baru dan alamat email resmi."
-                : "PT Apollo Global Interactive Tbk officially adopted its new identity following the Extraordinary General Meeting of Shareholders (RUPSLB) held on 31 January 2024, when PT Bintang Oto Global Tbk changed its name and updated its corporate identity. This rebranding also introduced a new logo and official email address.",
-            p2: isId
-                ? "Perubahan tersebut kemudian diungkapkan kepada OJK dan BEI pada 21 Januari 2024, bersamaan dengan perombakan manajemen yang mengonfirmasi Albert Wibowo Setiawan sebagai Direktur Utama, dengan penunjukan dewan baru dilakukan tanpa berdampak pada kelangsungan operasional, keuangan, atau hukum Perseroan."
-                : "The change was subsequently disclosed to OJK and BEI on 21 January 2024, alongside a management reshuffle that confirmed Albert Wibowo Setiawan as President Director, with new board appointments made without impacting the Company's operational, financial, or legal continuity."
+            desc: isId
+                ? "PT Apollo Global Interactive Tbk secara resmi mengadopsi identitas barunya setelah Rapat Umum Pemegang Saham Luar Biasa (RUPSLB) yang diadakan pada 21 Januari 2026, ketika PT Bintang Oto Global Tbk mengubah namanya dan memperbarui identitas korporatnya. Rebranding ini juga memperkenalkan logo baru dan alamat email resmi.\r\n\r\nPerubahan tersebut kemudian diungkapkan kepada OJK dan BEI pada 27 Januari 2026, bersamaan dengan perombakan manajemen yang mengonfirmasi Albert Witono Setiawan sebagai Direktur Utama, dengan penunjukan dewan baru dilakukan tanpa berdampak pada kelangsungan operasional, keuangan, atau hukum Perseroan.\r\n\r\nSementara perusahaan melanjutkan kegiatan intinya dalam perdagangan kendaraan, suku cadang, pemeliharaan, dan penyewaan kendaraan melalui anak perusahaannya seiring dengan finalisasi migrasi situs web ke identitas baru."
+                : "PT Apollo Global Interactive Tbk officially adopted its new identity following the Extraordinary General Meeting of Shareholders (RUPSLB) held on 21 January 2026, when PT Bintang Oto Global Tbk changed its name and updated its corporate identity The rebranding also introduced a new logo and official email address.\r\n\r\nThe change was subsequently disclosed to OJK and BEI on 27 January 2026, alongside a management reshuffle that confirmed Albert Witono Setiawan as President Director, with new board appointments made without impacting the Company’s operational, financial, or legal continuity.\r\n\r\nwhile the company continues its core activities in vehicle trading, spare parts, maintenance, and vehicle rental through its subsidiaries as the website migration to the new identity is finalized.",
+            imageParent: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327533-7zi7.jpg",
+            imageChild: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327534-px8d.jpg"
         },
-        commissioners: {
-            tag: isId ? "Dewan Komisaris Kami" : "Our BOC",
+        companyStructure: {
+            badge: isId ? "Struktur Perusahaan" : "Company Structural",
+            title: isId ? "Lihat Struktur Perusahaan Kami" : "See Our Company Structure",
+            desc: isId
+                ? "Struktur organisasi PT Apollo Global Interactive mendukung tata kelola yang efektif, akuntabilitas yang jelas, dan pengambilan keputusan strategis."
+                : "PT Apollo Global Interactive ’s organizational structure supports effective governance, clear accountability, and strategic decision-making.",
+            items: [
+                {
+                    id: "d093689b-7cbc-42a4-b8a4-ebb7a4c8e34d",
+                    name: isId ? "Dealer" : "Dealership",
+                    icon: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327536-nin0.jpg"
+                },
+                {
+                    id: "ce6435a5-14cb-48d2-a809-118f88d1e3ef",
+                    name: isId ? "Penyewaan Mobil" : "Auto Rental",
+                    icon: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327536-5xra.jpg"
+                },
+                {
+                    id: "662533aa-d7da-40a8-a38a-86d45199ec87",
+                    name: isId ? "Servis Mobil" : "Auto Service",
+                    icon: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327536-fboi.jpg"
+                },
+                {
+                    id: "62e967cc-e419-4887-b609-c824abaffcb0",
+                    name: isId ? "Ritel Mobil Bekas" : "Used Car Retailer",
+                    icon: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327536-hdrw.jpg"
+                }
+            ]
+        },
+        boc: {
+            badge: isId ? "Dewan Komisaris Kami" : "Our BOC",
             title: isId ? "Dewan Komisaris (BOC)" : "Board of Commissioners (BOC)",
             desc: isId
                 ? "Dewan Komisaris mengawasi dan memberikan panduan strategis kepada Dewan Direksi untuk memastikan tata kelola perusahaan yang baik dan keberlanjutan jangka panjang."
                 : "The Board of Commissioners supervises and provides strategic guidance to the Board of Directors to ensure good corporate governance and long-term sustainability.",
             members: [
                 {
+                    id: "b0e3ebc8-7814-40a6-8fdb-86d4a4bbdc07",
                     name: "Romeo Lledo",
-                    role: isId ? "Komisaris Utama" : "President Commissioner",
-                    image: "/assets/stakeholder/placeholder.png",
-                    verified: true,
+                    positionDesc: isId ? "Komisaris Utama" : "President Commisioner",
+                    photo: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327536-qstl.jpg"
                 },
                 {
+                    id: "0acd028f-d9ce-47dd-bf0f-347a2d688370",
                     name: "Marjorie E Wairizal, SE",
-                    role: isId ? "Komisaris Independen" : "Independent Commissioner",
-                    image: "/assets/stakeholder/placeholder.png",
-                    verified: true,
-                },
+                    positionDesc: isId ? "Komisaris Independen" : "Independent Commissioner",
+                    photo: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327536-y4rq.jpg"
+                }
             ]
         },
-        directors: {
-            tag: isId ? "Dewan Direksi Kami" : "Our BOD",
+        bod: {
+            badge: isId ? "Dewan Direksi Kami" : "Our BOD",
             title: isId ? "Dewan Direksi (BOD)" : "Board of Directors (BOD)",
             desc: isId
                 ? "Dewan Direksi bertanggung jawab atas pengelolaan operasional Perusahaan dan pelaksanaan strategi untuk mencapai tujuan kami."
-                : "The Board of Directors is responsible for managing the Company's operations and executing strategies to achieve our goals.",
+                : "The Board of Directors is responsible for managing the Company’s operations and executing strategies to achieve our goals.",
             members: [
                 {
-                    name: "Albert Witono Setiawan",
-                    role: isId ? "Direktur Utama" : "President Director",
-                    image: "/assets/stakeholder/albert-witono-setiawan.png",
-                    verified: true,
+                    id: "3b61714c-d6c4-4155-a6c0-276ead04525d",
+                    name: "Albert Witono S",
+                    positionDesc: isId ? "Direktur Utama" : "President Director",
+                    photo: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327536-egcn.jpg"
                 },
                 {
+                    id: "9cce286f-c2c3-42f3-961d-09dc4ab2e4c2",
                     name: "Farras Pina",
-                    role: isId ? "Direktur" : "Director",
-                    image: "/assets/stakeholder/placeholder.png",
-                    verified: true,
-                },
+                    positionDesc: isId ? "Direktur" : "Director",
+                    photo: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327536-j32g.jpg"
+                }
             ]
+        },
+        metadata: {
+            title: isId ? "Tentang Kami" : "About Us",
+            description: isId
+                ? "Temukan warisan keunggulan Apollo Global Interactive. Pelajari visi kami untuk mobilitas berkelanjutan, tim kepemimpinan yang berdedikasi, dan komitmen kami terhadap inovasi otomotif."
+                : "Discover Apollo Global Interactive's legacy of excellence. Learn about our vision for sustainable mobility, our dedicated leadership team, and our commitment to automotive innovation.",
+            og_image: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327525-7zpn.jpg"
         }
     };
 }
 
 // Helper to fetch data
-async function getAboutData(lang: string) {
+async function getAboutData(lang: string): Promise<{ data: AboutPageData }> {
     const token = process.env.API_TOKEN;
     try {
-        const data = await dbFetch(`client/about?lang=${lang}`, {
+        const res = await dbFetch(`client/about-us?lang=${lang}`, {
             headers: {
                 'Cookie': `token=${token}`
-            }
+            },
+            next: { tags: ['about'], revalidate: false }
         });
 
-        if (data && data.data) {
-            return data;
+        if (res && res.data) {
+            return res as { data: AboutPageData };
         }
         throw new Error("Invalid data structure received");
     } catch (error) {
-        console.error("Error fetching about data, using default fallback:", error);
-        return { data: getDefaultAboutData(lang) };
+        console.error("Error fetching about data:", error);
+        throw error;
+        // return { data: getDefaultAboutData(lang) };
     }
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
     const { lang } = await params;
-
     const aboutData = await getAboutData(lang);
-    const data = aboutData?.data;
+    const data = aboutData.data;
 
-    const title = data?.meta_title || (lang === "id" ? "Tentang Kami" : "About Us");
-    const description = data?.meta_description || (lang === "id"
-        ? "Temukan warisan keunggulan Apollo Global Interactive."
-        : "Discover Apollo Global Interactive's legacy of excellence.");
+    // Use metadata from API or fallback to default
+    const title = data.metadata?.title || (lang === "id" ? "Tentang Kami" : "About Us");
+    const description = data.metadata?.description || "";
+    const ogImage = data.metadata?.og_image || `${SITE_URL}/og-about.jpg`;
 
     return {
         title: title,
@@ -171,7 +275,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
             siteName: "Apollo",
             images: [
                 {
-                    url: data?.og_image || `${SITE_URL}/og-about.jpg`,
+                    url: ogImage,
                     width: 1200,
                     height: 630,
                 },
@@ -187,18 +291,18 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
     const { lang } = await params;
 
     const aboutData = await getAboutData(lang);
-    const data = aboutData?.data || getDefaultAboutData(lang);
+    const data: AboutPageData = aboutData.data;
 
     return (
         <main className="flex flex-col items-center">
             {/* Header */}
             <div className="w-full">
                 <AboutHeader
-                    title={data.header.title}
-                    subtitle={data.header.subtitle}
-                    backgroundImage="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop"
+                    title={data.hero.title}
+                    subtitle={data.hero.desc}
+                    backgroundImage={data.hero.background}
                     targetId="our-vision"
-                    badge={data.header.badge}
+                    badge={data.hero.badge}
                 />
             </div>
 
@@ -206,24 +310,23 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
                 {/* Our Vision */}
                 <div id="our-vision" className="scroll-mt-32">
                     <AboutSection
-                        tag={data.vision.tag}
+                        tag={data.vision.badge}
                         title={data.vision.title}
-                        imageSrc="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071&auto=format&fit=crop"
-                        imageAlt="Team collaborating"
-                        overlayImageSrc="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2670&auto=format&fit=crop"
+                        imageSrc={data.vision.imageParent}
+                        imageAlt="Vision Image"
+                        overlayImageSrc={data.vision.imageChild}
                         additionalContent={
                             <>
-                                <p className="mt-3 font-semibold text-[#323441]">{data.vision.listTitle}</p>
                                 <ul className="mt-2 space-y-[6px]">
-                                    {data.vision.points.map((item: string, i: number) => (
+                                    {data.vision.list.map((item: string, i: number) => (
                                         <li key={i} className="flex items-start gap-3">
                                             <span className="mt-1.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#5a80b9] text-[10px] text-white">✓</span>
                                             <span>{item}</span>
                                         </li>
                                     ))}
                                 </ul>
-                                <p className="mt-4">
-                                    {data.vision.footer}
+                                <p className="mt-4 italic text-gray-500">
+                                    &quot;{data.vision.quote}&quot;
                                 </p>
                             </>
                         }
@@ -233,25 +336,24 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
 
                     {/* Our Mission */}
                     <AboutSection
-                        tag={data.mission.tag}
+                        tag={data.mission.badge}
                         title={data.mission.title}
                         isReversed
-                        imageSrc="https://images.unsplash.com/photo-1486325212027-8081e485255e?q=80&w=2070&auto=format&fit=crop"
-                        imageAlt="Modern architecture looking up"
-                        overlayImageSrc="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=2670&auto=format&fit=crop"
+                        imageSrc={data.mission.imageParent}
+                        imageAlt="Mission Image"
+                        overlayImageSrc={data.mission.imageChild}
                         additionalContent={
                             <>
-                                <p className="mt-4 font-semibold text-[#323441]">{data.mission.listTitle}</p>
                                 <ul className="mt-2 space-y-2">
-                                    {data.mission.points.map((item: string, i: number) => (
+                                    {data.mission.list.map((item: string, i: number) => (
                                         <li key={i} className="flex items-start gap-3">
                                             <span className="mt-1.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#5a80b9] text-[10px] text-white">✓</span>
                                             <span>{item}</span>
                                         </li>
                                     ))}
                                 </ul>
-                                <p className="mt-4">
-                                    {data.mission.footer}
+                                <p className="mt-4 italic text-gray-500">
+                                    &quot;{data.mission.quote}&quot;
                                 </p>
                             </>
                         }
@@ -261,36 +363,52 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
 
                     {/* Company History */}
                     <AboutSection
-                        tag={data.history.tag}
+                        tag={data.history.badge}
                         title={data.history.title}
-                        imageSrc="https://images.unsplash.com/photo-1486325212027-8081e485255e?q=80&w=2070&auto=format&fit=crop"
-                        imageAlt="Company building"
-                        overlayImageSrc="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=2670&auto=format&fit=crop"
+                        imageSrc={data.history.imageParent}
+                        imageAlt="Company History"
+                        overlayImageSrc={data.history.imageChild}
                         mobileImagePriorToDescription
                     >
-                        <p>{data.history.p1}</p>
-                        <p className="mt-4">{data.history.p2}</p>
+                        {data.history.desc.split('\r\n').map((paragraph, idx) => (
+                            <p key={idx} className={idx > 0 ? "mt-4" : ""}>{paragraph}</p>
+                        ))}
                     </AboutSection>
 
                     {/* Company Structure */}
-                    <CompanyStructure />
+                    <CompanyStructure
+                        badge={data.companyStructure.badge}
+                        title={data.companyStructure.title}
+                        description={data.companyStructure.desc}
+                        items={data.companyStructure.items}
+                    />
 
                     {/* BOC */}
                     <TeamSection
-                        tag={data.commissioners.tag}
+                        tag={data.boc.badge}
                         tagClassName="bg-[#f2f7ff] border border-[#5a80b9]/15 rounded-full px-4 py-1.5 text-[#5a80b9]"
-                        title={data.commissioners.title}
-                        description={data.commissioners.desc}
-                        members={data.commissioners.members}
+                        title={data.boc.title}
+                        description={data.boc.desc}
+                        members={data.boc.members.map((m: TeamMember) => ({
+                            name: m.name,
+                            role: m.positionDesc,
+                            image: m.photo,
+                            verified: true
+                        }))}
                     />
 
                     {/* BOD */}
                     <TeamSection
-                        tag={data.directors.tag}
+                        tag={data.bod.badge}
                         tagClassName="bg-[#f2f7ff] border border-[#5a80b9]/15 rounded-full px-4 py-1.5 text-[#5a80b9]"
-                        title={data.directors.title}
-                        description={data.directors.desc}
-                        members={data.directors.members}
+                        title={data.bod.title}
+                        description={data.bod.desc}
+                        members={data.bod.members.map((m: TeamMember) => ({
+                            name: m.name,
+                            role: m.positionDesc,
+                            image: m.photo,
+                            verified: true
+                        }))}
                     />
                 </div>
             </div>

@@ -12,7 +12,12 @@ const carouselImages = [
     "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2670&auto=format&fit=crop",
 ];
 
-export default function CSRCarousel() {
+interface CSRCarouselProps {
+    images?: string[];
+}
+
+export default function CSRCarousel({ images }: CSRCarouselProps) {
+    const listImages = (images && images.length > 0) ? images : carouselImages;
     const [currentIndex, setCurrentIndex] = useState(0);
     const [direction, setDirection] = useState(0);
 
@@ -41,8 +46,8 @@ export default function CSRCarousel() {
     const paginate = (newDirection: number) => {
         setDirection(newDirection);
         let newIndex = currentIndex + newDirection;
-        if (newIndex < 0) newIndex = carouselImages.length - 1;
-        if (newIndex >= carouselImages.length) newIndex = 0;
+        if (newIndex < 0) newIndex = listImages.length - 1;
+        if (newIndex >= listImages.length) newIndex = 0;
         setCurrentIndex(newIndex);
     };
 
@@ -75,7 +80,7 @@ export default function CSRCarousel() {
                     className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing"
                 >
                     <Image
-                        src={carouselImages[currentIndex]}
+                        src={listImages[currentIndex]}
                         alt={`CSR Image ${currentIndex + 1}`}
                         fill
                         className="object-cover"
@@ -102,7 +107,7 @@ export default function CSRCarousel() {
 
             {/* Pagination Indicators */}
             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex gap-2">
-                {carouselImages.map((_, idx) => (
+                {listImages.map((_, idx) => (
                     <button
                         key={idx}
                         onClick={() => {

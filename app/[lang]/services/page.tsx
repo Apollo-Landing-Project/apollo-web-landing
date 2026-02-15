@@ -1,143 +1,220 @@
 import React from "react";
 import AboutHeader from "@/components/AboutHeader";
 import ServiceCarousel from "@/components/ServiceCarousel";
-import ServiceList from "@/components/ServiceList"; // Import the new component
+import ServiceList from "@/components/ServiceList";
 import { Metadata } from "next";
 import { dbFetch } from "@/lib/fetcher";
 import { SITE_URL } from "@/lib/constants";
 
+// Type definitions matching the API response
+interface ServiceItem {
+    badge: string;
+    id: string;
+    image: string;
+    order: number;
+    title: string;
+    desc: string;
+    location: string;
+    contact: string[];
+    email: string[];
+    quote: string;
+}
+
+interface UsedCarItem {
+    id: string;
+    image: string;
+    title: string;
+    desc: string;
+}
+
+interface ServicePageData {
+    id: string;
+    hero: {
+        badge: string;
+        title: string;
+        desc: string;
+        background: string;
+    };
+    services: ServiceItem[];
+    usedCarGallery: {
+        badge: string;
+        title: string;
+        desc: string;
+        items: UsedCarItem[];
+    };
+    metadata: {
+        title: string;
+        description: string;
+        og_image: string;
+    };
+}
+
 // Helper to generate default data structure
-function getDefaultServiceData(lang: string) {
+function getDefaultServiceData(lang: string): ServicePageData {
     const isId = lang === "id";
     return {
-        meta_title: isId ? "Layanan Kami" : "Our Services",
-        meta_description: isId
-            ? "Solusi otomotif komprehensif yang disesuaikan untuk Anda."
-            : "Comprehensive automotive solutions tailored for you.",
-        og_image: "/og-services.jpg",
-        title: isId ? "Pelajari Lebih Lanjut Tentang Apollo Global Interactive" : "Learn More About Apollo Global Interactive",
-        subtitle: isId
-            ? "Solusi otomotif komprehensif yang disesuaikan dengan kebutuhan Anda, mulai dari pembelian hingga perawatan dan seterusnya."
-            : "Comprehensive automotive solutions tailored to your needs, from purchasing to maintenance and beyond.",
-        badge: isId ? "Layanan Kami" : "Our Services",
+        id: "073bbd55-6523-47ee-ba10-d296d083c781",
+        hero: {
+            badge: isId ? "Tentang Kami" : "About Us",
+            title: isId ? "Pelajari Lebih Lanjut Tentang Apollo Global Interactive" : "Learn More About Apollo Global Interactive",
+            desc: isId
+                ? "PT Apollo Global Interactive Tbk adalah perusahaan otomotif terintegrasi yang menyediakan solusi dealer, penyewaan mobil, layanan servis, dan ritel mobil bekas melalui sistem layanan terpadu."
+                : "PT Apollo Global Interactive Tbk is an integrated automotive company providing dealership, auto rental, auto service, and used car retail solutions through an integrated service system.",
+            background: "https://api.apolloglobalinteractive.com/storage/images/image-20260215-105640659-0swf.jpg"
+        },
         services: [
             {
-                id: "1",
-                image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2072&auto=format&fit=crop",
-                title: isId ? "Penjualan Mobil Baru" : "New Car Sales",
+                badge: "Service#1",
+                id: "df0aa3c0-f719-48a8-a34b-c4e332143e08",
+                image: "https://api.apolloglobalinteractive.com/storage/images/image-20260215-100314487-zef6.jpg",
+                order: 1,
+                title: isId ? "Dealer" : "Dealership",
                 desc: isId
-                    ? "Solusi penjualan dan purna jual yang komprehensif untuk kendaraan Honda baru, dirancang untuk memberikan dukungan handal dan kepuasan pelanggan jangka panjang."
-                    : "Comprehensive sales and after-sales service solutions for new Honda vehicles, designed to deliver reliable support and long-term customer satisfaction.",
+                    ? "Solusi layanan penjualan dan purna jual yang komprehensif untuk kendaraan baru merek Honda."
+                    : "Comprehensive sales and after sales service solutions for Honda brand new vehicles.",
                 location: "Honda Sukun Malang, S. Supriadi Street. No. 19-22 Sukun, Malang - East Java",
-                contact: ["(P) +62 341 363499", "(f) +62 341 2995051"],
-                email: ["cs@bintangotoglobal.com"],
+                contact: [
+                    "+62341363499 ",
+                    "+623412995051 "
+                ],
+                email: [
+                    "cs@bintangotoglobal.com"
+                ],
                 quote: isId
                     ? "Untuk informasi lebih lanjut atau pertanyaan, silakan hubungi kami melalui detail yang tersedia di atas."
                     : "For further information or inquiries, please contact us through the details provided above."
             },
             {
-                id: "2",
-                image: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=2070&auto=format&fit=crop",
-                title: isId ? "Layanan Rental Mobil" : "Car Rental Services",
+                badge: "Service#2",
+                id: "d2dfd9a9-a0e1-4837-bca9-fa481199f864",
+                image: "https://api.apolloglobalinteractive.com/storage/images/image-20260215-100440594-ajmm.jpg",
+                order: 2,
+                title: isId ? "Penyewaan Mobil" : "Car Rental",
                 desc: isId
-                    ? "Solusi penyewaan mobil yang fleksibel dan andal untuk individu dan bisnis. Pilih dari berbagai kendaraan terawat baik untuk kebutuhan jangka pendek atau panjang, memastikan kenyamanan dan keamanan di setiap perjalanan."
-                    : "Flexible and reliable car rental solutions for individuals and businesses. Choose from a wide range of well-maintained vehicles for short-term or long-term needs, ensuring comfort and safety on every journey.",
+                    ? "Solusi transportasi lengkap yang disediakan melalui layanan penyewaan kendaraan yang fleksibel dan andal untuk mendukung berbagai kebutuhan mobilitas dan bisnis."
+                    : "A complete transportation solution provided through flexible and reliable vehicle rental services to support various mobility and business needs.",
                 location: "Honda Sukun Malang, S. Supriadi Street. No. 19-22 Sukun, Malang - East Java",
-                contact: ["(P) +62 341 363499", "(f) +62 341 2995051"],
-                email: ["cs@bintangotoglobal.com"],
+                contact: [
+                    "+62 341 2995051 "
+                ],
+                email: [
+                    "cs@bintangotoglobal.com"
+                ],
                 quote: isId
                     ? "Untuk informasi lebih lanjut atau pertanyaan, silakan hubungi kami melalui detail yang tersedia di atas."
                     : "For further information or inquiries, please contact us through the details provided above."
             },
             {
-                id: "3",
-                image: "https://images.unsplash.com/photo-1625047509168-a7026f36de04?q=80&w=2080&auto=format&fit=crop",
-                title: isId ? "Pusat Servis" : "Service Center",
+                badge: "Service#3",
+                id: "6c7ec3f3-d6b2-400a-bc68-0b654a821181",
+                image: "https://api.apolloglobalinteractive.com/storage/images/image-20260215-100632416-grby.jpg",
+                order: 3,
+                title: isId ? "Pusat Servis" : "Service center",
                 desc: isId
-                    ? "Layanan perawatan dan perbaikan profesional menggunakan peralatan canggih dan teknisi bersertifikat. Kami memastikan kendaraan Anda beroperasi pada performa terbaiknya dengan standar layanan berkualitas tinggi yang efisien."
-                    : "Professional maintenance and repair services utilizing state-of-the-art equipment and certified technicians. We ensure your vehicle performs at its best with efficient, high-quality service standards.",
+                    ? "Solusi fasilitas perawatan dan perbaikan profesional yang dirancang untuk memastikan keandalan kendaraan, keselamatan, dan kinerja optimal."
+                    : "Professional maintenance and repair facility solutions designed to ensure vehicle reliability, safety, and optimal performance.",
                 location: "Honda Sukun Malang, S. Supriadi Street. No. 19-22 Sukun, Malang - East Java",
-                contact: ["(P) +62 341 363499", "(f) +62 341 2995051"],
-                email: ["cs@bintangotoglobal.com"],
+                contact: [
+                    "+623412995051 "
+                ],
+                email: [
+                    "cs@bintangotoglobal.com"
+                ],
                 quote: isId
                     ? "Untuk informasi lebih lanjut atau pertanyaan, silakan hubungi kami melalui detail yang tersedia di atas."
                     : "For further information or inquiries, please contact us through the details provided above."
             },
             {
-                id: "4",
-                image: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=1974&auto=format&fit=crop",
-                title: isId ? "Jual Beli Mobil Bekas" : "Used Car Retailer",
+                badge: "Service#4",
+                id: "f599464a-aa6d-4601-8f1f-664bdb02b1fc",
+                image: "https://api.apolloglobalinteractive.com/storage/images/image-20260215-100649438-m58b.jpg",
+                order: 4,
+                title: isId ? "Pengecer Mobil Bekas" : "Used Car Retailer",
                 desc: isId
-                    ? "Kami menawarkan berbagai pilihan mobil bekas berkualitas tinggi yang telah lulus standar pemeriksaan ketat untuk memastikan keamanan dan kenyamanan. Temukan mobil impian Anda dengan harga kompetitif dan jaminan pembelian kembali yang terpercaya."
-                    : "We offer a wide selection of high-quality used cars that have passed rigorous inspection standards to ensure safety and comfort. Find your dream car at competitive prices with our trusted buy-back guarantee.",
+                    ? "Solusi komprehensif untuk membeli dan menjual mobil bekas, disampaikan dengan transparansi, keandalan, dan standar penilaian yang terpercaya."
+                    : "Comprehensive solutions for buying and selling used cars, delivered with transparency, reliability, and trusted valuation standards.",
                 location: "Honda Sukun Malang, S. Supriadi Street. No. 19-22 Sukun, Malang - East Java",
-                contact: ["(P) +62 341 363499", "(f) +62 341 2995051"],
-                email: ["cs@bintangotoglobal.com"],
+                contact: [
+                    "+62 341 2995051 "
+                ],
+                email: [
+                    "cs@bintangotoglobal.com"
+                ],
                 quote: isId
                     ? "Untuk informasi lebih lanjut atau pertanyaan, silakan hubungi kami melalui detail yang tersedia di atas."
                     : "For further information or inquiries, please contact us through the details provided above."
             }
         ],
         usedCarGallery: {
-            title: isId ? "Daftar Mobil Yang Tersedia" : "Our Available Used Car Collection",
+            badge: isId ? "Galeri Mobil Bekas" : "Used Car Gallery",
+            title: isId ? "Koleksi Mobil Bekas Kami yang Tersedia" : "Our Available Used Car Collection",
             desc: isId
-                ? "Berikut adalah daftar mobil yang tersedia"
+                ? "Temukan pilihan mobil bekas berkualitas dengan informasi transparan untuk mendukung keputusan pembelian yang percaya diri."
                 : "Discover a selection of quality used cars with transparent information to support confident purchasing decisions.",
             items: [
                 {
-                    id: "04ea0173-bdee-4a13-ab2a-29d66dcbc8a5",
-                    image: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-112832064-yej1.jpg",
-                    title: "Honda CR-V 1.5L Turbo",
-                    desc: isId
-                        ? "Sebuah SUV premium yang dirancang untuk kenyamanan keluarga dan performa bertenaga, menawarkan fitur keselamatan canggih dan interior yang lapang untuk setiap perjalanan."
-                        : "A premium SUV designed for family comfort and powerful performance, offering advanced safety features and a spacious interior for every journey."
-                },
-                {
-                    id: "75f57484-f422-4a9a-ad9f-b4373d4e0cd4",
-                    image: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-112932660-zz7f.jpg",
+                    id: "5e74448e-1394-4213-bc44-ee667f8ddb37",
+                    image: "https://api.apolloglobalinteractive.com/storage/images/image-20260215-105854274-aqd4.jpg",
                     title: "Honda Brio Satya E",
                     desc: isId
-                        ? "Dirancang kompak dan efisien untuk mobilitas perkotaan sehari-hari dengan performa responsif dan gaya modern. Menawarkan pengalaman berkendara yang nyaman dan rekayasa yang andal."
+                        ? "Dirancang kompak dan efisien untuk mobilitas perkotaan sehari-hari dengan performa responsif dan gaya modern. Menawarkan pengalaman berkendara yang nyaman dan teknik yang handal."
                         : "Designed compact and efficient for everyday urban mobility with responsive performance and modern styling. Offers a comfortable driving experience and reliable engineering."
                 },
                 {
-                    id: "c898cb4a-000b-483b-a1ce-59807c2812df",
-                    image: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-113029028-0uvp.jpg",
-                    title: "Honda Civic Type R",
-                    desc: isId
-                        ? "Sebuah desain kompak dan efisien untuk mobilitas perkotaan sehari-hari dengan performa responsif dan gaya modern. Menawarkan pengalaman berkendara yang nyaman dan rekayasa yang dapat diandalkan."
-                        : "A compact and efficient design for everyday urban mobility with responsive performance and modern styling. Offers a comfortable driving experience and reliable engineering."
-                },
-                {
-                    id: "7ad18c43-34cd-4cee-a629-7714f7e6a15c",
-                    image: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-113129615-4wzl.jpg",
+                    id: "d47cd3b2-d4a7-4162-883a-140b1fb995e7",
+                    image: "https://api.apolloglobalinteractive.com/storage/images/image-20260215-105956464-297m.jpg",
                     title: "Honda HR-V SE CVT",
                     desc: isId
-                        ? "Sebuah SUV kompak dan bergaya yang memadukan efisiensi dengan desain dinamis, sempurna untuk berkendara di perkotaan dan liburan akhir pekan."
+                        ? "Sebuah SUV kompak dan bergaya yang memadukan efisiensi dengan desain dinamis, sempurna untuk mengemudi di perkotaan dan liburan akhir pekan."
                         : "A compact and stylish SUV that blends efficiency with dynamic design, perfect for urban driving and weekend getaways alike."
+                },
+                {
+                    id: "2a08a9c0-e974-4b25-88c9-26218ad5f759",
+                    image: "https://api.apolloglobalinteractive.com/storage/images/image-20260215-110053272-d9a4.jpg",
+                    title: "Honda CR-V 1.5L Turbo",
+                    desc: isId
+                        ? "Sebuah SUV premium yang dirancang untuk kenyamanan keluarga dan performa bertenaga, menawarkan fitur keselamatan canggih dan interior yang luas untuk setiap perjalanan."
+                        : "A premium SUV designed for family comfort and powerful performance, offering advanced safety features and a spacious interior for every journey."
+                },
+                {
+                    id: "1b333d75-59a9-4cce-ad7d-5bfcda859085",
+                    image: "https://api.apolloglobalinteractive.com/storage/images/image-20260215-110141664-yrj7.jpg",
+                    title: "Honda Civic Type R",
+                    desc: isId
+                        ? "Sebuah desain kompak dan efisien untuk mobilitas perkotaan sehari-hari dengan performa responsif dan gaya modern. Menawarkan pengalaman berkendara yang nyaman dan teknik yang handal."
+                        : "A compact and efficient design for everyday urban mobility with responsive performance and modern styling. Offers a comfortable driving experience and reliable engineering."
                 }
             ]
+        },
+        metadata: {
+            title: isId ? "Layanan Kami" : "Our Services",
+            description: isId
+                ? "Solusi otomotif komprehensif yang disesuaikan untuk Anda. Dari dealer mobil baru dan perawatan bersertifikat hingga penyewaan yang fleksibel dan mobil bekas berkualitas, Apollo memiliki semuanya."
+                : "Comprehensive automotive solutions tailored for you. From new car dealerships and certified maintenance to flexible rentals and quality used cars, Apollo has it all.",
+            og_image: "https://api.apolloglobalinteractive.com/storage/images/image-20260215-105640659-0swf.jpg"
         }
     };
 }
 
 // Helper to fetch data
-async function getServiceData(lang: string) {
+async function getServiceData(lang: string): Promise<{ data: ServicePageData }> {
     const token = process.env.API_TOKEN;
     try {
-        const data = await dbFetch(`client/service?lang=${lang}`, {
+        const res = await dbFetch(`client/service?lang=${lang}`, {
             headers: {
                 'Cookie': `token=${token}`
-            }
+            },
+            next: { tags: ['services', 'home'], revalidate: false }
         });
 
-        if (data && data.data) {
-            return data;
+        if (res && res.data) {
+            return res as { data: ServicePageData };
         }
         throw new Error("Invalid data structure received");
     } catch (error) {
-        console.error("Error fetching service data, using default fallback:", error);
-        return { data: getDefaultServiceData(lang) };
+        console.error("Error fetching service data:", error);
+        throw error;
+        // return { data: getDefaultServiceData(lang) };
     }
 }
 
@@ -146,16 +223,12 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
 
     // Fetch data for metadata
     const serviceData = await getServiceData(lang);
-    const data = serviceData?.data;
+    const data = serviceData.data;
 
-    // Console log for testing metadata fetch
-    console.log("Creating Metadata for Service Page:", { lang, data });
-
-    // Fallback if fetch fails or data structure doesn't match
-    const title = data?.meta_title || (lang === "id" ? "Layanan Kami" : "Our Services");
-    const description = data?.meta_description || (lang === "id"
-        ? "Solusi otomotif komprehensif yang disesuaikan untuk Anda."
-        : "Comprehensive automotive solutions tailored for you.");
+    // Use metadata from API
+    const title = data.metadata?.title || (lang === "id" ? "Layanan Kami" : "Our Services");
+    const description = data.metadata?.description || "";
+    const ogImage = data.metadata?.og_image || `${SITE_URL}/og-services.jpg`;
 
     return {
         title: title,
@@ -174,7 +247,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
             siteName: "Apollo",
             images: [
                 {
-                    url: data?.og_image || `${SITE_URL}/og-services.jpg`,
+                    url: ogImage,
                     width: 1200,
                     height: 630,
                 },
@@ -190,15 +263,7 @@ export default async function ServicesPage({ params }: { params: Promise<{ lang:
 
     // Fetch data server-side
     const serviceData = await getServiceData(lang);
-
-    // Ensure we have data to work with
-    const data = serviceData?.data || getDefaultServiceData(lang);
-
-    // Log data for testing
-    // console.log("========================================");
-    // console.log(`[ServicePage] Fetching data for lang: ${lang}`);
-    // console.log("[ServicePage] Data received:", JSON.stringify(data, null, 2));
-    // console.log("========================================");
+    const data = serviceData.data;
 
     return (
         <main className="flex flex-col items-center">
@@ -209,7 +274,7 @@ export default async function ServicesPage({ params }: { params: Promise<{ lang:
                     subtitle={data.hero.desc}
                     backgroundImage={data.hero.background}
                     targetId="services-content"
-                    badge={data.badge}
+                    badge={data.hero.badge}
                 />
             </div>
 

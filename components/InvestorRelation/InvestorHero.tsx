@@ -4,13 +4,23 @@ import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 
-const InvestorHero = () => {
+const InvestorHero = ({
+    badge = "Investor Relations",
+    title = "Transparent Growth & Sustainable Value.",
+    desc = "We are committed to delivering long-term value to our shareholders through transparent governance and sustainable business practices.",
+    background = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2670&auto=format&fit=crop"
+}: {
+    badge?: string;
+    title?: string;
+    desc?: string;
+    background?: string;
+}) => {
     return (
         <section className="relative w-full h-[500px] md:h-[600px] mt-24 md:mt-0">
             {/* Background Image */}
             <div className="absolute inset-0 w-full h-full">
                 <Image
-                    src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2670&auto=format&fit=crop"
+                    src={background}
                     alt="Investor Relations"
                     fill
                     className="object-cover"
@@ -27,13 +37,13 @@ const InvestorHero = () => {
                     className="max-w-2xl text-white"
                 >
                     <div className="inline-flex items-center justify-center rounded-full bg-white/10 backdrop-blur-md px-4 py-1.5 text-sm font-medium text-white mb-6 border border-white/20">
-                        Investor Relations
+                        {badge}
                     </div>
                     <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-6">
-                        Transparent Growth & Sustainable Value.
+                        {title}
                     </h1>
                     <p className="text-lg md:text-xl text-gray-200 leading-relaxed max-w-lg">
-                        We are committed to delivering long-term value to our shareholders through transparent governance and sustainable business practices.
+                        {desc}
                     </p>
                 </motion.div>
             </div>

@@ -1,12 +1,68 @@
 import React from "react";
-import NewsHero from "@/components/NewsHero";
 import NewsCategorySection from "@/components/NewsCategorySection";
 import AboutHeader from "@/components/AboutHeader";
 import { Metadata } from "next";
 import { dbFetch } from "@/lib/fetcher";
 import { SITE_URL } from "@/lib/constants";
+import { parseISO, isWithinInterval, startOfDay, endOfDay, isValid } from "date-fns";
 
-// Helper to generate default data structure
+// --- Types ---
+
+interface NewsItemApi {
+    id: string;
+    title: string;
+    description: string;
+    image: string;
+    author: string;
+    authorImage: string;
+    publishedAt: string;
+}
+
+interface CsrItemApi {
+    id: string;
+    title: string;
+    description: string;
+    author: string;
+    authorImage: string;
+    publishedAt: string;
+    images?: Array<{ id: string; image: string; description: string | null }>;
+}
+
+interface NewsPageApiData {
+    id: string;
+    hero: {
+        badge: string | null;
+        title: string;
+        desc: string;
+        background: string;
+    };
+    newsSection: {
+        badge: string | null;
+        title: string;
+        desc: string;
+    };
+    csrSection: {
+        badge: string | null;
+        title: string;
+        desc: string;
+    };
+    news: NewsItemApi[];
+    csr: CsrItemApi[];
+    metadata: {
+        title: string;
+        description: string;
+        og_image: string;
+    };
+}
+
+interface ApiResponse {
+    status: string;
+    message: string;
+    data: NewsPageApiData;
+}
+
+// --- Default Data (Fallback) ---
+
 function getDefaultNewsData(lang: string) {
     const isId = lang === "id";
     return {
@@ -20,7 +76,8 @@ function getDefaultNewsData(lang: string) {
             subtitle: isId
                 ? "Jelajahi pembaruan terbaru, pengumuman, dan cerita dari Apollo Global Interactive."
                 : "Explore the latest updates, announcements, and stories from Apollo Global Interactive.",
-            badge: isId ? "Berita" : "News"
+            badge: isId ? "Berita" : "News",
+            backgroundImage: "https://plus.unsplash.com/premium_photo-1725075086642-584ef254b39c?q=80&w=2940&auto=format&fit=crop"
         },
         companyNews: {
             id: "news",
@@ -32,61 +89,33 @@ function getDefaultNewsData(lang: string) {
             basePath: "/news",
             items: [
                 {
-                    id: 1,
+                    id: "1",
                     image: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=2670&auto=format&fit=crop",
                     date: "October 23, 2025",
                     title: "Summary of Minutes of EGMS 2026",
                     description: "We've been enhancing production to support growing demand product.",
                 },
                 {
-                    id: 2,
+                    id: "2",
                     image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2670&auto=format&fit=crop",
                     date: "October 23, 2025",
                     title: "Summary of Minutes of EGMS 2026",
                     description: "We've been enhancing production to support growing demand product.",
                 },
                 {
-                    id: 3,
+                    id: "3",
                     image: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=2670&auto=format&fit=crop",
                     date: "October 23, 2025",
                     title: "Summary of Minutes of EGMS 2026",
                     description: "We've been enhancing production to support growing demand product.",
                 },
                 {
-                    id: 4,
+                    id: "4",
                     image: "https://images.unsplash.com/photo-1720236177685-b62ffa6377aa?q=80&w=2117&auto=format&fit=crop",
                     date: "October 23, 2025",
                     title: "Summary of Minutes of EGMS 2026",
                     description: "We've been enhancing production to support growing demand product.",
-                },
-                {
-                    id: 5,
-                    image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2670&auto=format&fit=crop",
-                    date: "September 15, 2025",
-                    title: "Q3 Financial Results Announcement",
-                    description: "Apollo Global Interactive reports strong growth in the third quarter of 2025.",
-                },
-                {
-                    id: 6,
-                    image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=2670&auto=format&fit=crop",
-                    date: "August 20, 2025",
-                    title: "Partnership with Green Energy Corp",
-                    description: "Strategic alliance to boost our sustainable energy initiatives and reduce carbon footprint.",
-                },
-                {
-                    id: 7,
-                    image: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=2670&auto=format&fit=crop",
-                    date: "July 10, 2025",
-                    title: "Expansion into Southeast Asian Market",
-                    description: "Opening of new regional headquarters in Singapore to serve the growing ASEAN market.",
-                },
-                {
-                    id: 8,
-                    image: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?q=80&w=2670&auto=format&fit=crop",
-                    date: "June 05, 2025",
-                    title: "New Product Line Launch Event",
-                    description: "Unveiling our latest innovative solutions for the automotive industry at the Global Tech Summit.",
-                },
+                }
             ]
         },
         csr: {
@@ -99,7 +128,7 @@ function getDefaultNewsData(lang: string) {
             basePath: "/csr",
             items: [
                 {
-                    id: 1,
+                    id: "1",
                     image: "https://images.unsplash.com/photo-1593113598332-cd288d649433?q=80&w=2670&auto=format&fit=crop",
                     date: "October 23, 2025",
                     title: "Santunan Ramadhan Tahunan di Pesantren Mua ...",
@@ -107,68 +136,191 @@ function getDefaultNewsData(lang: string) {
                     badge: "CSR",
                 },
                 {
-                    id: 2,
+                    id: "2",
                     image: "https://images.unsplash.com/photo-1544377193-33dcf4d68fb5?q=80&w=2070&auto=format&fit=crop",
                     date: "October 23, 2025",
                     title: "Sosialisasi Kendaraan Otomotif Tahun 2025",
                     description: "We've been enhancing production to support growing demand product.",
                     badge: "CSR",
-                },
-                {
-                    id: 3,
-                    image: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=2070&auto=format&fit=crop",
-                    date: "October 23, 2025",
-                    title: "Acara Jumat Berkah Bersama Kel. Cempaka",
-                    description: "We've been enhancing production to support growing demand product.",
-                    badge: "CSR",
-                },
-                {
-                    id: 4,
-                    image: "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?q=80&w=2070&auto=format&fit=crop",
-                    date: "October 23, 2025",
-                    title: "Acara Jumat Berkah Bersama Kel. Cempaka",
-                    description: "We've been enhancing production to support growing demand product.",
-                    badge: "CSR",
-                },
+                }
             ]
         }
     };
 }
 
-// Helper to fetch data
-async function getNewsData(lang: string) {
-    const token = process.env.API_TOKEN;
-    try {
-        const data = await dbFetch(`client/news?lang=${lang}`, {
-            headers: {
-                'Cookie': `token=${token}`
-            }
-        });
 
-        if (data && data.data) {
-            return data;
-        }
-        throw new Error("Invalid data structure received");
-    } catch (error) {
-        console.error("Error fetching news data, using default fallback:", error);
-        return { data: getDefaultNewsData(lang) };
+// --- Data Fetching ---
+
+function formatDate(dateString: string, lang: string): string {
+    if (!dateString) return "";
+    try {
+        const date = new Date(dateString);
+        return new Intl.DateTimeFormat(lang === 'id' ? 'id-ID' : 'en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        }).format(date);
+    } catch (e) {
+        return dateString;
     }
 }
+
+async function getNewsData(lang: string) {
+    const defaultData = getDefaultNewsData(lang);
+    const token = process.env.API_TOKEN;
+
+    try {
+        const response: ApiResponse = await dbFetch(`client/news?lang=${lang}`, {
+            headers: {
+                'Cookie': `token=${token}`
+            },
+            next: { tags: ['news', 'home'], revalidate: false }
+        });
+
+        if (response?.status === "success" && response?.data) {
+            const apiData = response.data;
+            return {
+                meta_title: apiData.metadata?.title || "",
+                meta_description: apiData.metadata?.description || "",
+                og_image: apiData.metadata?.og_image || "",
+                header: {
+                    title: apiData.hero?.title || "",
+                    subtitle: apiData.hero?.desc || "",
+                    badge: apiData.hero?.badge || "",
+                    backgroundImage: apiData.hero?.background || ""
+                },
+                companyNews: {
+                    id: "news",
+                    badge: apiData.newsSection?.badge || "News",
+                    title: apiData.newsSection?.title || "Latest News",
+                    description: apiData.newsSection?.desc || "",
+                    basePath: `/${lang}/news`,
+                    items: apiData.news?.length > 0 ? apiData.news.map((item) => ({
+                        id: item.id,
+                        image: item.image,
+                        date: formatDate(item.publishedAt, lang),
+                        title: item.title,
+                        description: item.description,
+                        badge: apiData.newsSection?.badge || "News",
+                        rawDate: item.publishedAt
+                    })) : []
+                },
+                csr: {
+                    id: "csr",
+                    badge: apiData.csrSection?.badge || "CSR",
+                    title: apiData.csrSection?.title || "Corporate Social Responsibility",
+                    description: apiData.csrSection?.desc || "",
+                    basePath: `/${lang}/csr`,
+                    items: apiData.csr?.length > 0 ? apiData.csr.map((item) => ({
+                        id: item.id,
+                        image: item.images?.[0]?.image || "",
+                        date: formatDate(item.publishedAt, lang),
+                        title: item.title,
+                        description: item.description,
+                        badge: apiData.csrSection?.badge || "CSR",
+                        rawDate: item.publishedAt
+                    })) : []
+                }
+            };
+        }
+    } catch (error) {
+        console.error("Error fetching news data:", error);
+    }
+
+    // Fallback to default if API fails or returns invalid structure (caught by try-catch or if block)
+    return defaultData;
+}
+
+// --- Filtering & Pagination Helper ---
+
+function filterAndPaginate(
+    items: any[],
+    sectionKey: string,
+    searchParams: any
+) {
+    const ITEMS_PER_PAGE = 8;
+
+    // 1. Extract Params for this section
+    const search = searchParams[`${sectionKey}_search`];
+    const startDate = searchParams[`${sectionKey}_start`];
+    const endDate = searchParams[`${sectionKey}_end`];
+    const pageParam = searchParams[`${sectionKey}_page`];
+
+    // Parse page
+    let page = 1;
+    if (pageParam && !Array.isArray(pageParam)) {
+        const parsed = parseInt(pageParam);
+        if (!isNaN(parsed) && parsed > 0) page = parsed;
+    }
+
+    const searchQuery = (typeof search === 'string' ? search : "").toLowerCase();
+
+    // 2. Filter
+    let filtered = items;
+
+    // Filter by Search
+    if (searchQuery) {
+        filtered = filtered.filter(item => {
+            const titleMatch = item.title?.toLowerCase().includes(searchQuery);
+            const descMatch = item.description?.toLowerCase().includes(searchQuery);
+            return titleMatch || descMatch;
+        });
+    }
+
+    // Filter by Date
+    if (startDate && typeof startDate === 'string') {
+        const start = startOfDay(new Date(startDate));
+        let end = endOfDay(new Date(startDate)); // Default to same day
+
+        if (endDate && typeof endDate === 'string') {
+            end = endOfDay(new Date(endDate));
+        }
+
+        if (isValid(start) && isValid(end)) {
+            filtered = filtered.filter(item => {
+                // Prefer rawDate (ISO string) if available, otherwise try to parse 'date'
+                const dateToUse = item.rawDate || item.date;
+                if (!dateToUse) return false;
+
+                const itemDate = new Date(dateToUse);
+                if (!isValid(itemDate)) return false;
+
+                return isWithinInterval(itemDate, { start, end });
+            });
+        }
+    }
+
+    // 3. Paginate
+    const totalItems = filtered.length;
+    const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE) || 1;
+    const currentPage = Math.min(Math.max(1, page), totalPages);
+
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const paginatedItems = filtered.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+    return {
+        items: paginatedItems,
+        currentPage,
+        totalPages
+    };
+}
+
+
+// --- Page & Metadata ---
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
     const { lang } = await params;
 
-    const newsData = await getNewsData(lang);
-    const data = newsData?.data;
-
-    const title = data?.meta_title || (lang === "id" ? "Berita & CSR" : "News & CSR");
-    const description = data?.meta_description || (lang === "id"
-        ? "Tetap terinformasi bersama Apollo Global Interactive."
-        : "Stay informed with Apollo Global Interactive.");
+    let data;
+    try {
+        data = await getNewsData(lang);
+    } catch {
+        data = getDefaultNewsData(lang);
+    }
 
     return {
-        title: title,
-        description: description,
+        title: data.meta_title,
+        description: data.meta_description,
         alternates: {
             canonical: `${SITE_URL}/${lang}/news`,
             languages: {
@@ -177,13 +329,13 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
             },
         },
         openGraph: {
-            title: `${title} - Apollo`,
-            description: description,
+            title: `${data.meta_title} - Apollo`,
+            description: data.meta_description,
             url: `${SITE_URL}/${lang}/news`,
             siteName: "Apollo",
             images: [
                 {
-                    url: data?.og_image || `${SITE_URL}/og-news.jpg`,
+                    url: data.og_image,
                     width: 1200,
                     height: 630,
                 },
@@ -194,11 +346,21 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     };
 }
 
-export default async function NewsPage({ params }: { params: Promise<{ lang: string }> }) {
-    const { lang } = await params;
+export default async function NewsPage(props: {
+    params: Promise<{ lang: string }>;
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+    const { lang } = await props.params;
+    const resolvedSearchParams = await props.searchParams;
 
-    const newsData = await getNewsData(lang);
-    const data = newsData?.data || getDefaultNewsData(lang);
+    // Fetch Data (Server Side)
+    // Note: getNewsData handles errors gracefully by returning fallback
+    const data = await getNewsData(lang);
+    console.log(data);
+    // Process Data (Server Side Filtering & Pagination)
+    // We pass the raw items to helper
+    const newsData = filterAndPaginate(data.companyNews.items, "news", resolvedSearchParams);
+    const csrData = filterAndPaginate(data.csr.items, "csr", resolvedSearchParams);
 
     return (
         <main className="flex min-h-screen flex-col items-center">
@@ -206,7 +368,7 @@ export default async function NewsPage({ params }: { params: Promise<{ lang: str
                 <AboutHeader
                     title={data.header.title}
                     subtitle={data.header.subtitle}
-                    backgroundImage="https://plus.unsplash.com/premium_photo-1725075086642-584ef254b39c?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    backgroundImage={data.header.backgroundImage}
                     targetId={data.companyNews.id}
                     badge={data.header.badge}
                 />
@@ -218,8 +380,11 @@ export default async function NewsPage({ params }: { params: Promise<{ lang: str
                 badge={data.companyNews.badge}
                 title={data.companyNews.title}
                 description={data.companyNews.description}
-                items={data.companyNews.items}
+                items={newsData.items}
                 basePath={data.companyNews.basePath}
+                sectionKey="news"
+                currentPage={newsData.currentPage}
+                totalPages={newsData.totalPages}
             />
 
             {/* CSR Section */}
@@ -228,8 +393,11 @@ export default async function NewsPage({ params }: { params: Promise<{ lang: str
                 badge={data.csr.badge}
                 title={data.csr.title}
                 description={data.csr.description}
-                items={data.csr.items}
+                items={csrData.items}
                 basePath={data.csr.basePath}
+                sectionKey="csr"
+                currentPage={csrData.currentPage}
+                totalPages={csrData.totalPages}
             />
         </main>
     );

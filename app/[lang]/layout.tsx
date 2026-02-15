@@ -117,7 +117,7 @@ export default async function RootLayout({
           {children}
         </div>
         <BackToTop />
-        <Footer />
+        <Footer lang={lang} />
       </body>
     </html>
   );

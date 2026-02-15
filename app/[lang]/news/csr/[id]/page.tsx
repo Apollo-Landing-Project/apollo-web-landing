@@ -61,8 +61,9 @@ async function getCsrDetail(id: string, lang: string) {
     const token = process.env.API_TOKEN;
 
     try {
-        // Using the endpoint matching other client endpoints
-        const response: ApiResponse = await dbFetch(`client/news/csr/${id}?lang=${lang}`, {
+        // Using the endpoint as requested: base_url/news/csr/:id
+        // We assume dbFetch handles the base_url part.
+        const response: ApiResponse = await dbFetch(`news/csr/${id}?lang=${lang}`, {
             headers: {
                 'Cookie': `token=${token}`
             },
@@ -83,10 +84,9 @@ async function getCsrDetail(id: string, lang: string) {
 }
 
 // --- Metadata ---
-export async function generateMetadata({ params }: { params: Promise<{ lang: string; slug: string }> }): Promise<Metadata> {
-    const { lang, slug } = await params;
-    // Note: The file uses [slug] but the API expects an ID. We treat slug as ID here.
-    const result = await getCsrDetail(slug, lang);
+export async function generateMetadata({ params }: { params: Promise<{ lang: string; id: string }> }): Promise<Metadata> {
+    const { lang, id } = await params;
+    const result = await getCsrDetail(id, lang);
     const data = result?.data;
     const metadata = result?.metadata;
 
@@ -100,16 +100,16 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
         title: metadata.title,
         description: metadata.description,
         alternates: {
-            canonical: `${SITE_URL}/${lang}/csr/${slug}`,
+            canonical: `${SITE_URL}/${lang}/news/csr/${id}`,
             languages: {
-                'id-ID': `${SITE_URL}/id/csr/${slug}`,
-                'en-US': `${SITE_URL}/en/csr/${slug}`,
+                'id-ID': `${SITE_URL}/id/news/csr/${id}`,
+                'en-US': `${SITE_URL}/en/news/csr/${id}`,
             },
         },
         openGraph: {
             title: `${metadata.title} - Apollo`,
             description: metadata.description,
-            url: `${SITE_URL}/${lang}/csr/${slug}`,
+            url: `${SITE_URL}/${lang}/news/csr/${id}`,
             siteName: "Apollo",
             images: [
                 {
@@ -125,10 +125,9 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
 }
 
 // --- Page Component ---
-export default async function CSRDetailPage({ params }: { params: Promise<{ lang: string; slug: string }> }) {
-    const { lang, slug } = await params;
-    // Note: The file uses [slug] but the API expects an ID. We treat slug as ID here.
-    const result = await getCsrDetail(slug, lang);
+export default async function CSRDetailPage({ params }: { params: Promise<{ lang: string; id: string }> }) {
+    const { lang, id } = await params;
+    const result = await getCsrDetail(id, lang);
 
     if (!result || !result.data) {
         notFound();

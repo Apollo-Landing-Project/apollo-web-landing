@@ -1,8 +1,26 @@
+import { Car, Key, Tag, Wrench } from "lucide-react";
 import Image from "next/image";
 import React from "react";
-import { Car, Key, Wrench, Tag } from "lucide-react";
 
-export default function CompanyStructure() {
+interface CompanyStructureItem {
+    id: string;
+    name: string;
+    icon: string;
+}
+
+interface CompanyStructureProps {
+    badge?: string;
+    title?: string;
+    description?: string;
+    items?: CompanyStructureItem[];
+}
+
+export default function CompanyStructure({
+    badge = "Company Structural",
+    title = "See Our Company Structure",
+    description,
+    items = []
+}: CompanyStructureProps) {
     const departments = [
         {
             name: "Dealership",
@@ -21,16 +39,20 @@ export default function CompanyStructure() {
             icon: Tag,
         },
     ];
-
     return (
         <section className="w-full py-12 md:py-20">
             <div className="flex flex-col items-center text-center px-4">
                 <span className="mb-2 text-sm font-semibold uppercase tracking-wider text-[#5a80b9]">
-                    Company Structure
+                    {badge}
                 </span>
-                <h2 className="mb-10 text-3xl font-bold text-[#323441] md:text-4xl">
-                    See Our Company Structure
+                <h2 className="mb-4 text-3xl font-bold text-[#323441] md:text-4xl">
+                    {title}
                 </h2>
+                {description && (
+                    <p className="mb-10 max-w-2xl text-base text-gray-600 md:text-lg">
+                        {description}
+                    </p>
+                )}
 
                 {/* Structure Container */}
                 <div className="relative w-full max-w-6xl">
@@ -63,21 +85,22 @@ export default function CompanyStructure() {
                     {/* Children Grid */}
                     {/* Mobile: 1 col, Tablet: 2 cols, Desktop: 4 cols */}
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8 mt-8 lg:mt-0">
-                        {departments.map((dept, index) => (
-                            <div
-                                key={index}
-                                className="flex items-center justify-start gap-[18px] bg-white border-[0.5px] border-[rgba(177,177,177,0.2)] p-[20px] lg:p-[28px] rounded-[24px] shadow-[8px_4px_24px_0px_rgba(177,177,177,0.12)] transition-transform hover:-translate-y-1"
-                            >
-                                <div className="shrink-0 w-[60px] h-[60px] lg:w-[70px] lg:h-[70px] bg-[#f2f7ff] border-[0.5px] border-[#f2f2f7] rounded-[8px] flex items-center justify-center p-[15px]">
-                                    <div className="w-full h-full flex items-center justify-center md:scale-125">
-                                        <dept.icon className="w-full h-full text-[#5a80b9]" />
+                        {items.map((dept, index) => {
+                            const DepartmentIcon = departments[index % departments.length].icon;
+                            return (
+                                <div
+                                    key={dept.id || index}
+                                    className="flex items-center justify-start gap-[18px] bg-white border-[0.5px] border-[rgba(177,177,177,0.2)] p-[20px] lg:p-[28px] rounded-[24px] shadow-[8px_4px_24px_0px_rgba(177,177,177,0.12)] transition-transform hover:-translate-y-1"
+                                >
+                                    <div className="shrink-0 w-[60px] h-[60px] lg:w-[70px] lg:h-[70px] bg-[#f2f7ff] border-[0.5px] border-[#f2f2f7] rounded-[8px] flex items-center justify-center relative overflow-hidden text-[#5a80b9]">
+                                        <DepartmentIcon size={32} strokeWidth={1.5} />
                                     </div>
+                                    <span className="text-[16px] md:text-[18px] lg:text-[20px] font-bold text-[#323441] leading-tight text-left">
+                                        {dept.name}
+                                    </span>
                                 </div>
-                                <span className="text-[16px] md:text-[18px] lg:text-[20px] font-bold text-[#323441] leading-tight text-left">
-                                    {dept.name}
-                                </span>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
             </div>
