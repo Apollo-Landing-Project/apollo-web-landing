@@ -75,6 +75,9 @@ export default function Contact({ data, lang = "en" }: { lang?: string, data: an
         return newErrors;
     };
 
+    // Determine the contact email (handle array or string)
+    const contactEmail = Array.isArray(data.email) ? data.email[0] : data.email;
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const validationErrors = validate();
@@ -86,7 +89,7 @@ export default function Contact({ data, lang = "en" }: { lang?: string, data: an
         setIsSending(true);
 
         // Simulate sending email
-        const mailtoLink = `mailto:andisantoso491@gmail.com?subject=ContactForm: ${formData.subject}&body=Name: ${formData.name}%0D%0AEmail: ${formData.email}%0D%0A%0D%0A${formData.question}`;
+        const mailtoLink = `mailto:${contactEmail}?subject=ContactForm: ${formData.subject}&body=Name: ${formData.name}%0D%0AEmail: ${formData.email}%0D%0A%0D%0A${formData.question}`;
 
         // In a real app, we'd use an API route. Here we simulate delay + success.
         setTimeout(() => {
@@ -221,11 +224,11 @@ export default function Contact({ data, lang = "en" }: { lang?: string, data: an
                         <h3 className="text-[34px] font-semibold text-[#323441] lg:text-[28px]">
                             PT Apollo Global Interactive
                         </h3>
-                        <a href="mailto:cs@bintangotoglobal.com" className="flex items-center gap-3 text-[#5A5A5A] transition-colors hover:text-[#5a80b9]">
+                        <a href={`mailto:${contactEmail}`} className="flex items-center gap-3 text-[#5A5A5A] transition-colors hover:text-[#5a80b9]">
                             <div className="flex h-6 w-6 items-center justify-center rounded bg-[#5a80b9]/10">
                                 <Mail className="h-4 w-4 text-[#5a80b9]" />
                             </div>
-                            <span>{data.email}</span>
+                            <span>{contactEmail}</span>
                         </a>
                         <div className="flex items-center gap-3 text-[#5A5A5A]">
                             <div className="flex h-6 w-6 items-center justify-center rounded bg-[#5a80b9]/10">
