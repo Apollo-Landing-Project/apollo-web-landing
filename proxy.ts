@@ -10,10 +10,15 @@ export default function proxy(request: NextRequest) {
     // 1. Tentukan file mana saja yang dilarang dicegat oleh Satpam
     const isPublicResource =
         pathname === '/sitemap.xml' ||
+        pathname === '/sitemap' ||
         pathname === '/robots.txt' ||
-        pathname.startsWith('/_next') || // Aset internal Next.js
-        pathname.startsWith('/api') ||    // Route API revalidate kamu
-        pathname.includes('.');           // File dengan ekstensi (gambar, favicon, dll)
+        pathname === '/robots' ||
+        pathname.startsWith('/_next') ||
+        pathname.startsWith('/api') ||
+        pathname.includes('.') ||
+        pathname.includes('/sitemap') ||
+        pathname.includes('/robots.txt') ||
+        pathname.includes('/robots')
 
     // 2. Jika itu file publik, biarkan lewat tanpa redirect ke /en
     if (isPublicResource) {
