@@ -235,7 +235,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
       siteName: "Apollo",
       images: [
         {
-          url: data.og_image || `${SITE_URL}/og-home.jpg`,
+          url: data.og_image || `${SITE_URL}/home-og.webp`,
           width: 1200,
           height: 630,
         },
