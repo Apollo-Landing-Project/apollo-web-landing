@@ -66,7 +66,7 @@ async function getCsrDetail(id: string, lang: string) {
             headers: {
                 'Cookie': `token=${token}`
             },
-            next: { revalidate: 60 }
+            next: { tags: ['csr', id], revalidate: 3600 } // fallback revalidate
         });
 
         if (response?.status === "success" && response?.data) {
@@ -113,7 +113,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
             siteName: "Apollo",
             images: [
                 {
-                    url: metadata.og_image,
+                    url: metadata.og_image || (data.image && data.image.length > 0 ? data.image[0].image : ""),
                     width: 1200,
                     height: 630,
                 },

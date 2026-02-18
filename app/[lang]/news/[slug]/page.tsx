@@ -56,7 +56,7 @@ async function getNewsDetail(slug: string, lang: string) {
             headers: {
                 'Cookie': `token=${token}`
             },
-            next: { revalidate: 60 }
+            next: { tags: ['news', slug], revalidate: 3600 } // fallback revalidate
         });
 
         if (res?.status === "success" && res?.data) {
