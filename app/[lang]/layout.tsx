@@ -67,7 +67,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
       siteName: "Apollo Global Interactive",
       images: [
         {
-          url: "/og-general.jpg",
+          url: "/assets/home-og.webp",
           width: 1200,
           height: 630,
           alt: "Apollo Global Interactive",
@@ -80,7 +80,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
       card: "summary_large_image",
       title: "Apollo Global Interactive",
       description: description,
-      images: ["/og-general.jpg"],
+      images: ["/assets/home-og.webp"],
       creator: "@apollo_global",
     },
     icons: {

@@ -70,7 +70,7 @@ function getDefaultNewsData(lang: string) {
         meta_description: isId
             ? "Tetap terinformasi bersama Apollo Global Interactive. Baca berita perusahaan terbaru, pembaruan keuangan, dan inisiatif Tanggung Jawab Sosial Perusahaan (CSR) yang membawa perubahan positif."
             : "Stay informed with Apollo Global Interactive. Read our latest corporate news, financial updates, and Corporate Social Responsibility (CSR) initiatives driving positive change.",
-        og_image: "/og-news.jpg",
+        og_image: "/assets/home-og.webp",
         header: {
             title: isId ? "Ikuti Berita Terbaru Perusahaan Kami." : "Stay Up To Date With Our Company News.",
             subtitle: isId
@@ -334,7 +334,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
             siteName: "Apollo",
             images: [
                 {
-                    url: data.og_image,
+                    url: data.og_image || "/assets/home-og.webp",
                     width: 1200,
                     height: 630,
                 },
