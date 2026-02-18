@@ -165,7 +165,7 @@ export default function Navbar({ lang = "en" }: { lang?: string }) {
                 <div className="mx-auto max-w-[1440px]">
                     <div className="flex h-[72px] items-center justify-between rounded-full border border-gray-100 bg-[#fdfdfd] px-6 py-2 shadow-[0px_2px_12px_0px_rgba(112,109,109,0.12)] md:px-8">
                         {/* Logo */}
-                        <Link href="/id" className="flex items-center shrink-0">
+                        <Link href={`/${lang}`} className="flex items-center shrink-0">
                             <div className="relative h-10 w-24 md:w-32">
                                 <Image
                                     src="/logo-new.png"

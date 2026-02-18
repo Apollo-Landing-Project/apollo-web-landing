@@ -23,7 +23,7 @@ const Footer = ({ lang = 'en' }: FooterProps) => {
             contactBtn: "Contact",
             links: [
                 { name: 'Home', href: '/' },
-                { name: 'About Us', href: '/#about-us' },
+                { name: 'About Us', href: '/about' },
                 { name: 'Our Services', href: '/services' },
                 { name: 'News', href: '/news' },
                 { name: 'Investor Relation', href: '/investor-relation' },
@@ -42,7 +42,7 @@ const Footer = ({ lang = 'en' }: FooterProps) => {
             contactBtn: "Hubungi Kami",
             links: [
                 { name: 'Beranda', href: '/' },
-                { name: 'Tentang Kami', href: '/#about-us' },
+                { name: 'Tentang Kami', href: '/about' },
                 { name: 'Layanan Kami', href: '/services' },
                 { name: 'Berita', href: '/news' },
                 { name: 'Hubungan Investor', href: '/investor-relation' },
@@ -92,13 +92,12 @@ const Footer = ({ lang = 'en' }: FooterProps) => {
 
                     {/* Middle Column: Links & Location */}
                     <div className="flex flex-col md:flex-row gap-12 md:gap-24 w-full lg:w-auto">
-
                         {/* Links */}
                         <div className="flex flex-col gap-4">
                             {t.links.map((link) => (
                                 <Link
                                     key={link.name}
-                                    href={`/${lang}${link.href.startsWith('/') ? link.href.substring(1) : link.href}`}
+                                    href={`/${lang}${link.href === '/' ? '' : link.href}`}
                                     className="text-white/90 hover:text-white hover:translate-x-1 transition-all text-lg font-medium"
                                 >
                                     {link.name}

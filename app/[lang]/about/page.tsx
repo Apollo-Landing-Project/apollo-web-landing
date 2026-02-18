@@ -88,7 +88,7 @@ function getDefaultAboutData(lang: string): AboutPageData {
             desc: isId
                 ? "PT Apollo Global Interactive Tbk adalah perusahaan otomotif terintegrasi yang menyediakan solusi dealer, penyewaan mobil, layanan servis, dan ritel mobil bekas melalui sistem layanan terpadu."
                 : "PT Apollo Global Interactive Tbk is an integrated automotive company providing dealership, auto rental, auto service, and used car retail solutions through an integrated service system.",
-            background: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327525-7zpn.jpg"
+            background: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327525-7zpn.jpg".replace("https://api.apolloglobalinteractive.com/", process.env.API_BASE_URL?.replace('/api/', '/') || "https://api.apolloglobalinteractive.com/")
         },
         vision: {
             badge: isId ? "Visi" : "Vision",
@@ -110,8 +110,8 @@ function getDefaultAboutData(lang: string): AboutPageData {
                 "Drive innovation through technology and service excellence",
                 "Promote sustainable and responsible business practices"
             ],
-            imageParent: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327532-cb8a.jpg",
-            imageChild: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327532-ishp.jpg"
+            imageParent: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327532-cb8a.jpg".replace("https://api.apolloglobalinteractive.com/", process.env.API_BASE_URL?.replace('/api/', '/') || "https://api.apolloglobalinteractive.com/"),
+            imageChild: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327532-ishp.jpg".replace("https://api.apolloglobalinteractive.com/", process.env.API_BASE_URL?.replace('/api/', '/') || "https://api.apolloglobalinteractive.com/")
         },
         mission: {
             badge: isId ? "Misi" : "Mission",
@@ -133,8 +133,8 @@ function getDefaultAboutData(lang: string): AboutPageData {
                 "Strengthening partnerships to support sustainable business growth",
                 "Leveraging innovation and technology to enhance efficiency and performance"
             ],
-            imageParent: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327532-k690.jpg",
-            imageChild: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327533-r70d.jpg"
+            imageParent: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327532-k690.jpg".replace("https://api.apolloglobalinteractive.com/", process.env.API_BASE_URL?.replace('/api/', '/') || "https://api.apolloglobalinteractive.com/"),
+            imageChild: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327533-r70d.jpg".replace("https://api.apolloglobalinteractive.com/", process.env.API_BASE_URL?.replace('/api/', '/') || "https://api.apolloglobalinteractive.com/")
         },
         history: {
             badge: isId ? "Sejarah" : "History",
@@ -142,8 +142,8 @@ function getDefaultAboutData(lang: string): AboutPageData {
             desc: isId
                 ? "PT Apollo Global Interactive Tbk secara resmi mengadopsi identitas barunya setelah Rapat Umum Pemegang Saham Luar Biasa (RUPSLB) yang diadakan pada 21 Januari 2026, ketika PT Bintang Oto Global Tbk mengubah namanya dan memperbarui identitas korporatnya. Rebranding ini juga memperkenalkan logo baru dan alamat email resmi.\r\n\r\nPerubahan tersebut kemudian diungkapkan kepada OJK dan BEI pada 27 Januari 2026, bersamaan dengan perombakan manajemen yang mengonfirmasi Albert Witono Setiawan sebagai Direktur Utama, dengan penunjukan dewan baru dilakukan tanpa berdampak pada kelangsungan operasional, keuangan, atau hukum Perseroan.\r\n\r\nSementara perusahaan melanjutkan kegiatan intinya dalam perdagangan kendaraan, suku cadang, pemeliharaan, dan penyewaan kendaraan melalui anak perusahaannya seiring dengan finalisasi migrasi situs web ke identitas baru."
                 : "PT Apollo Global Interactive Tbk officially adopted its new identity following the Extraordinary General Meeting of Shareholders (RUPSLB) held on 21 January 2026, when PT Bintang Oto Global Tbk changed its name and updated its corporate identity The rebranding also introduced a new logo and official email address.\r\n\r\nThe change was subsequently disclosed to OJK and BEI on 27 January 2026, alongside a management reshuffle that confirmed Albert Witono Setiawan as President Director, with new board appointments made without impacting the Company’s operational, financial, or legal continuity.\r\n\r\nwhile the company continues its core activities in vehicle trading, spare parts, maintenance, and vehicle rental through its subsidiaries as the website migration to the new identity is finalized.",
-            imageParent: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327533-7zi7.jpg",
-            imageChild: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327534-px8d.jpg"
+            imageParent: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327533-7zi7.jpg".replace("https://api.apolloglobalinteractive.com/", process.env.API_BASE_URL?.replace('/api/', '/') || "https://api.apolloglobalinteractive.com/"),
+            imageChild: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327534-px8d.jpg".replace("https://api.apolloglobalinteractive.com/", process.env.API_BASE_URL?.replace('/api/', '/') || "https://api.apolloglobalinteractive.com/")
         },
         companyStructure: {
             badge: isId ? "Struktur Perusahaan" : "Company Structural",
@@ -155,22 +155,22 @@ function getDefaultAboutData(lang: string): AboutPageData {
                 {
                     id: "d093689b-7cbc-42a4-b8a4-ebb7a4c8e34d",
                     name: isId ? "Dealer" : "Dealership",
-                    icon: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327536-nin0.jpg"
+                    icon: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327536-nin0.jpg".replace("https://api.apolloglobalinteractive.com/", process.env.API_BASE_URL?.replace('/api/', '/') || "https://api.apolloglobalinteractive.com/")
                 },
                 {
                     id: "ce6435a5-14cb-48d2-a809-118f88d1e3ef",
                     name: isId ? "Penyewaan Mobil" : "Auto Rental",
-                    icon: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327536-5xra.jpg"
+                    icon: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327536-5xra.jpg".replace("https://api.apolloglobalinteractive.com/", process.env.API_BASE_URL?.replace('/api/', '/') || "https://api.apolloglobalinteractive.com/")
                 },
                 {
                     id: "662533aa-d7da-40a8-a38a-86d45199ec87",
                     name: isId ? "Servis Mobil" : "Auto Service",
-                    icon: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327536-fboi.jpg"
+                    icon: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327536-fboi.jpg".replace("https://api.apolloglobalinteractive.com/", process.env.API_BASE_URL?.replace('/api/', '/') || "https://api.apolloglobalinteractive.com/")
                 },
                 {
                     id: "62e967cc-e419-4887-b609-c824abaffcb0",
                     name: isId ? "Ritel Mobil Bekas" : "Used Car Retailer",
-                    icon: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327536-hdrw.jpg"
+                    icon: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327536-hdrw.jpg".replace("https://api.apolloglobalinteractive.com/", process.env.API_BASE_URL?.replace('/api/', '/') || "https://api.apolloglobalinteractive.com/")
                 }
             ]
         },
@@ -185,13 +185,13 @@ function getDefaultAboutData(lang: string): AboutPageData {
                     id: "b0e3ebc8-7814-40a6-8fdb-86d4a4bbdc07",
                     name: "Romeo Lledo",
                     positionDesc: isId ? "Komisaris Utama" : "President Commisioner",
-                    photo: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327536-qstl.jpg"
+                    photo: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327536-qstl.jpg".replace("https://api.apolloglobalinteractive.com/", process.env.API_BASE_URL?.replace('/api/', '/') || "https://api.apolloglobalinteractive.com/")
                 },
                 {
                     id: "0acd028f-d9ce-47dd-bf0f-347a2d688370",
                     name: "Marjorie E Wairizal, SE",
                     positionDesc: isId ? "Komisaris Independen" : "Independent Commissioner",
-                    photo: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327536-y4rq.jpg"
+                    photo: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327536-y4rq.jpg".replace("https://api.apolloglobalinteractive.com/", process.env.API_BASE_URL?.replace('/api/', '/') || "https://api.apolloglobalinteractive.com/")
                 }
             ]
         },
@@ -206,13 +206,13 @@ function getDefaultAboutData(lang: string): AboutPageData {
                     id: "3b61714c-d6c4-4155-a6c0-276ead04525d",
                     name: "Albert Witono S",
                     positionDesc: isId ? "Direktur Utama" : "President Director",
-                    photo: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327536-egcn.jpg"
+                    photo: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327536-egcn.jpg".replace("https://api.apolloglobalinteractive.com/", process.env.API_BASE_URL?.replace('/api/', '/') || "https://api.apolloglobalinteractive.com/")
                 },
                 {
                     id: "9cce286f-c2c3-42f3-961d-09dc4ab2e4c2",
                     name: "Farras Pina",
                     positionDesc: isId ? "Direktur" : "Director",
-                    photo: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327536-j32g.jpg"
+                    photo: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327536-j32g.jpg".replace("https://api.apolloglobalinteractive.com/", process.env.API_BASE_URL?.replace('/api/', '/') || "https://api.apolloglobalinteractive.com/")
                 }
             ]
         },
@@ -221,7 +221,7 @@ function getDefaultAboutData(lang: string): AboutPageData {
             description: isId
                 ? "Temukan warisan keunggulan Apollo Global Interactive. Pelajari visi kami untuk mobilitas berkelanjutan, tim kepemimpinan yang berdedikasi, dan komitmen kami terhadap inovasi otomotif."
                 : "Discover Apollo Global Interactive's legacy of excellence. Learn about our vision for sustainable mobility, our dedicated leadership team, and our commitment to automotive innovation.",
-            og_image: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327525-7zpn.jpg"
+            og_image: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327525-7zpn.jpg".replace("https://api.apolloglobalinteractive.com/", process.env.API_BASE_URL?.replace('/api/', '/') || "https://api.apolloglobalinteractive.com/")
         }
     };
 }
