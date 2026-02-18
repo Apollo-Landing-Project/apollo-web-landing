@@ -4,34 +4,19 @@ import type { NextRequest } from 'next/server'
 // Define supported locales
 const locales = ['id', 'en']
 
-// Define assets and public files to ignore
-const publicFiles = [
-    '/favicon.ico',
-    '/logo.png',
-    '/logo-new.png',
-    '/next.svg',
-    '/vercel.svg',
-    '/file.svg',
-    '/globe.svg',
-    '/window.svg',
-    '/site.webmanifest'
-]
-
-function isPublicFile(pathname: string) {
-    if (publicFiles.includes(pathname)) return true
-    if (pathname.startsWith('/assets/')) return true
-    return false
-}
-
 export default function proxy(request: NextRequest) {
     const pathname = request.nextUrl.pathname
 
-    // 1. Skip middleware for API routes, Next.js internals, and public files
-    if (
-        pathname.startsWith('/api') ||
-        pathname.startsWith('/_next') ||
-        isPublicFile(pathname)
-    ) {
+    // 1. Tentukan file mana saja yang dilarang dicegat oleh Satpam
+    const isPublicResource =
+        pathname === '/sitemap.xml' ||
+        pathname === '/robots.txt' ||
+        pathname.startsWith('/_next') || // Aset internal Next.js
+        pathname.startsWith('/api') ||    // Route API revalidate kamu
+        pathname.includes('.');           // File dengan ekstensi (gambar, favicon, dll)
+
+    // 2. Jika itu file publik, biarkan lewat tanpa redirect ke /en
+    if (isPublicResource) {
         return NextResponse.next()
     }
 
@@ -64,11 +49,11 @@ export const config = {
         /*
          * Match all request paths except for the ones starting with:
          * - api (API routes)
-         * - _next/static (static files)
-         * - _next/image (image optimization files)
+         * - _next (Next.js internals)
+         * - assets (static assets)
          * - favicon.ico (favicon file)
          * - public files (images, etc)
          */
-        '/((?!api|_next/static|_next/image|assets|favicon.ico|sw.js|site.webmanifest).*)',
+        '/((?!api|_next|assets|favicon.ico|sw.js|site.webmanifest|sitemap.xml|robots.txt).*)',
     ],
 }
