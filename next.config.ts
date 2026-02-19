@@ -31,6 +31,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "api.apolloglobalinteractive.com",
       },
+      {
+        protocol: "https",
+        hostname: "storage.apolloglobalinteractive.com",
+      },
     ],
   },
 };
