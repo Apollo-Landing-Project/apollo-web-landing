@@ -25,7 +25,6 @@ const navLinks = [
     { name: "Home", href: "/" },
     { name: "About Us", href: "/about" },
     { name: "Our Services", href: "/services" },
-    { name: "News", href: "/news" },
     { name: "Investor Relations", href: "/investor-relation" },
     { name: "Contact Us", href: "/#contact" },
 ];
@@ -44,7 +43,6 @@ export default function Navbar({ lang = "en" }: { lang?: string }) {
         { name: isId ? "Beranda" : "Home", href: "/" },
         { name: isId ? "Tentang Kami" : "About Us", href: "/about" },
         { name: isId ? "Layanan Kami" : "Our Services", href: "/services" },
-        { name: isId ? "Berita" : "News", href: "/news" },
         { name: isId ? "Hubungan Investor" : "Investor Relations", href: "/investor-relation" },
         { name: isId ? "Hubungi Kami" : "Contact Us", href: "/#contact" },
     ];
@@ -122,13 +120,7 @@ export default function Navbar({ lang = "en" }: { lang?: string }) {
         const pathRest = pathSegments.slice(1);
         const pathWithoutLang = pathRest.length > 0 ? '/' + pathRest.join('/') : '/';
 
-        // 1. Special case for News/CSR subpages (e.g. /en/news/detail-1, /en/csr/detail-2)
-        if (link.name === "News") {
-            // Check if current path (without lang) starts with /news or /csr
-            if (pathWithoutLang.startsWith("/news") || pathWithoutLang.startsWith("/csr")) {
-                return true;
-            }
-        }
+        // 1. Special case for CSR subpages removed along with News
 
         // 2. Home Page Scroll Logic
         // This applies when we are EXACTLY at the language root (e.g. /en or /id)
@@ -136,7 +128,6 @@ export default function Navbar({ lang = "en" }: { lang?: string }) {
             if (link.href === "/" && activeSection === "home") return true;
             if (link.href === "/about" && activeSection === "about-us") return true;
             if (link.href === "/services" && activeSection === "services") return true;
-            if (link.href === "/news" && activeSection === "news") return true;
             if (link.href === "/#contact" && activeSection === "contact") return true;
 
             // If just on home and no active section (top of page), highlight Home

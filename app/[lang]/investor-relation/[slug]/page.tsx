@@ -110,24 +110,24 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     try {
         const data = await getNewsDetail(slug, lang);
 
-        const title = data.metadata?.title || data.title || "News - Apollo";
-        const description = data.metadata?.description || data.description || "News detail page";
-        const ogImage = data.metadata?.og_image || data.image || `${SITE_URL}/og-news.jpg`;
+        const title = data.metadata?.title || data.title || "Investor Relation - Apollo";
+        const description = data.metadata?.description || data.description || "Investor relation detail page";
+        const ogImage = data.metadata?.og_image || data.image || `${SITE_URL}/og-investor.jpg`;
 
         return {
             title: title,
             description: description,
             alternates: {
-                canonical: `${SITE_URL}/${lang}/news/${slug}`,
+                canonical: `${SITE_URL}/${lang}/investor-relation/${slug}`,
                 languages: {
-                    'id-ID': `${SITE_URL}/id/news/${slug}`,
-                    'en-US': `${SITE_URL}/en/news/${slug}`,
+                    'id-ID': `${SITE_URL}/id/investor-relation/${slug}`,
+                    'en-US': `${SITE_URL}/en/investor-relation/${slug}`,
                 },
             },
             openGraph: {
                 title: `${title} - Apollo`,
                 description: description,
-                url: `${SITE_URL}/${lang}/news/${slug}`,
+                url: `${SITE_URL}/${lang}/investor-relation/${slug}`,
                 siteName: "Apollo",
                 images: [
                     {
@@ -144,15 +144,15 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
         console.error("Metadata error:", e);
         // Fallback metadata if fetch fails
         return {
-            title: "News - Apollo",
-            description: "Latest updates and news from Apollo Global Interactive.",
+            title: "Investor Relation - Apollo",
+            description: "Information about Apollo Global Interactive investor relations.",
         };
     }
 }
 
 // --- Component ---
 
-export default async function NewsDetailPage({ params }: { params: Promise<{ lang: string; slug: string }> }) {
+export default async function InvestorRelationDetailPage({ params }: { params: Promise<{ lang: string; slug: string }> }) {
     const { lang, slug } = await params;
 
     let data;
@@ -181,11 +181,11 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ lan
             {/* Back Button */}
             <div className="mb-8">
                 <Link
-                    href={`/${lang}/news`}
+                    href={`/${lang}/investor-relation`}
                     className="inline-flex items-center gap-2 rounded-full border-[1.5px] border-[#d1d1d6] px-4 py-3 text-sm font-semibold text-[#323441] transition-colors hover:bg-gray-50"
                 >
                     <ArrowLeft className="h-5 w-5" />
-                    {lang === 'id' ? "Kembali ke Berita" : "Back To News"}
+                    {lang === 'id' ? "Kembali ke Hubungan Investor" : "Back To Investor Relations"}
                 </Link>
             </div>
 

@@ -13,6 +13,7 @@ type CarouselItem = {
 };
 
 type ServiceCarouselProps = {
+    badge?: string;
     title: string;
     description: string;
     items: CarouselItem[];
@@ -52,7 +53,7 @@ const CarouselImage = ({
     );
 };
 
-export default function ServiceCarousel({ title, description, items }: ServiceCarouselProps) {
+export default function ServiceCarousel({ badge, title, description, items }: ServiceCarouselProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [direction, setDirection] = useState(0);
 
@@ -107,7 +108,7 @@ export default function ServiceCarousel({ title, description, items }: ServiceCa
                 <div className="mb-10 flex flex-col items-center justify-center gap-6 text-center">
                     <div className="flex flex-col items-center gap-4">
                         <div className="inline-flex w-fit items-center justify-center rounded-full border border-[#5a80b9]/15 bg-white px-4 py-1.5 backdrop-blur-sm">
-                            <span className="text-sm font-medium text-[#5a80b9]">Used Car Gallery</span>
+                            <span className="text-sm font-medium text-[#5a80b9]">{badge || "Available Cars"}</span>
                         </div>
                         <h2 className="text-3xl font-bold leading-tight text-[#323441] md:text-4xl">
                             {title}

@@ -146,11 +146,11 @@ function getDefaultServiceData(lang: string): ServicePageData {
             }
         ],
         usedCarGallery: {
-            badge: isId ? "Galeri Mobil Bekas" : "Used Car Gallery",
-            title: isId ? "Koleksi Mobil Bekas Kami yang Tersedia" : "Our Available Used Car Collection",
+            badge: isId ? "Mobil Tersedia" : "Available Cars",
+            title: isId ? "Daftar Mobil yang Tersedia di Dealer" : "List of Cars Available in Dealership",
             desc: isId
-                ? "Temukan pilihan mobil bekas berkualitas dengan informasi transparan untuk mendukung keputusan pembelian yang percaya diri."
-                : "Discover a selection of quality used cars with transparent information to support confident purchasing decisions.",
+                ? "Temukan pilihan mobil berkualitas dengan informasi transparan untuk mendukung keputusan pembelian yang percaya diri."
+                : "Discover a selection of quality cars with transparent information to support confident purchasing decisions.",
             items: [
                 {
                     id: "5e74448e-1394-4213-bc44-ee667f8ddb37",
@@ -284,8 +284,11 @@ export default async function ServicesPage({ params }: { params: Promise<{ lang:
             {/* Used Cars Carousel */}
             <div className="w-full">
                 <ServiceCarousel
-                    title={data.usedCarGallery.title}
-                    description={data.usedCarGallery.desc}
+                    badge={lang === 'id' ? "Mobil Tersedia" : "Available Cars"}
+                    title={lang === 'id' ? "Mobil Tersedia di Dealer Apollo" : "Available Cars at Apollo Dealership"}
+                    description={lang === 'id'
+                        ? "Jelajahi pilihan kendaraan berkualitas tinggi di dealer kami. Temukan mobil yang tepat untuk kebutuhan mobilitas Anda."
+                        : "Explore our selection of high-quality vehicles at our dealership. Find the perfect car for your mobility needs."}
                     items={data.usedCarGallery.items}
                 />
             </div>

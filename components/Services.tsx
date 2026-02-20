@@ -13,6 +13,8 @@ export default function Services({ lang, data }: { lang: string, data: any }) {
         seeMore: isId ? "Lihat Layanan Lainnya" : "See More Services",
     };
 
+    const services = data.serviceItems || [];
+    /*
     const services = data.serviceItems?.length > 0 ? data.serviceItems : [
         {
             title: isId ? 'Dealer Mobil' : 'Dealership',
@@ -29,12 +31,9 @@ export default function Services({ lang, data }: { lang: string, data: any }) {
             desc: isId ? 'Solusi fasilitas perawatan dan perbaikan.' : 'Maintenance and repair facility solutions.',
             icon: Wrench,
         },
-        {
-            title: isId ? 'Jual Beli Mobil Bekas' : 'Used Car Retailer',
-            desc: isId ? 'Solusi untuk jual beli mobil bekas.' : 'Solution for buying and selling used cars.',
-            icon: Tag,
-        },
+
     ];
+    */
 
     return (
         <section id="services" className="w-full bg-[#FAFAFA] py-10 md:py-20 px-4 md:px-10 overflow-hidden scroll-mt-24">
@@ -57,7 +56,7 @@ export default function Services({ lang, data }: { lang: string, data: any }) {
                 </div>
 
                 {/* Cards Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className={`grid grid-cols-1 sm:grid-cols-2 ${services.length === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} gap-6`}>
                     {services.map((service: any, index: number) => {
                         const iconList = [Car, Key, Wrench, Tag];
                         const Icon = iconList[index] || Car;

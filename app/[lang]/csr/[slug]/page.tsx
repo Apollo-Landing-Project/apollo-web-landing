@@ -75,53 +75,60 @@ async function getCsrDetail(id: string, lang: string) {
                 metadata: response.metadata
             };
         }
-        return null;
+        throw new Error("Failed to fetch CSR detail");
     } catch (error) {
         console.error("Error fetching CSR detail:", error);
-        return null;
+        throw error;
     }
 }
 
 // --- Metadata ---
 export async function generateMetadata({ params }: { params: Promise<{ lang: string; slug: string }> }): Promise<Metadata> {
     const { lang, slug } = await params;
-    // Note: The file uses [slug] but the API expects an ID. We treat slug as ID here.
-    const result = await getCsrDetail(slug, lang);
-    const data = result?.data;
-    const metadata = result?.metadata;
 
-    if (!data || !metadata) {
+    try {
+        // Note: The file uses [slug] but the API expects an ID. We treat slug as ID here.
+        const result = await getCsrDetail(slug, lang);
+
+        if (!result || !result.data || !result.metadata) {
+            throw new Error("Missing CSR data or metadata");
+        }
+
+        const { data, metadata } = result;
+
         return {
-            title: "CSR Detail",
+            title: metadata.title,
+            description: metadata.description,
+            alternates: {
+                canonical: `${SITE_URL}/${lang}/csr/${slug}`,
+                languages: {
+                    'id-ID': `${SITE_URL}/id/csr/${slug}`,
+                    'en-US': `${SITE_URL}/en/csr/${slug}`,
+                },
+            },
+            openGraph: {
+                title: `${metadata.title} - Apollo`,
+                description: metadata.description,
+                url: `${SITE_URL}/${lang}/csr/${slug}`,
+                siteName: "Apollo",
+                images: [
+                    {
+                        url: metadata.og_image || (data.image && data.image.length > 0 ? data.image[0].image : ""),
+                        width: 1200,
+                        height: 630,
+                    },
+                ],
+                locale: lang === 'id' ? 'id_ID' : 'en_US',
+                type: "article",
+            },
+        };
+    } catch (e) {
+        console.error("CSR Metadata error:", e);
+        return {
+            title: "CSR Detail - Apollo",
+            description: "Information about Apollo Global Interactive CSR initiatives.",
         };
     }
-
-    return {
-        title: metadata.title,
-        description: metadata.description,
-        alternates: {
-            canonical: `${SITE_URL}/${lang}/csr/${slug}`,
-            languages: {
-                'id-ID': `${SITE_URL}/id/csr/${slug}`,
-                'en-US': `${SITE_URL}/en/csr/${slug}`,
-            },
-        },
-        openGraph: {
-            title: `${metadata.title} - Apollo`,
-            description: metadata.description,
-            url: `${SITE_URL}/${lang}/csr/${slug}`,
-            siteName: "Apollo",
-            images: [
-                {
-                    url: metadata.og_image || (data.image && data.image.length > 0 ? data.image[0].image : ""),
-                    width: 1200,
-                    height: 630,
-                },
-            ],
-            locale: lang === 'id' ? 'id_ID' : 'en_US',
-            type: "article",
-        },
-    };
 }
 
 // --- Page Component ---

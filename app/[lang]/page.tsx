@@ -3,7 +3,7 @@ import Hero from "@/components/Hero";
 import AboutUs from "@/components/AboutUs";
 import Services from "@/components/Services";
 import Partners from "@/components/Partners";
-import News from "@/components/News";
+import HomeInvestor from "@/components/HomeInvestor";
 import Contact from "@/components/Contact";
 import { dbFetch } from "@/lib/fetcher";
 import { SITE_URL } from "@/lib/constants";
@@ -46,11 +46,12 @@ interface HomeData {
     desc: string;
     serviceItems: ServiceItem[];
   };
-  news: {
+  investor?: {
     badge: string;
     title: string;
     desc: string;
-    newsItems: any[]; // Using any[] as we use local data for items
+    lastReport?: any;
+    shares?: any[];
   };
   partners: {
     badge: string;
@@ -133,21 +134,16 @@ function getDefaultHomeData(lang: string): HomeData {
           desc: isId ? "Solusi fasilitas perawatan dan perbaikan profesional yang dirancang untuk memastikan keandalan, keselamatan, dan kinerja optimal kendaraan." : "Professional maintenance and repair facility solutions designed to ensure vehicle reliability, safety, and optimal performance.",
           image: "https://api.apolloglobalinteractive.com/storage/images/image-20260215-100632416-grby.jpg"
         },
-        {
-          id: "f599464a-aa6d-4601-8f1f-664bdb02b1fc",
-          title: isId ? "Pedagang Mobil Bekas" : "Used Car Retailer",
-          desc: isId ? "Solusi komprehensif untuk membeli dan menjual mobil bekas, disampaikan dengan transparansi, keandalan, dan standar penilaian yang terpercaya." : "Comprehensive solutions for buying and selling used cars, delivered with transparency, reliability, and trusted valuation standards.",
-          image: "https://api.apolloglobalinteractive.com/storage/images/image-20260215-100649438-m58b.jpg"
-        }
       ]
     },
-    news: {
-      badge: isId ? "Berita" : "News",
-      title: isId ? "Berita Terbaru" : "Latest News",
+    investor: {
+      badge: isId ? "Hubungan Investor" : "Investor Relations",
+      title: isId ? "Informasi Investor Terkini" : "Latest Investor Information",
       desc: isId
-        ? "Tetap mendapat informasi dengan pembaruan terbaru dari perusahaan kami, termasuk inovasi produk, proses manufaktur, wawasan industri, dan pencapaian penting."
-        : "Stay informed with the latest updates from our company, including product innovations, manufacturing, industry insights, and milestones",
-      newsItems: []
+        ? "Akses informasi terbaru mengenai kinerja saham dan laporan resmi perusahaan kami."
+        : "Access the latest information on our stock performance and official company reports.",
+      lastReport: null,
+      shares: []
     },
     partners: {
       badge: isId ? "Rekan Kerja Kami" : "Our Partners",
@@ -205,7 +201,22 @@ async function getHomeData(lang: string): Promise<{ data: HomeData }> {
   } catch (error) {
     console.error("Error fetching home data:", error);
     throw error;
-    // return { data: getDefaultHomeData(lang) };
+  }
+}
+
+async function getInvestorData(lang: string) {
+  const token = process.env.API_TOKEN;
+  try {
+    const res = await dbFetch(`client/investor?lang=${lang}`, {
+      headers: {
+        'Cookie': `token=${token}`
+      },
+      next: { tags: ['investor_relation'], revalidate: false }
+    });
+    return res?.data;
+  } catch (error) {
+    console.error("Error fetching investor data for home:", error);
+    return null;
   }
 }
 
@@ -248,7 +259,12 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
 
 export default async function Home({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
-  const homeData = await getHomeData(lang);
+
+  // Fetch both home and investor data in parallel
+  const [homeData, investorData] = await Promise.all([
+    getHomeData(lang),
+    getInvestorData(lang)
+  ]);
 
   const data = homeData.data;
 
@@ -257,7 +273,14 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
       <Hero lang={lang} data={data.hero} />
       <AboutUs lang={lang} data={data.about} />
       <Services lang={lang} data={data.services} />
-      <News lang={lang} data={data.news} />
+      <HomeInvestor
+        lang={lang}
+        data={{
+          ...data.investor,
+          lastReport: investorData?.report?.reportItems?.[0],
+          shares: investorData?.stakeholders?.shares
+        }}
+      />
       <Partners lang={lang} data={data.partners} />
       <Contact lang={lang} data={data.contact} />
     </main>

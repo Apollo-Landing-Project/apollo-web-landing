@@ -223,12 +223,11 @@ async function getNewsData(lang: string) {
                 }
             };
         }
+        throw new Error("Failed to fetch news data from API");
     } catch (error) {
         console.error("Error fetching news data:", error);
+        throw error;
     }
-
-    // Fallback to default if API fails or returns invalid structure (caught by try-catch or if block)
-    return defaultData;
 }
 
 // --- Filtering & Pagination Helper ---
@@ -310,12 +309,7 @@ function filterAndPaginate(
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
     const { lang } = await params;
 
-    let data;
-    try {
-        data = await getNewsData(lang);
-    } catch {
-        data = getDefaultNewsData(lang);
-    }
+    const data = await getNewsData(lang);
 
     return {
         title: data.meta_title,

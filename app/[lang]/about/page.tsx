@@ -166,11 +166,6 @@ function getDefaultAboutData(lang: string): AboutPageData {
                     id: "662533aa-d7da-40a8-a38a-86d45199ec87",
                     name: isId ? "Servis Mobil" : "Auto Service",
                     icon: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327536-fboi.jpg".replace("https://api.apolloglobalinteractive.com/", process.env.API_BASE_URL?.replace('/api/', '/') || "https://api.apolloglobalinteractive.com/")
-                },
-                {
-                    id: "62e967cc-e419-4887-b609-c824abaffcb0",
-                    name: isId ? "Ritel Mobil Bekas" : "Used Car Retailer",
-                    icon: "https://api.apolloglobalinteractive.com/storage/images/image-20260214-012327536-hdrw.jpg".replace("https://api.apolloglobalinteractive.com/", process.env.API_BASE_URL?.replace('/api/', '/') || "https://api.apolloglobalinteractive.com/")
                 }
             ]
         },

@@ -51,7 +51,7 @@ const ReportSection = ({
 
     // Derived data for filters
     const processedReports = useMemo(() => {
-        const items = reportItems.length > 0 ? reportItems : REPORT_DATA;
+        const items = reportItems || [];
         return items.map(item => ({
             ...item,
             year: item.published_at ? new Date(item.published_at).getFullYear().toString() : 'N/A'
@@ -188,8 +188,8 @@ const ReportSection = ({
                                         {/* View Details Button (Only if news_id exists) */}
                                         {report.news_id && (
                                             <Link
-                                                href={`/${lang}/news/${report.news_id}`}
-                                                className="flex items-center justify-between w-full py-2.5 px-4 rounded-lg bg-orange-50 border border-orange-100 text-sm font-medium text-orange-700 hover:bg-orange-600 hover:text-white hover:border-orange-600 transition-all duration-300"
+                                                href={`/${lang}/investor-relation/${report.news_id}`}
+                                                className="flex items-center justify-between w-full py-2.5 px-4 rounded-lg bg-orange-500 border border-orange-500 text-sm font-medium text-white hover:bg-orange-600 hover:border-orange-600 transition-all duration-300"
                                             >
                                                 <span>{isId ? "Lihat Detail" : "View Details"}</span>
                                                 <ArrowRight className="w-4 h-4" />
@@ -201,10 +201,7 @@ const ReportSection = ({
                                             href={report.file_url}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className={`flex items-center justify-between w-full py-2.5 px-4 rounded-lg border text-sm font-medium transition-all duration-300 ${report.news_id
-                                                    ? 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
-                                                    : 'bg-[#F8FAFC] border-gray-100 text-[#323441] hover:bg-[#5A80B9] hover:text-white hover:border-[#5A80B9]'
-                                                }`}
+                                            className="flex items-center justify-between w-full py-2.5 px-4 rounded-lg border text-sm font-medium transition-all duration-300 bg-[#5A80B9] border-[#5A80B9] text-white hover:bg-[#4a6d9e] hover:border-[#4a6d9e]"
                                         >
                                             <span>{isId ? "Unduh Dokumen" : "Download Document"}</span>
                                             <Download className="w-4 h-4" />

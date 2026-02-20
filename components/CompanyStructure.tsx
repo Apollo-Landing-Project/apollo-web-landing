@@ -1,4 +1,4 @@
-import { Car, Key, Tag, Wrench } from "lucide-react";
+import { Car, Key, Wrench } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 
@@ -33,10 +33,6 @@ export default function CompanyStructure({
         {
             name: "Auto Service",
             icon: Wrench,
-        },
-        {
-            name: "Used Car Retailer",
-            icon: Tag,
         },
     ];
     return (
@@ -73,18 +69,17 @@ export default function CompanyStructure({
                     {/* Desktop Tree Connector Lines (Visible only on lg+) */}
                     <div className="hidden lg:block relative w-full h-8 mb-6">
                         {/* Horizontal Line connecting centers of first and last items */}
-                        <div className="absolute top-0 left-[12.5%] right-[12.5%] h-px bg-gray-300"></div>
+                        <div className="absolute top-0 left-[16.66%] right-[16.66%] h-px bg-gray-300"></div>
 
                         {/* Vertical Lines descending to children */}
-                        <div className="absolute top-0 left-[12.5%] h-full w-px bg-gray-300"></div>
-                        <div className="absolute top-0 left-[37.5%] h-full w-px bg-gray-300"></div>
-                        <div className="absolute top-0 left-[62.5%] h-full w-px bg-gray-300"></div>
-                        <div className="absolute top-0 left-[87.5%] h-full w-px bg-gray-300"></div>
+                        <div className="absolute top-0 left-[16.66%] h-full w-px bg-gray-300"></div>
+                        <div className="absolute top-0 left-[50%] h-full w-px bg-gray-300"></div>
+                        <div className="absolute top-0 left-[83.33%] h-full w-px bg-gray-300"></div>
                     </div>
 
                     {/* Children Grid */}
-                    {/* Mobile: 1 col, Tablet: 2 cols, Desktop: 4 cols */}
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8 mt-8 lg:mt-0">
+                    {/* Mobile: 1 col, Tablet: 2 cols, Desktop: 3 cols */}
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8 mt-8 lg:mt-0">
                         {items.map((dept, index) => {
                             const DepartmentIcon = departments[index % departments.length].icon;
                             return (
