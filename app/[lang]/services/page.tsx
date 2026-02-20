@@ -142,9 +142,11 @@ export default async function ServicesPage({ params }: { params: Promise<{ lang:
             {/* Used Cars Carousel */}
             <div className="w-full">
                 <ServiceCarousel
-                    badge={data.usedCarGallery.badge}
-                    title={data.usedCarGallery.title}
-                    description={data.usedCarGallery.desc}
+                    badge={lang === 'id' ? "Mobil Baru Tersedia" : "Available New Cars"}
+                    title={lang === 'id' ? "Koleksi Mobil Baru Kami" : "Our New Car Collection"}
+                    description={lang === 'id'
+                        ? "Temukan pilihan mobil baru yang tersedia dengan informasi lengkap untuk mendukung keputusan pembelian Anda."
+                        : "Discover a selection of available new cars with transparent information to support your purchasing decisions."}
                     items={data.usedCarGallery.items}
                 />
             </div>
