@@ -86,7 +86,7 @@ export default function Navbar({ lang = "en" }: { lang?: string }) {
             return;
         }
 
-        const sections = ["home", "about-us", "services", "news", "contact"];
+        const sections = ["home", "about-us", "services", "contact"];
         const observerOptions = {
             root: null,
             rootMargin: "-20% 0px -50% 0px", // Adjust to trigger when section is properly in view
