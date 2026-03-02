@@ -1,79 +1,61 @@
 import { MetadataRoute } from 'next';
 
 const BASE_URL = 'https://apolloglobalinteractive.com';
-// Use process.env.API_BASE_URL if available, otherwise fallback (though API_BASE_URL should be in env)
-// Based on .env: API_BASE_URL="https://api.apolloglobalinteractive.com/api/"
-// The user prompt mentioned APOLLO_BASE_URL but .env has API_BASE_URL. We will use API_BASE_URL.
 const API_BASE_URL = process.env.API_BASE_URL;
 const API_TOKEN = process.env.API_TOKEN;
 
-// Type definitions based on NewsPageApiData in app/[lang]/news/page.tsx
-interface NewsItem {
+interface ReportItem {
     id: string;
-    publishedAt: string;
+    news_id?: string;
+    published_at?: string;
 }
 
-interface CsrItem {
-    id: string;
-    publishedAt: string;
-}
-
-interface ApiResponse {
-    status: string;
-    message: string;
-    data: {
-        news: NewsItem[];
-        csr: CsrItem[];
+interface InvestorApiResponse {
+    status?: string;
+    data?: {
+        report?: {
+            reportItems?: ReportItem[];
+        };
     };
 }
 
-async function getDynamicData(): Promise<{ news: NewsItem[], csr: CsrItem[] }> {
+async function getInvestorData(): Promise<ReportItem[]> {
     if (!API_BASE_URL || !API_TOKEN) {
         console.warn('API_BASE_URL or API_TOKEN is missing in environment variables.');
-        return { news: [], csr: [] };
+        return [];
     }
 
     try {
-        // Fetching 'en' data to get the list of IDs. Assuming IDs are consistent across languages.
-        // Using the same endpoint pattern as in app/[lang]/news/page.tsx: client/news?lang=en
-        // We need to construct the full URL carefully.
-        // API_BASE_URL ends with /api/ in .env, so we might need to adjust or use it as is if fetching from there.
-        // In lib/fetcher.ts, it does: BASE_URL.replace(/\/$/, "") + '/' + endpoint.replace(/^\//, "")
-        // So if API_BASE_URL is .../api/, endpoint client/news becomes .../api/client/news.
-
         const cleanBaseUrl = API_BASE_URL.replace(/\/$/, "");
-        const url = `${cleanBaseUrl}/client/news?lang=en`;
+        const url = `${cleanBaseUrl}/client/investor?lang=en`;
 
         const res = await fetch(url, {
             headers: {
                 'Cookie': `token=${API_TOKEN}`,
             },
-            next: { revalidate: 3600 } // Revalidate every hour for sitemap
+            next: { revalidate: 3600 }
         });
 
         if (!res.ok) {
             console.error(`Failed to fetch sitemap data: ${res.status} ${res.statusText}`);
-            return { news: [], csr: [] };
+            return [];
         }
 
-        const json: ApiResponse = await res.json();
+        const json: InvestorApiResponse = await res.json();
 
-        if (json.status === 'success' && json.data) {
-            return {
-                news: json.data.news || [],
-                csr: json.data.csr || []
-            };
+        if (json && json.data && json.data.report && json.data.report.reportItems) {
+            return json.data.report.reportItems;
         }
 
-        return { news: [], csr: [] };
+        return [];
     } catch (error) {
         console.error('Error fetching dynamic sitemap data:', error);
-        return { news: [], csr: [] };
+        return [];
     }
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const { news, csr } = await getDynamicData();
+    const investorReports = await getInvestorData();
     const currentDate = new Date().toISOString();
 
     // Static Routes
@@ -81,14 +63,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '',
         '/about',
         '/services',
-        '/news',
         '/investor-relation',
     ];
 
     const staticEntries: MetadataRoute.Sitemap = routes.flatMap((route) => {
-        // Clean route for ID (e.g., /services -> services)
-        // const routeName = route === '' ? 'home' : route.substring(1);
-
         return ['id', 'en'].map((lang) => {
             const url = `${BASE_URL}/${lang}${route}`;
 
@@ -107,37 +85,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         });
     });
 
-    // Dynamic News Entries
-    const newsEntries: MetadataRoute.Sitemap = news.flatMap((item) => {
-        return ['id', 'en'].map((lang) => ({
-            url: `${BASE_URL}/${lang}/news/${item.id}`,
-            lastModified: item.publishedAt || currentDate,
-            changeFrequency: 'weekly' as const,
-            priority: 0.7,
-            alternates: {
-                languages: {
-                    id: `${BASE_URL}/id/news/${item.id}`,
-                    en: `${BASE_URL}/en/news/${item.id}`,
-                },
-            },
-        }));
-    });
+    const investorEntries: MetadataRoute.Sitemap = investorReports
+        .filter(item => item.news_id)
+        .flatMap((item) => {
+            const slug = item.news_id;
+            const lastMod = item.published_at ? new Date(item.published_at).toISOString() : currentDate;
 
-    // Dynamic CSR Entries
-    const csrEntries: MetadataRoute.Sitemap = csr.flatMap((item) => {
-        return ['id', 'en'].map((lang) => ({
-            url: `${BASE_URL}/${lang}/csr/${item.id}`,
-            lastModified: item.publishedAt || currentDate,
-            changeFrequency: 'weekly' as const,
-            priority: 0.7,
-            alternates: {
-                languages: {
-                    id: `${BASE_URL}/id/csr/${item.id}`,
-                    en: `${BASE_URL}/en/csr/${item.id}`,
-                },
-            },
-        }));
-    });
+            return ['id', 'en'].map((lang) => {
+                const url = `${BASE_URL}/${lang}/investor-relation/${slug}`;
 
-    return [...staticEntries, ...newsEntries, ...csrEntries];
+                return {
+                    url: url,
+                    lastModified: lastMod,
+                    changeFrequency: 'monthly' as const,
+                    priority: 0.6,
+                    alternates: {
+                        languages: {
+                            id: `${BASE_URL}/id/investor-relation/${slug}`,
+                            en: `${BASE_URL}/en/investor-relation/${slug}`,
+                        },
+                    },
+                };
+            });
+        });
+
+    return [...staticEntries, ...investorEntries];
 }
