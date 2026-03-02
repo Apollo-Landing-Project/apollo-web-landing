@@ -160,7 +160,7 @@ export default function Navbar({ lang = "en" }: { lang?: string }) {
                             <div className="relative h-10 w-24 md:w-32">
                                 <Image
                                     src="/logo-new.png"
-                                    alt="Apollo Logo"
+                                    alt="Apollo Global Interactive"
                                     fill
                                     className="object-contain"
                                     priority
