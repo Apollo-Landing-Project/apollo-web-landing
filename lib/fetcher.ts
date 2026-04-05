@@ -5,14 +5,21 @@ const API_TOKEN = process.env.API_TOKEN;
 
 /**
  * Helper for Server-Side Fetching.
- * Automatically handles Base URL and Authentication Token.
+ * Automatically handles Base URL, Authentication Token, and Fallback Data.
  * 
  * @param endpoint - The API endpoint (e.g., "/users")
  * @param options - Fetch options (method, headers, body, etc.)
- * @returns The parsed JSON response
+ * @param fallbackData - Optional fallback data returned if the API call fails
+ * @returns The parsed JSON response, or fallbackData if the fetch fails.
  */
-export async function dbFetch<T = any>(endpoint: string, options: RequestInit = {}): Promise<T> {
+export async function dbFetch<T = any>(
+    endpoint: string,
+    options: RequestInit = {},
+    fallbackData?: T
+): Promise<T> {
     if (!BASE_URL) {
+        console.error("[Server Fetch Error] API_BASE_URL is not defined in environment variables.");
+        if (fallbackData !== undefined) return fallbackData;
         throw new Error("API_BASE_URL is not defined in environment variables.");
     }
 
@@ -56,12 +63,21 @@ export async function dbFetch<T = any>(endpoint: string, options: RequestInit = 
 
         // Handle 204 No Content
         if (response.status === 204) {
-            return {} as T;
+            return (fallbackData !== undefined ? fallbackData : {}) as T;
         }
 
         return await response.json();
     } catch (error) {
-        console.error(`[Server Fetch Error] ${url}:`, error);
+        // Safe robust logging
+        console.error(`[Server Fetch Error] Failed fetching ${url}:`, error instanceof Error ? error.message : error);
+        
+        // Return fallback data if explicitly provided instead of crashing
+        if (fallbackData !== undefined) {
+            console.warn(`[Fallback] Returning fallback recovery data for ${endpoint}`);
+            return fallbackData;
+        }
+
+        // Only throw if NO fallback was supplied
         throw error;
     }
 }

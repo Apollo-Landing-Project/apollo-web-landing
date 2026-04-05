@@ -5,6 +5,7 @@ import ServiceList from "@/components/ServiceList";
 import { Metadata } from "next";
 import { dbFetch } from "@/lib/fetcher";
 import { SITE_URL } from "@/lib/constants";
+import { fallbackServiceData, ServiceApiResponse } from "@/lib/fallback-service-data";
 
 // Type definitions matching the API response
 interface ServiceItem {
@@ -55,24 +56,30 @@ interface ApiResponse {
     };
 }
 
-// Helper to fetch data
-async function getServiceData(lang: string): Promise<ApiResponse> {
+// Adaptor Mapper Fallback
+function getServiceFallbackData(): ApiResponse {
+    // Cast because the structures are identical after the move
+    return fallbackServiceData as unknown as ApiResponse;
+}
+
+// Helper to fetch data safely using centralized fallback logic
+async function fetchServiceData(lang: string): Promise<{ response: ApiResponse; isFallback: boolean }> {
     const token = process.env.API_TOKEN;
     try {
-        const res = await dbFetch(`client/service?lang=${lang}`, {
+        const res = await dbFetch<ApiResponse>(`client/service?lang=${lang}`, {
             headers: {
-                'Cookie': `token=${token}`
+                'Cookie': `token=${token || ''}`
             },
             next: { tags: ['services', 'home'], revalidate: false }
         });
 
-        if (res && res.data) {
-            return res as ApiResponse;
+        if (!res || !res.data) {
+            throw new Error("Invalid structure received");
         }
-        throw new Error("Invalid data structure received");
+        return { response: res, isFallback: false };
     } catch (error) {
-        console.error("Error fetching service data:", error);
-        throw error;
+        console.error(`[SSR] Services fetch failed for '${lang}', using static fallback.`);
+        return { response: getServiceFallbackData(), isFallback: true };
     }
 }
 
@@ -80,13 +87,13 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     const { lang } = await params;
 
     // Fetch data for metadata
-    const serviceData = await getServiceData(lang);
-    const data = serviceData.data;
+    const { response } = await fetchServiceData(lang);
+    const meta = response.metadata || { title: "", description: "", og_image: "" };
 
     // Use metadata from API
-    const title = serviceData.metadata?.title || (lang === "id" ? "Layanan Kami" : "Our Services");
-    const description = serviceData.metadata?.description || "";
-    const ogImage = serviceData.metadata?.og_image || `${SITE_URL}/og-services.jpg`;
+    const title = meta.title || (lang === "id" ? "Layanan Kami" : "Our Services");
+    const description = meta.description || "";
+    const ogImage = meta.og_image || `${SITE_URL}/og-services.jpg`;
 
     return {
         title: title,
@@ -117,11 +124,14 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
 }
 
 export default async function ServicesPage({ params }: { params: Promise<{ lang: string }> }) {
-    const { lang } = await params;
+    const { lang: pathLang } = await params;
 
-    // Fetch data server-side
-    const serviceData = await getServiceData(lang);
-    const data = serviceData.data;
+    // Fetch data server-side via Safe Fallback Layer
+    const { response, isFallback } = await fetchServiceData(pathLang);
+    const data = response.data;
+    
+    // Override logic: Jika fallback -> ID
+    const activeLang = isFallback ? "id" : pathLang;
 
     return (
         <main className="flex flex-col items-center">
@@ -137,14 +147,14 @@ export default async function ServicesPage({ params }: { params: Promise<{ lang:
             </div>
 
             {/* Service Sections List */}
-            <ServiceList services={data.services} lang={lang} />
+            <ServiceList services={data.services} lang={activeLang} />
 
             {/* Used Cars Carousel */}
             <div className="w-full">
                 <ServiceCarousel
-                    badge={lang === 'id' ? "Mobil Baru Tersedia" : "Available New Cars"}
-                    title={lang === 'id' ? "Koleksi Mobil Baru Kami" : "Our New Car Collection"}
-                    description={lang === 'id'
+                    badge={activeLang === 'id' ? "Mobil Baru Tersedia" : "Available New Cars"}
+                    title={activeLang === 'id' ? "Koleksi Mobil Baru Kami" : "Our New Car Collection"}
+                    description={activeLang === 'id'
                         ? "Temukan pilihan mobil baru yang tersedia dengan informasi lengkap untuk mendukung keputusan pembelian Anda."
                         : "Discover a selection of available new cars with transparent information to support your purchasing decisions."}
                     items={data.usedCarGallery.items}
