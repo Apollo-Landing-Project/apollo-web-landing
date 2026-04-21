@@ -49,7 +49,9 @@ const StakeholderCharts = ({
 
 	const dataDisplay = [
 		{
-			name: isId ? "PT GX Archipelago Pte. Ltd" : "PT GX Archipelago Pte. Ltd",
+			name: isId
+				? "PT. GX Archipelago Pte. Ltd"
+				: "PT. GX Archipelago Pte. Ltd",
 			value: majorityPercent,
 			shares: formatNumber(majorityValue),
 			color: "#5A80B9",
