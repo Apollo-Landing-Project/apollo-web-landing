@@ -1,180 +1,191 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { ArrowUp, MapPin, ArrowRight, Instagram, Twitter, Facebook, MessageCircle } from 'lucide-react';
+import React from "react";
+import Link from "next/link";
+import {
+	ArrowUp,
+	MapPin,
+	ArrowRight,
+	Instagram,
+	Twitter,
+	Facebook,
+	MessageCircle,
+} from "lucide-react";
 
 interface FooterProps {
-    lang?: string;
+	lang?: string;
 }
 
-const Footer = ({ lang = 'en' }: FooterProps) => {
-    const scrollToTop = () => {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
-    };
+const Footer = ({ lang = "en" }: FooterProps) => {
+	const scrollToTop = () => {
+		window.scrollTo({
+			top: 0,
+			behavior: "smooth",
+		});
+	};
 
-    const content = {
-        en: {
-            heading: "Committed to Supporting Your Business",
-            description: "Reach out to us for service information, strategic partnerships, or other business-related inquiries.",
-            contactBtn: "Contact",
-            links: [
-                { name: 'Home', href: '/' },
-                { name: 'About Us', href: '/about' },
-                { name: 'Our Services', href: '/services' },
-                { name: 'Investor Relation', href: '/investor-relation' },
-                { name: 'Contact Us', href: '/#contact' },
-            ],
-            locationTitle: "Our Location",
-            address1: "S. Supriadi Street. No. 19-22",
-            address2: "Sukun, Malang - East Java",
-            navigationBtn: "Use Navigation",
-            backToTop: "Back To Top",
-            rights: "All Rights Reserved"
-        },
-        id: {
-            heading: "Berkomitmen Untuk Mendukung Bisnis Anda",
-            description: "Hubungi kami untuk informasi layanan, kemitraan strategis, atau pertanyaan terkait bisnis lainnya.",
-            contactBtn: "Hubungi Kami",
-            links: [
-                { name: 'Beranda', href: '/' },
-                { name: 'Tentang Kami', href: '/about' },
-                { name: 'Layanan Kami', href: '/services' },
-                { name: 'Hubungan Investor', href: '/investor-relation' },
-                { name: 'Hubungi Kami', href: '/#contact' },
-            ],
-            locationTitle: "Lokasi Kami",
-            address1: "Jl. S. Supriadi No. 19-22",
-            address2: "Sukun, Malang - Jawa Timur",
-            navigationBtn: "Gunakan Navigasi",
-            backToTop: "Kembali ke Atas",
-            rights: "Hak Cipta Dilindungi"
-        }
-    };
+	const content = {
+		en: {
+			heading: "Committed to Supporting Your Business",
+			description:
+				"Reach out to us for service information, strategic partnerships, or other business-related inquiries.",
+			contactBtn: "Contact",
+			links: [
+				{ name: "Home", href: "/" },
+				{ name: "About Us", href: "/about" },
+				// { name: 'Our Services', href: '/services' },
+				{ name: "Investor Relation", href: "/investor-relation" },
+				{ name: "Contact Us", href: "/#contact" },
+			],
+			locationTitle: "Our Location",
+			address1: "S. Supriadi Street. No. 19-22",
+			address2: "Sukun, Malang - East Java",
+			navigationBtn: "Use Navigation",
+			backToTop: "Back To Top",
+			rights: "All Rights Reserved",
+		},
+		id: {
+			heading: "Berkomitmen Untuk Mendukung Bisnis Anda",
+			description:
+				"Hubungi kami untuk informasi layanan, kemitraan strategis, atau pertanyaan terkait bisnis lainnya.",
+			contactBtn: "Hubungi Kami",
+			links: [
+				{ name: "Beranda", href: "/" },
+				{ name: "Tentang Kami", href: "/about" },
+				// { name: 'Layanan Kami', href: '/services' },
+				{ name: "Hubungan Investor", href: "/investor-relation" },
+				{ name: "Hubungi Kami", href: "/#contact" },
+			],
+			locationTitle: "Lokasi Kami",
+			address1: "Jl. S. Supriadi No. 19-22",
+			address2: "Sukun, Malang - Jawa Timur",
+			navigationBtn: "Gunakan Navigasi",
+			backToTop: "Kembali ke Atas",
+			rights: "Hak Cipta Dilindungi",
+		},
+	};
 
-    // Fallback to English if lang is not 'id' or 'en' (though it should be one of them)
-    const t = (lang === 'id' ? content.id : content.en);
+	// Fallback to English if lang is not 'id' or 'en' (though it should be one of them)
+	const t = lang === "id" ? content.id : content.en;
 
-    const socialLinks = [
-        { icon: Facebook, href: '#' },
-        { icon: Twitter, href: '#' },
-        { icon: Instagram, href: '#' },
-        { icon: MessageCircle, href: '#' },
-    ];
+	const socialLinks = [
+		{ icon: Facebook, href: "#" },
+		{ icon: Twitter, href: "#" },
+		{ icon: Instagram, href: "#" },
+		{ icon: MessageCircle, href: "#" },
+	];
 
-    return (
-        <footer className="w-full bg-gradient-to-br from-[#5A80B9] to-[#2D476E] text-white pt-20 pb-8 px-6 md:px-20 relative mt-20 z-40">
-            <div className="mx-auto max-w-[1440px] flex flex-col sm:gap-16 gap-8">
+	return (
+		<footer className="w-full bg-gradient-to-br from-[#5A80B9] to-[#2D476E] text-white pt-20 pb-8 px-6 md:px-20 relative mt-20 z-40">
+			<div className="mx-auto max-w-[1440px] flex flex-col sm:gap-16 gap-8">
+				{/* Top Section */}
+				<div className="flex flex-col lg:flex-row justify-between items-start gap-12 lg:gap-20">
+					{/* Left Column: CTA */}
+					<div className="flex flex-col gap-6 max-w-md">
+						<h2 className="text-3xl md:text-4xl font-semibold leading-tight">
+							{t.heading}
+						</h2>
+						<p className="text-white/80 text-lg leading-relaxed">
+							{t.description}
+						</p>
+						<Link
+							href={`/${lang}#contact`}
+							className="bg-white text-[#5A80B9] font-medium rounded-full px-8 py-3 w-fit hover:bg-gray-100 transition-colors cursor-pointer"
+						>
+							{t.contactBtn}
+						</Link>
+					</div>
 
-                {/* Top Section */}
-                <div className="flex flex-col lg:flex-row justify-between items-start gap-12 lg:gap-20">
+					{/* Middle Column: Links & Location */}
+					<div className="flex flex-col md:flex-row gap-12 md:gap-24 w-full lg:w-auto">
+						{/* Links */}
+						<div className="flex flex-col gap-4">
+							{t.links.map((link) => (
+								<Link
+									key={link.name}
+									href={`/${lang}${link.href === "/" ? "" : link.href}`}
+									className="text-white/90 hover:text-white hover:translate-x-1 transition-all text-lg font-medium"
+								>
+									{link.name}
+								</Link>
+							))}
+						</div>
 
-                    {/* Left Column: CTA */}
-                    <div className="flex flex-col gap-6 max-w-md">
-                        <h2 className="text-3xl md:text-4xl font-semibold leading-tight">
-                            {t.heading}
-                        </h2>
-                        <p className="text-white/80 text-lg leading-relaxed">
-                            {t.description}
-                        </p>
-                        <Link
-                            href={`/${lang}#contact`}
-                            className="bg-white text-[#5A80B9] font-medium rounded-full px-8 py-3 w-fit hover:bg-gray-100 transition-colors cursor-pointer"
-                        >
-                            {t.contactBtn}
-                        </Link>
-                    </div>
+						{/* Location */}
+						<div className="flex flex-col gap-6 max-w-xs">
+							<h4 className="text-lg font-medium text-white/80">
+								{t.locationTitle}
+							</h4>
+							<div className="flex flex-col gap-1 text-white/90 text-lg">
+								<p>{t.address1}</p>
+								<p>{t.address2}</p>
+							</div>
 
-                    {/* Middle Column: Links & Location */}
-                    <div className="flex flex-col md:flex-row gap-12 md:gap-24 w-full lg:w-auto">
-                        {/* Links */}
-                        <div className="flex flex-col gap-4">
-                            {t.links.map((link) => (
-                                <Link
-                                    key={link.name}
-                                    href={`/${lang}${link.href === '/' ? '' : link.href}`}
-                                    className="text-white/90 hover:text-white hover:translate-x-1 transition-all text-lg font-medium"
-                                >
-                                    {link.name}
-                                </Link>
-                            ))}
-                        </div>
+							<a
+								href="https://www.google.com/maps/search/?api=1&query=Honda+Sukun+Malang+(Official)"
+								target="_blank"
+								rel="noreferrer"
+								className="flex items-center justify-center md:justify-start gap-2 border border-white/30 rounded-full px-5 py-2.5 w-full md:w-fit hover:bg-white/10 transition-colors text-white"
+							>
+								<span className="text-sm font-medium">{t.navigationBtn}</span>
+								<ArrowRight className="w-4 h-4" />
+							</a>
+						</div>
+					</div>
 
-                        {/* Location */}
-                        <div className="flex flex-col gap-6 max-w-xs">
-                            <h4 className="text-lg font-medium text-white/80">{t.locationTitle}</h4>
-                            <div className="flex flex-col gap-1 text-white/90 text-lg">
-                                <p>{t.address1}</p>
-                                <p>{t.address2}</p>
-                            </div>
+					{/* Right Column: Back to Top */}
+					<div className="hidden lg:block">
+						<button
+							onClick={scrollToTop}
+							className="bg-white text-[#5A80B9] flex items-center gap-2 px-5 py-2.5 rounded-full font-medium transition-all duration-300 hover:bg-[#5A80B9] hover:text-white border border-white cursor-pointer group"
+						>
+							<span>{t.backToTop}</span>
+							<ArrowUp className="w-4 h-4 group-hover:-translate-y-1 transition-transform" />
+						</button>
+					</div>
+				</div>
 
-                            <a
-                                href="https://www.google.com/maps/search/?api=1&query=Honda+Sukun+Malang+(Official)"
-                                target="_blank"
-                                rel="noreferrer"
-                                className="flex items-center justify-center md:justify-start gap-2 border border-white/30 rounded-full px-5 py-2.5 w-full md:w-fit hover:bg-white/10 transition-colors text-white"
-                            >
-                                <span className="text-sm font-medium">{t.navigationBtn}</span>
-                                <ArrowRight className="w-4 h-4" />
-                            </a>
-                        </div>
-                    </div>
+				{/* Divider */}
+				<div className="w-full h-px bg-white/20" />
 
-                    {/* Right Column: Back to Top */}
-                    <div className="hidden lg:block">
-                        <button
-                            onClick={scrollToTop}
-                            className="bg-white text-[#5A80B9] flex items-center gap-2 px-5 py-2.5 rounded-full font-medium transition-all duration-300 hover:bg-[#5A80B9] hover:text-white border border-white cursor-pointer group"
-                        >
-                            <span>{t.backToTop}</span>
-                            <ArrowUp className="w-4 h-4 group-hover:-translate-y-1 transition-transform" />
-                        </button>
-                    </div>
-                </div>
+				{/* Bottom Section */}
+				<div className="flex flex-col-reverse lg:grid lg:grid-cols-3 gap-6 items-center w-full">
+					{/* Left Spacer (Desktop only) */}
+					<div className="hidden lg:block" />
 
-                {/* Divider */}
-                <div className="w-full h-px bg-white/20" />
+					{/* Center: Copyright */}
+					<p className="text-white/80 text-sm lg:text-base text-center w-full min-w-[300px]">
+						© 2017 - {new Date().getFullYear()} PT Apollo Global Interactive
+						Tbk. {t.rights}
+					</p>
 
-                {/* Bottom Section */}
-                <div className="flex flex-col-reverse lg:grid lg:grid-cols-3 gap-6 items-center w-full">
-                    {/* Left Spacer (Desktop only) */}
-                    <div className="hidden lg:block" />
+					{/* Right: Socials */}
+					<div className="flex gap-6 justify-center lg:justify-end w-full">
+						{socialLinks.map((social, index) => (
+							<a
+								key={index}
+								href={social.href}
+								className="text-white hover:text-white/80 hover:scale-110 transition-all cursor-pointer"
+							>
+								<social.icon className="w-6 h-6" />
+							</a>
+						))}
+					</div>
+				</div>
 
-                    {/* Center: Copyright */}
-                    <p className="text-white/80 text-sm lg:text-base text-center w-full min-w-[300px]">
-                        © 2017 - {new Date().getFullYear()} PT Apollo Global Interactive Tbk. {t.rights}
-                    </p>
-
-                    {/* Right: Socials */}
-                    <div className="flex gap-6 justify-center lg:justify-end w-full">
-                        {socialLinks.map((social, index) => (
-                            <a
-                                key={index}
-                                href={social.href}
-                                className="text-white hover:text-white/80 hover:scale-110 transition-all cursor-pointer"
-                            >
-                                <social.icon className="w-6 h-6" />
-                            </a>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Mobile Back To Top (Visible only on smaller screens) */}
-                <div className="lg:hidden flex justify-center w-full lg:mb-0 mb-12">
-                    <button
-                        onClick={scrollToTop}
-                        className="bg-white/10 text-white backdrop-blur-md border border-white/20 flex items-center justify-center gap-2 px-6 py-3 rounded-full font-medium hover:bg-white hover:text-[#5A80B9] transition-all duration-300 cursor-pointer group w-full sm:w-auto"
-                    >
-                        <span>{t.backToTop}</span>
-                        <ArrowUp className="w-4 h-4 group-hover:-translate-y-1 transition-transform" />
-                    </button>
-                </div>
-            </div>
-        </footer>
-    );
+				{/* Mobile Back To Top (Visible only on smaller screens) */}
+				<div className="lg:hidden flex justify-center w-full lg:mb-0 mb-12">
+					<button
+						onClick={scrollToTop}
+						className="bg-white/10 text-white backdrop-blur-md border border-white/20 flex items-center justify-center gap-2 px-6 py-3 rounded-full font-medium hover:bg-white hover:text-[#5A80B9] transition-all duration-300 cursor-pointer group w-full sm:w-auto"
+					>
+						<span>{t.backToTop}</span>
+						<ArrowUp className="w-4 h-4 group-hover:-translate-y-1 transition-transform" />
+					</button>
+				</div>
+			</div>
+		</footer>
+	);
 };
 
 export default Footer;
