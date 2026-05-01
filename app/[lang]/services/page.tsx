@@ -64,12 +64,8 @@ function getServiceFallbackData(): ApiResponse {
 
 // Helper to fetch data safely using centralized fallback logic
 async function fetchServiceData(lang: string): Promise<{ response: ApiResponse; isFallback: boolean }> {
-    const token = process.env.API_TOKEN;
     try {
         const res = await dbFetch<ApiResponse>(`client/service?lang=${lang}`, {
-            headers: {
-                'Cookie': `token=${token || ''}`
-            },
             next: { tags: ['services', 'home'], revalidate: false }
         });
 

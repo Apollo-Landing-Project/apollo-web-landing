@@ -42,6 +42,8 @@ export interface ReportItem {
   title: string;
   description: string;
   file_url: string;
+  original_filename?: string;
+  download_url?: string;
   published_at: string;
   category: string;
   news_id?: string; // Optional field based on JSON snippet

@@ -1,11 +1,10 @@
 // Helper for server-side fetching
 
 const BASE_URL = process.env.API_BASE_URL;
-const API_TOKEN = process.env.API_TOKEN;
 
 /**
- * Helper for Server-Side Fetching.
- * Automatically handles Base URL, Authentication Token, and Fallback Data.
+ * Helper for server-side fetching.
+ * Automatically handles base URL construction and fallback data.
  * 
  * @param endpoint - The API endpoint (e.g., "/users")
  * @param options - Fetch options (method, headers, body, etc.)
@@ -34,11 +33,6 @@ export async function dbFetch<T = any>(
     // Set default Content-Type if not provided
     if (!headers.has("Content-Type")) {
         headers.set("Content-Type", "application/json");
-    }
-
-    // Set Authorization if token exists and not already provided
-    if (API_TOKEN && !headers.has("Authorization")) {
-        headers.set("Authorization", `Bearer ${API_TOKEN}`);
     }
 
     try {

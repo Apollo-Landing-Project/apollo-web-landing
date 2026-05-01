@@ -58,14 +58,9 @@ function formatDate(dateString: string, lang: string): string {
 
 // --- Data Fetching ---
 async function getCsrDetail(id: string, lang: string) {
-    const token = process.env.API_TOKEN;
-
     try {
         // Using the endpoint matching other client endpoints
         const response: ApiResponse = await dbFetch(`client/news/csr/${id}?lang=${lang}`, {
-            headers: {
-                'Cookie': `token=${token}`
-            },
             next: { tags: ['csr', id], revalidate: 3600 } // fallback revalidate
         });
 

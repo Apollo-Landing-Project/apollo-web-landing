@@ -7,23 +7,32 @@ import ReportSection from '@/components/InvestorRelation/ReportSection';
 import { dbFetch } from "@/lib/fetcher";
 import { SITE_URL } from "@/lib/constants";
 import { fallbackInvestorData, InvestorApiResponse, InvestorDataPayload } from "@/lib/fallback-investor-data";
+import { enrichInvestorReportDownloads } from "@/lib/report-download";
 
 // Helper to fetch data safely using centralized fallback logic
 async function fetchInvestorData(lang: string): Promise<{ response: InvestorApiResponse; isFallback: boolean }> {
-    const token = process.env.API_TOKEN;
     try {
         const res = await dbFetch<InvestorApiResponse>(`client/investor?lang=${lang}`, {
-            headers: {
-                'Cookie': `token=${token || ''}`
-            },
             next: { tags: ['investor_relation'], revalidate: false }
         });
 
         if (!res || !res.data) throw new Error("Invalid Investor Data Response");
-        return { response: res, isFallback: false };
+        return {
+            response: {
+                ...res,
+                data: enrichInvestorReportDownloads(res.data),
+            },
+            isFallback: false,
+        };
     } catch (error) {
         console.error(`[SSR] Investor fetch failed for '${lang}', using static fallback.`);
-        return { response: fallbackInvestorData, isFallback: true };
+        return {
+            response: {
+                ...fallbackInvestorData,
+                data: enrichInvestorReportDownloads(fallbackInvestorData.data),
+            },
+            isFallback: true,
+        };
     }
 }
 

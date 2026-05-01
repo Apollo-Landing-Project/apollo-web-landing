@@ -15,6 +15,8 @@ interface ReportItem {
     title: string;
     description: string;
     file_url: string;
+    original_filename?: string;
+    download_url?: string;
     published_at: string;
     category: string;
 }
@@ -149,7 +151,7 @@ export default function HomeInvestor({ lang, data }: HomeInvestorProps) {
                                         })}
                                     </span>
                                     <a
-                                        href={lastReport.file_url}
+                                        href={lastReport.download_url || lastReport.file_url}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#5a80b9] hover:bg-[#4a6d9e] rounded-full text-white text-sm font-medium transition-colors"

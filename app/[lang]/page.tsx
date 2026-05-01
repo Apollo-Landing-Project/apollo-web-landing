@@ -10,6 +10,7 @@ import { dbFetch } from "@/lib/fetcher";
 import { SITE_URL } from "@/lib/constants";
 import { fallbackHomeData } from "@/lib/fallback-data";
 import { fallbackInvestorData } from "@/lib/fallback-investor-data";
+import { enrichInvestorReportDownloads } from "@/lib/report-download";
 
 // ----------------------------------------------------------------------
 // Interfaces (Bentuk Akhir yang Dibutuhkan oleh Komponen UI Utama)
@@ -153,7 +154,6 @@ async function fetchHomeContent(
 ): Promise<{ data: HomeData; isFallback: boolean }> {
 	try {
 		const res = await dbFetch<{ data: HomeData }>(`client/home?lang=${lang}`, {
-			headers: { "Cookie": `token=${process.env.API_TOKEN || ""}` },
 			next: { tags: ["home"], revalidate: false },
 		});
 
@@ -176,17 +176,19 @@ async function fetchInvestorContent(
 ): Promise<{ data: any; isFallback: boolean }> {
 	try {
 		const res = await dbFetch<{ data: any }>(`client/investor?lang=${lang}`, {
-			headers: { "Cookie": `token=${process.env.API_TOKEN || ""}` },
 			next: { tags: ["investor_relation"], revalidate: false },
 		});
 
 		if (!res || !res.data) throw new Error("Invalid Investor API Response");
-		return { data: res.data, isFallback: false };
+		return { data: enrichInvestorReportDownloads(res.data), isFallback: false };
 	} catch (error) {
 		console.warn(
 			`[SSR] Investor fetch failed for lang '${lang}'. Using fallback.`,
 		);
-		return { data: fallbackInvestorData.data, isFallback: true };
+		return {
+			data: enrichInvestorReportDownloads(fallbackInvestorData.data),
+			isFallback: true,
+		};
 	}
 }
 

@@ -2,7 +2,6 @@ import { MetadataRoute } from "next";
 
 const BASE_URL = "https://apolloglobalinteractive.com";
 const API_BASE_URL = process.env.API_BASE_URL;
-const API_TOKEN = process.env.API_TOKEN;
 
 interface ReportItem {
 	id: string;
@@ -20,9 +19,9 @@ interface InvestorApiResponse {
 }
 
 async function getInvestorData(): Promise<ReportItem[]> {
-	if (!API_BASE_URL || !API_TOKEN) {
+	if (!API_BASE_URL) {
 		console.warn(
-			"API_BASE_URL or API_TOKEN is missing in environment variables.",
+			"API_BASE_URL is missing in environment variables.",
 		);
 		return [];
 	}
@@ -32,9 +31,6 @@ async function getInvestorData(): Promise<ReportItem[]> {
 		const url = `${cleanBaseUrl}/client/investor?lang=en`;
 
 		const res = await fetch(url, {
-			headers: {
-				"Cookie": `token=${API_TOKEN}`,
-			},
 			next: { revalidate: 3600 },
 		});
 

@@ -198,7 +198,7 @@ const ReportSection = ({
 
                                         {/* Download Button (Always visible) */}
                                         <a
-                                            href={report.file_url}
+                                            href={report.download_url || report.file_url}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="flex items-center justify-between w-full py-2.5 px-4 rounded-lg border text-sm font-medium transition-all duration-300 bg-[#5A80B9] border-[#5A80B9] text-white hover:bg-[#4a6d9e] hover:border-[#4a6d9e]"

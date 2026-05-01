@@ -16,14 +16,10 @@ import {
 async function fetchAboutData(
 	lang: string,
 ): Promise<{ data: AboutPageData; isFallback: boolean }> {
-	const token = process.env.API_TOKEN;
 	try {
 		const res = await dbFetch<{ data: AboutPageData }>(
 			`client/about-us?lang=${lang}`,
 			{
-				headers: {
-					"Cookie": `token=${token || ""}`,
-				},
 				next: { tags: ["about"], revalidate: false },
 			},
 		);

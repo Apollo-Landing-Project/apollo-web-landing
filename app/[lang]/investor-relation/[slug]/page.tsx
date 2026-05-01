@@ -5,6 +5,7 @@ import { ArrowLeft, Download } from "lucide-react";
 import { Metadata } from "next";
 import { dbFetch } from "@/lib/fetcher";
 import { SITE_URL } from "@/lib/constants";
+import { buildReportDownloadUrl } from "@/lib/report-download";
 
 // --- Data & Types ---
 
@@ -54,13 +55,8 @@ function formatDate(dateString: string, lang: string): string {
 
 // Fetching function for News Detail
 async function getNewsDetail(slug: string, lang: string) {
-    const token = process.env.API_TOKEN;
-
     try {
         const res: ApiResponse = await dbFetch(`client/news/article/${slug}?lang=${lang}`, {
-            headers: {
-                'Cookie': `token=${token}`
-            },
             next: { tags: ['investor_relation_post', slug], revalidate: 3600 } // fallback revalidate
         });
 
@@ -79,10 +75,8 @@ async function getNewsDetail(slug: string, lang: string) {
 
 // Helper to search for file in investor data
 async function getRelatedFile(slug: string, lang: string): Promise<string | null> {
-    const token = process.env.API_TOKEN;
     try {
         const res = await dbFetch(`client/investor?lang=${lang}`, {
-            headers: { 'Cookie': `token=${token}` },
             next: { revalidate: 60 }
         });
 
@@ -92,7 +86,7 @@ async function getRelatedFile(slug: string, lang: string): Promise<string | null
 
         if (data?.report?.reportItems && Array.isArray(data.report.reportItems)) {
             const report = data.report.reportItems.find((item: any) => item.news_id === slug);
-            return report ? report.file_url : null;
+            return report ? buildReportDownloadUrl(report.id) : null;
         }
         return null;
     } catch (error) {
