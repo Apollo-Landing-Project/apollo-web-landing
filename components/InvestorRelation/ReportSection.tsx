@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { Search, FileText, Download, ChevronLeft, ChevronRight, ArrowRight, Newspaper } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-
-const REPORT_DATA: any[] = [];
+import { getReportCategoryLabel, getReportCategoryKey } from '@/lib/report-category';
 
 const ReportSection = ({
     badge = "General Reports",
@@ -27,25 +26,27 @@ const ReportSection = ({
     const pathname = usePathname();
 
     // Get Filter Values from URL
-    const selectedYear = searchParams.get('year') || 'All Years';
-    const selectedCategory = searchParams.get('category') || 'All Reports';
+    const selectedYear = searchParams.get('year') || 'all';
+    const selectedCategory = searchParams.get('category') || 'all';
 
     const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 8;
 
     // Helper to update URL params
-    const createQueryString = useCallback(
-        (name: string, value: string) => {
-            const params = new URLSearchParams(searchParams.toString());
+    const createQueryString = useCallback((name: string, value: string) => {
+        const params = new URLSearchParams(searchParams.toString());
+        if (value === 'all') {
+            params.delete(name);
+        } else {
             params.set(name, value);
-            return params.toString();
-        },
-        [searchParams]
-    );
+        }
+        return params.toString();
+    }, [searchParams]);
 
     const handleFilterChange = (name: string, value: string) => {
-        router.replace(pathname + '?' + createQueryString(name, value), { scroll: false });
+        const queryString = createQueryString(name, value);
+        router.replace(queryString ? `${pathname}?${queryString}` : pathname, { scroll: false });
         setCurrentPage(1); // Reset to first page on filter change
     };
 
@@ -54,13 +55,24 @@ const ReportSection = ({
         const items = reportItems || [];
         return items.map(item => ({
             ...item,
-            year: item.published_at ? new Date(item.published_at).getFullYear().toString() : 'N/A'
+            year: item.published_at ? new Date(item.published_at).getFullYear().toString() : 'N/A',
+            categoryKey: getReportCategoryKey(item.category),
+            categoryLabel: getReportCategoryLabel(item.category, lang === 'id' ? 'id' : 'en'),
         }));
-    }, [reportItems]);
+    }, [reportItems, lang]);
 
     // Unique Categories from Data
     const availableCategories = useMemo(() => {
-        return Array.from(new Set(processedReports.map((r: any) => r.category))).sort();
+        const seen = new Map<string, string>();
+        for (const report of processedReports as any[]) {
+            if (!seen.has(report.categoryKey)) {
+                seen.set(report.categoryKey, report.categoryLabel);
+            }
+        }
+
+        return Array.from(seen.entries())
+            .map(([value, label]) => ({ value, label }))
+            .sort((a, b) => a.label.localeCompare(b.label));
     }, [processedReports]);
 
     // Dynamic Years: 2024 to Current Year
@@ -77,8 +89,8 @@ const ReportSection = ({
     // Filter Logic
     const filteredReports = processedReports.filter((report: any) => {
         const matchesSearch = report.title.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesYear = selectedYear === 'All Years' || report.year === selectedYear;
-        const matchesCategory = selectedCategory === 'All Reports' || report.category === selectedCategory;
+        const matchesYear = selectedYear === 'all' || report.year === selectedYear;
+        const matchesCategory = selectedCategory === 'all' || report.categoryKey === selectedCategory;
         return matchesSearch && matchesYear && matchesCategory;
     });
 
@@ -121,14 +133,16 @@ const ReportSection = ({
 
                     {/* Filters */}
                     <div className="flex flex-wrap gap-4">
-                        <select
+                            <select
                             value={selectedCategory}
                             onChange={(e) => handleFilterChange('category', e.target.value)}
                             className="appearance-none bg-white border border-gray-200 text-[#323441] py-2.5 pl-4 pr-10 rounded-lg cursor-pointer focus:outline-none focus:border-[#5A80B9] hover:bg-gray-50"
                             style={{ backgroundImage: 'none' }}
                         >
-                            <option value="All Reports">{isId ? "Semua Laporan" : "All Reports"}</option>
-                            {availableCategories.map((cat: any) => <option key={cat} value={cat}>{cat}</option>)}
+                            <option value="all">{isId ? "Semua Laporan" : "All Reports"}</option>
+                            {availableCategories.map((cat: any) => (
+                                <option key={cat.value} value={cat.value}>{cat.label}</option>
+                            ))}
                         </select>
 
                         <select
@@ -136,7 +150,7 @@ const ReportSection = ({
                             onChange={(e) => handleFilterChange('year', e.target.value)}
                             className="appearance-none bg-white border border-gray-200 text-[#323441] py-2.5 pl-4 pr-10 rounded-lg cursor-pointer focus:outline-none focus:border-[#5A80B9] hover:bg-gray-50"
                         >
-                            <option value="All Years">{isId ? "Semua Tahun" : "All Years"}</option>
+                            <option value="all">{isId ? "Semua Tahun" : "All Years"}</option>
                             {dynamicYears.map(year => <option key={year} value={year}>{year}</option>)}
                         </select>
                     </div>
@@ -166,7 +180,7 @@ const ReportSection = ({
                                         <div>
                                             <div className="flex flex-wrap gap-2 mb-2">
                                                 <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
-                                                    {report.category}
+                                                    {report.categoryLabel}
                                                 </span>
                                                 {/* Visual Indicator: Badge */}
                                                 {report.news_id && (

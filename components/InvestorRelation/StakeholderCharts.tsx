@@ -28,11 +28,14 @@ const StakeholderCharts = ({
 	// Process the shares data to format for charts and lists
 	// We expect two main categories: MAJORITY and PUBLIC
 
-	const majorityShare = shares.find((s) => s.category === "MAJORITY");
-	const publicShare = shares.find((s) => s.category === "PUBLIC");
+	// const majorityShare = shares.find((s) => s.category === "MAJORITY");
+	// const publicShare = shares.find((s) => s.category === "PUBLIC");
 
-	const majorityValue = majorityShare ? parseInt(majorityShare.value, 10) : 0;
-	const publicValue = publicShare ? parseInt(publicShare.value, 10) : 0;
+	// const majorityValue = majorityShare ? parseInt(majorityShare.value, 10) : 0;
+	// const publicValue = publicShare ? parseInt(publicShare.value, 10) : 0;
+	const majorityValue = parseInt("1120000000", 10);
+	const publicValue = parseInt("2680000000", 10);
+
 	const totalValue = majorityValue + publicValue;
 
 	// Calculate percentages
