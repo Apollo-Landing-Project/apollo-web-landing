@@ -9,6 +9,11 @@ const REPORT_CATEGORY_LABELS = {
 		id: "Laporan Keuangan",
 		aliases: ["financial statements", "laporan keuangan"],
 	},
+	berita: {
+		en: "News",
+		id: "Berita",
+		aliases: ["berita", "news"],
+	},
 } as const;
 
 type ReportCategoryKey = keyof typeof REPORT_CATEGORY_LABELS;

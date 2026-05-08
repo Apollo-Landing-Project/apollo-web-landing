@@ -3,12 +3,12 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowRight, FileText, TrendingUp } from "lucide-react";
-import { getReportCategoryLabel } from "@/lib/report-category";
+import { getShareSnapshot, normalizeShareCategory } from "@/lib/share-utils";
 
 interface ShareItem {
 	id: string;
 	category: "MAJORITY" | "PUBLIC" | string;
-	value: string;
+	value: string | number;
 }
 
 interface ReportItem {
@@ -35,6 +35,8 @@ interface HomeInvestorProps {
 
 export default function HomeInvestor({ lang, data }: HomeInvestorProps) {
 	const isId = lang === "id";
+	const liveShares = data.shares || [];
+	const lastReport = data.lastReport;
 
 	const labels = {
 		badge: data.badge || (isId ? "Hubungan Investor" : "Investor Relations"),
@@ -56,14 +58,74 @@ export default function HomeInvestor({ lang, data }: HomeInvestorProps) {
 		public: isId ? "Publik" : "Public",
 	};
 
-	const lastReport = data.lastReport;
-	const majorityShare = data.shares?.find((s) => s.category === "MAJORITY");
-	const publicShare = data.shares?.find((s) => s.category === "PUBLIC");
+	const formatNumber = (num: number) => num.toLocaleString("id-ID");
 
-	const formatNumber = (num: string) => {
-		const val = parseInt(num, 10);
-		return isNaN(val) ? "0" : val.toLocaleString("id-ID");
+	const getReportCategoryKey = (category?: string) =>
+		(category || "").trim().toLowerCase();
+
+	const reportCategoryKey = getReportCategoryKey(lastReport?.category);
+	const isNewsReport = reportCategoryKey === "berita";
+
+	const reportStyles = {
+		card: "bg-white border-gray-100 hover:shadow-lg",
+		icon: isNewsReport
+			? "bg-orange-100 text-orange-600"
+			: "bg-[#F0F5FA] text-[#5A80B9] group-hover:bg-[#5A80B9] group-hover:text-white",
+		pill: isNewsReport
+			? "bg-orange-100 text-orange-700 ring-orange-700/10"
+			: "bg-blue-50 text-blue-700 ring-blue-700/10",
+		year: "text-[#5A80B9]",
+		action:
+			"inline-flex items-center gap-2 rounded-full bg-[#5a80b9] px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-[#4a6d9e] hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#5a80b9] focus:ring-offset-2",
+		download:
+			"inline-flex items-center gap-2 rounded-full border border-[#c7d7ea] bg-[#eff5fb] px-5 py-2.5 text-sm font-medium text-[#35618f] shadow-sm transition-all hover:-translate-y-0.5 hover:bg-[#e0ebf7] hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#5a80b9] focus:ring-offset-2",
 	};
+
+	const reportCategoryLabel = reportCategoryKey || "report";
+	const toCamelCase = (value: string) =>
+		value
+			.split(/[_\s]+/)
+			.filter(Boolean)
+			.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+			.join(" ");
+	const reportCategoryDisplay = isNewsReport
+		? "Berita"
+		: toCamelCase(reportCategoryLabel);
+
+	const getShareLabel = (category: string) => {
+		const normalizedCategory = normalizeShareCategory(category);
+
+		if (normalizedCategory === "MAJORITY") {
+			return isId ? "Pemegang Saham Mayoritas" : "Majority Stakeholder";
+		}
+
+		if (normalizedCategory === "PUBLIC") {
+			return isId ? "Publik" : "Public";
+		}
+
+		return category
+			.toLowerCase()
+			.split(/[_\s]+/)
+			.filter(Boolean)
+			.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+			.join(" ");
+	};
+
+	const { data: shareData } = getShareSnapshot(liveShares);
+
+	const shareItems = [...shareData]
+		.filter((share) => share.category)
+		.sort((a, b) => {
+			const order = ["MAJORITY", "PUBLIC"];
+			const aIndex = order.indexOf(a.normalizedCategory);
+			const bIndex = order.indexOf(b.normalizedCategory);
+
+			if (aIndex === -1 && bIndex === -1) return 0;
+			if (aIndex === -1) return 1;
+			if (bIndex === -1) return -1;
+
+			return aIndex - bIndex;
+		});
 
 	return (
 		<section
@@ -103,41 +165,47 @@ export default function HomeInvestor({ lang, data }: HomeInvestorProps) {
 						</div>
 
 						<div className="flex flex-col gap-4 mt-2">
-							<div className="flex flex-col gap-1 p-4 rounded-2xl bg-gray-50 border border-gray-100">
-								<span className="text-sm text-gray-500">{labels.majority}</span>
-								<div className="flex items-end gap-2">
-									<span className="text-xl font-bold text-[#323441]">
-										{/* {majorityShare ? formatNumber(majorityShare.value) : "0"} */}
-										{formatNumber("1120000000")}
-									</span>
-									<span className="text-sm text-gray-400 mb-0.5">Shares</span>
+							{shareItems.length > 0 ? (
+								shareItems.map((share) => (
+									<div
+										key={share.id}
+										className="flex flex-col gap-1 p-4 rounded-2xl bg-gray-50 border border-gray-100"
+									>
+										<span className="text-sm text-gray-500">
+											{getShareLabel(share.category)}
+										</span>
+										<div className="flex items-end gap-2">
+											<span className="text-xl font-bold text-[#323441]">
+												{formatNumber(share.numericValue)}
+											</span>
+											<span className="text-sm text-gray-400 mb-0.5">Shares</span>
+										</div>
+									</div>
+								))
+							) : (
+								<div className="flex grow items-center justify-center rounded-2xl border border-gray-100 bg-gray-50 p-4 text-sm italic text-gray-400">
+									{isId ? "Data saham belum tersedia" : "Share data is not available yet"}
 								</div>
-							</div>
-							<div className="flex flex-col gap-1 p-4 rounded-2xl bg-gray-50 border border-gray-100">
-								<span className="text-sm text-gray-500">{labels.public}</span>
-								<div className="flex items-end gap-2">
-									<span className="text-xl font-bold text-[#323441]">
-										{/* {publicShare ? formatNumber(publicShare.value) : "0"} */}
-										{formatNumber("2680000000")}
-									</span>
-									<span className="text-sm text-gray-400 mb-0.5">Shares</span>
-								</div>
-							</div>
+							)}
 						</div>
 
 						<Link
 							href={`/${lang}/investor-relation`}
-							className="group mt-auto flex items-center gap-2 text-[#5a80b9] font-medium hover:underline"
+							className={`${reportStyles.action} mt-auto`}
 						>
 							{labels.viewDetails}
-							<ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+							<ArrowRight className="w-4 h-4" />
 						</Link>
 					</div>
 
 					{/* Latest Document Card */}
-					<div className="flex flex-col gap-6 p-8 rounded-[32px] bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+					<div
+						className={`group flex flex-col gap-6 rounded-[32px] border p-8 shadow-sm transition-shadow ${reportStyles.card}`}
+					>
 						<div className="flex items-center gap-3">
-							<div className="w-12 h-12 rounded-2xl bg-[#5a80b9]/10 flex items-center justify-center text-[#5a80b9]">
+							<div
+								className={`group flex h-12 w-12 items-center justify-center rounded-2xl transition-colors ${reportStyles.icon}`}
+							>
 								<FileText size={24} />
 							</div>
 							<h3 className="text-2xl font-bold text-[#323441]">
@@ -148,11 +216,10 @@ export default function HomeInvestor({ lang, data }: HomeInvestorProps) {
 						{lastReport ? (
 							<div className="flex flex-col gap-4 mt-2 grow">
 								<div className="flex flex-col gap-2">
-									<span className="text-sm font-medium text-[#5a80b9]">
-										{getReportCategoryLabel(
-											lastReport.category,
-											isId ? "id" : "en",
-										)}
+									<span
+										className={`inline-flex w-fit items-center rounded-full px-3 py-1 text-xs font-medium ring-1 ring-inset ${reportStyles.pill}`}
+									>
+										{reportCategoryDisplay}
 									</span>
 									<h4 className="text-xl font-bold text-[#323441] leading-tight line-clamp-2">
 										{lastReport.title}
@@ -164,9 +231,9 @@ export default function HomeInvestor({ lang, data }: HomeInvestorProps) {
 												: "Official company report")}
 									</p>
 								</div>
-								<div className="mt-auto pt-4 flex items-center justify-between border-top border-gray-50">
-									<span className="text-sm text-gray-400">
-										{new Date(lastReport.published_at).toLocaleDateString(
+										<div className="mt-auto pt-4 flex items-center justify-between border-top border-gray-50">
+											<span className={`text-sm ${reportStyles.year}`}>
+												{new Date(lastReport.published_at).toLocaleDateString(
 											isId ? "id-ID" : "en-US",
 											{
 												year: "numeric",
@@ -175,18 +242,18 @@ export default function HomeInvestor({ lang, data }: HomeInvestorProps) {
 											},
 										)}
 									</span>
-									<a
-										href={lastReport.download_url || lastReport.file_url}
-										target="_blank"
-										rel="noopener noreferrer"
-										className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#5a80b9] hover:bg-[#4a6d9e] rounded-full text-white text-sm font-medium transition-colors"
-									>
-										{labels.download}
-										<ArrowRight className="w-4 h-4" />
-									</a>
+										<a
+											href={lastReport.download_url || lastReport.file_url}
+											target="_blank"
+											rel="noopener noreferrer"
+											className={reportStyles.download}
+										>
+											{labels.download}
+											<ArrowRight className="w-4 h-4" />
+										</a>
+									</div>
 								</div>
-							</div>
-						) : (
+							) : (
 							<div className="flex grow items-center justify-center text-gray-400 italic">
 								{isId ? "Tidak ada dokumen tersedia" : "No documents available"}
 							</div>
@@ -199,6 +266,15 @@ export default function HomeInvestor({ lang, data }: HomeInvestorProps) {
 							>
 								{labels.seeAllReports}
 								<ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+							</Link>
+						)}
+						{lastReport && (
+							<Link
+								href={`/${lang}/investor-relation`}
+								className={`${reportStyles.action} mt-auto`}
+							>
+								{labels.viewDetails}
+								<ArrowRight className="w-4 h-4" />
 							</Link>
 						)}
 					</div>

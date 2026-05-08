@@ -7,6 +7,35 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { getReportCategoryLabel, getReportCategoryKey } from '@/lib/report-category';
 
+const categoryThemes: Record<
+    string,
+    {
+        card: string;
+        icon: string;
+        pill: string;
+        year: string;
+        download: string;
+        detail: string;
+    }
+> = {
+    berita: {
+        card: 'bg-[#fffaf3] border-[#ffd7a3] hover:shadow-[0_18px_40px_rgba(245,158,11,0.14)]',
+        icon: 'bg-orange-100 text-orange-600 group-hover:bg-orange-500 group-hover:text-white',
+        pill: 'bg-orange-100 text-orange-700 ring-orange-700/10',
+        year: 'text-orange-600',
+        download: 'bg-orange-500 border-orange-500 text-white hover:bg-orange-600 hover:border-orange-600',
+        detail: 'bg-orange-500 border-orange-500 text-white hover:bg-orange-600 hover:border-orange-600',
+    },
+    default: {
+        card: 'bg-white border-gray-100 hover:shadow-lg',
+        icon: 'bg-[#F0F5FA] text-[#5A80B9] group-hover:bg-[#5A80B9] group-hover:text-white',
+        pill: 'bg-blue-50 text-blue-700 ring-blue-700/10',
+        year: 'text-[#5A80B9]',
+        download: 'bg-[#5A80B9] border-[#5A80B9] text-white hover:bg-[#4a6d9e] hover:border-[#4a6d9e]',
+        detail: 'bg-[#5A80B9] border-[#5A80B9] text-white hover:bg-[#4a6d9e] hover:border-[#4a6d9e]',
+    },
+};
+
 const ReportSection = ({
     badge = "General Reports",
     title = "Reports",
@@ -58,6 +87,7 @@ const ReportSection = ({
             year: item.published_at ? new Date(item.published_at).getFullYear().toString() : 'N/A',
             categoryKey: getReportCategoryKey(item.category),
             categoryLabel: getReportCategoryLabel(item.category, lang === 'id' ? 'id' : 'en'),
+            isNewsCategory: getReportCategoryKey(item.category) === 'berita',
         }));
     }, [reportItems, lang]);
 
@@ -133,7 +163,7 @@ const ReportSection = ({
 
                     {/* Filters */}
                     <div className="flex flex-wrap gap-4">
-                            <select
+                        <select
                             value={selectedCategory}
                             onChange={(e) => handleFilterChange('category', e.target.value)}
                             className="appearance-none bg-white border border-gray-200 text-[#323441] py-2.5 pl-4 pr-10 rounded-lg cursor-pointer focus:outline-none focus:border-[#5A80B9] hover:bg-gray-50"
@@ -160,69 +190,70 @@ const ReportSection = ({
                 {currentReports.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         <AnimatePresence mode="popLayout">
-                            {currentReports.map((report: any) => (
-                                <motion.div
-                                    key={report.id}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, scale: 0.95 }}
-                                    className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-shadow flex flex-col justify-between group h-full"
-                                >
-                                    <div className="flex flex-col gap-4">
-                                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${report.news_id ? 'bg-orange-50 text-orange-600 group-hover:bg-orange-600 group-hover:text-white' : 'bg-[#F0F5FA] text-[#5A80B9] group-hover:bg-[#5A80B9] group-hover:text-white'}`}>
-                                            {/* Visual Indicator: Icon Change */}
-                                            {report.news_id ? (
-                                                <Newspaper className="w-6 h-6" />
-                                            ) : (
-                                                <FileText className="w-6 h-6" />
-                                            )}
-                                        </div>
-                                        <div>
-                                            <div className="flex flex-wrap gap-2 mb-2">
-                                                <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
-                                                    {report.categoryLabel}
-                                                </span>
-                                                {/* Visual Indicator: Badge */}
-                                                {report.news_id && (
-                                                    <span className="inline-flex items-center rounded-md bg-orange-50 px-2 py-1 text-xs font-medium text-orange-700 ring-1 ring-inset ring-orange-700/10">
-                                                        {isId ? "Berita" : "News"}
-                                                    </span>
+                            {currentReports.map((report: any) => {
+                                const theme = categoryThemes[report.categoryKey] || categoryThemes.default;
+                                return (
+                                    <motion.div
+                                        key={report.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, scale: 0.95 }}
+                                        className={`p-6 rounded-2xl border shadow-sm transition-shadow flex flex-col justify-between group h-full ${theme.card}`}
+                                    >
+                                        <div className="flex flex-col gap-4">
+                                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${theme.icon}`}>
+                                                {report.isNewsCategory ? (
+                                                    <Newspaper className="w-6 h-6" />
+                                                ) : (
+                                                    <FileText className="w-6 h-6" />
                                                 )}
                                             </div>
-                                            <div className="flex items-center gap-2 mt-1">
-                                                <span className="text-xs font-semibold text-[#5A80B9] uppercase tracking-wider">{report.year}</span>
+                                            <div>
+                                                <div className="flex flex-wrap gap-2 mb-2">
+                                                    <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${theme.pill}`}>
+                                                        {report.categoryLabel}
+                                                    </span>
+                                                    {report.news_id && !report.isNewsCategory && (
+                                                        <span className="inline-flex items-center rounded-md bg-orange-50 px-2 py-1 text-xs font-medium text-orange-700 ring-1 ring-inset ring-orange-700/10">
+                                                            {isId ? "Detail" : "Details"}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <div className="flex items-center gap-2 mt-1">
+                                                    <span className={`text-xs font-semibold uppercase tracking-wider ${theme.year}`}>{report.year}</span>
+                                                </div>
+                                                <h3 className="text-lg font-bold text-[#323441] mt-1 leading-snug">{report.title}</h3>
+                                                <p className="text-sm text-gray-500 mt-2 line-clamp-3">{report.description}</p>
                                             </div>
-                                            <h3 className="text-lg font-bold text-[#323441] mt-1 leading-snug">{report.title}</h3>
-                                            <p className="text-sm text-gray-500 mt-2 line-clamp-3">{report.description}</p>
                                         </div>
-                                    </div>
 
-                                    {/* Actions */}
-                                    <div className="mt-6 flex flex-col gap-2">
-                                        {/* View Details Button (Only if news_id exists) */}
-                                        {report.news_id && (
-                                            <Link
-                                                href={`/${lang}/investor-relation/${report.news_id}`}
-                                                className="flex items-center justify-between w-full py-2.5 px-4 rounded-lg bg-orange-500 border border-orange-500 text-sm font-medium text-white hover:bg-orange-600 hover:border-orange-600 transition-all duration-300"
+                                        {/* Actions */}
+                                        <div className="mt-6 flex flex-col gap-2">
+                                            {/* View Details Button (Only if news_id exists) */}
+                                            {report.news_id && (
+                                                <Link
+                                                    href={`/${lang}/investor-relation/${report.news_id}`}
+                                                    className={`flex items-center justify-between w-full py-2.5 px-4 rounded-lg border text-sm font-medium transition-all duration-300 ${theme.detail}`}
+                                                >
+                                                    <span>{isId ? "Lihat Detail" : "View Details"}</span>
+                                                    <ArrowRight className="w-4 h-4" />
+                                                </Link>
+                                            )}
+
+                                            {/* Download Button (Always visible) */}
+                                            <a
+                                                href={report.download_url || report.file_url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className={`flex items-center justify-between w-full py-2.5 px-4 rounded-lg border text-sm font-medium transition-all duration-300 ${theme.download}`}
                                             >
-                                                <span>{isId ? "Lihat Detail" : "View Details"}</span>
-                                                <ArrowRight className="w-4 h-4" />
-                                            </Link>
-                                        )}
-
-                                        {/* Download Button (Always visible) */}
-                                        <a
-                                            href={report.download_url || report.file_url}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="flex items-center justify-between w-full py-2.5 px-4 rounded-lg border text-sm font-medium transition-all duration-300 bg-[#5A80B9] border-[#5A80B9] text-white hover:bg-[#4a6d9e] hover:border-[#4a6d9e]"
-                                        >
-                                            <span>{isId ? "Unduh Dokumen" : "Download Document"}</span>
-                                            <Download className="w-4 h-4" />
-                                        </a>
-                                    </div>
-                                </motion.div>
-                            ))}
+                                                <span>{isId ? "Unduh Dokumen" : "Download Document"}</span>
+                                                <Download className="w-4 h-4" />
+                                            </a>
+                                        </div>
+                                    </motion.div>
+                                );
+                            })}
                         </AnimatePresence>
                     </div>
                 ) : (

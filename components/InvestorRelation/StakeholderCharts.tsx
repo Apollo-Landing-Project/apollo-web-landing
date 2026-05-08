@@ -2,6 +2,7 @@
 
 import React from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import { getShareSnapshot, type NormalizedShareRecord } from "@/lib/share-utils";
 
 interface ShareItem {
 	id: string;
@@ -24,44 +25,58 @@ const StakeholderCharts = ({
 }) => {
 	// Determine which labels to use
 	const isId = lang === "id";
+	const liveShares = shares;
 
-	// Process the shares data to format for charts and lists
-	// We expect two main categories: MAJORITY and PUBLIC
+	const { data, totalValue } = getShareSnapshot(liveShares);
+	const majorityShare = data.find(
+		(share) => share.normalizedCategory === "MAJORITY",
+	);
+	const publicShare = data.find(
+		(share) => share.normalizedCategory === "PUBLIC",
+	);
+	const majorityValue = majorityShare?.numericValue || 0;
+	const publicValue = publicShare?.numericValue || 0;
 
-	// const majorityShare = shares.find((s) => s.category === "MAJORITY");
-	// const publicShare = shares.find((s) => s.category === "PUBLIC");
+	const getShareName = (share?: NormalizedShareRecord) => {
+		if (!share) {
+			return isId ? "Data belum tersedia" : "No data";
+		}
 
-	// const majorityValue = majorityShare ? parseInt(majorityShare.value, 10) : 0;
-	// const publicValue = publicShare ? parseInt(publicShare.value, 10) : 0;
-	const majorityValue = parseInt("1120000000", 10);
-	const publicValue = parseInt("2680000000", 10);
+		if (share.normalizedCategory === "MAJORITY") {
+			return isId ? "Pemegang Saham Mayoritas" : "Majority Stakeholder";
+		}
 
-	const totalValue = majorityValue + publicValue;
+		if (share.normalizedCategory === "PUBLIC") {
+			return isId ? "Publik" : "Public";
+		}
+
+		return share.category;
+	};
 
 	// Calculate percentages
 	// If total is 0 (no data), avoid NaN
 	const majorityPercent =
-		totalValue > 0 ? Math.round((majorityValue / totalValue) * 100) : 0;
+		totalValue > 0
+			? Number(((majorityValue / totalValue) * 100).toFixed(1))
+			: 0;
 	const publicPercent =
-		totalValue > 0 ? Math.round((publicValue / totalValue) * 100) : 0;
-	// ensure they sum to 100 if there's rounding drift, usually fine for display unless critical financial report.
-	// For visual charts, these integers are fine.
+		totalValue > 0
+			? Number(((publicValue / totalValue) * 100).toFixed(1))
+			: 0;
 
 	// Format numbers with dots
 	const formatNumber = (num: number) => num.toLocaleString("id-ID"); // 'id-ID' uses dots for thousands
 
 	const dataDisplay = [
 		{
-			name: isId
-				? "PT. GX Archipelago Pte. Ltd"
-				: "PT. GX Archipelago Pte. Ltd",
+			name: getShareName(majorityShare),
 			value: majorityPercent,
 			shares: formatNumber(majorityValue),
 			color: "#5A80B9",
 			category: "MAJORITY",
 		},
 		{
-			name: isId ? "Publik" : "Public",
+			name: getShareName(publicShare),
 			value: publicPercent,
 			shares: formatNumber(publicValue),
 			color: "#94a3b8", // Gray-ish blue for public

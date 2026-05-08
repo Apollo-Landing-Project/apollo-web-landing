@@ -179,14 +179,25 @@ async function fetchInvestorContent(
 			next: { tags: ["investor_relation"], revalidate: false },
 		});
 
-		if (!res || !res.data) throw new Error("Invalid Investor API Response");
-		return { data: enrichInvestorReportDownloads(res.data), isFallback: false };
+		if (!res || !res.data?.hero || !res.data?.stakeholders || !res.data?.report) {
+			throw new Error("Invalid Investor API Response");
+		}
+
+		return {
+			data: enrichInvestorReportDownloads({
+				...res.data,
+			}),
+			isFallback: false,
+		};
 	} catch (error) {
 		console.warn(
 			`[SSR] Investor fetch failed for lang '${lang}'. Using fallback.`,
+			error,
 		);
 		return {
-			data: enrichInvestorReportDownloads(fallbackInvestorData.data),
+			data: enrichInvestorReportDownloads({
+				...fallbackInvestorData.data,
+			}),
 			isFallback: true,
 		};
 	}
