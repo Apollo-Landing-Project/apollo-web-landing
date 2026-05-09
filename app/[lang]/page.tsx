@@ -33,6 +33,14 @@ interface PartnerItem {
 	image: string;
 }
 
+interface HomePartnersData {
+	badge: string;
+	title: string;
+	desc: string;
+	partnersFunding: PartnerItem[];
+	partnersInsurance: PartnerItem[];
+}
+
 interface HomeData {
 	hero: HeroItem[];
 	about: {
@@ -75,6 +83,11 @@ interface HomeData {
 	meta_title?: string;
 	meta_description?: string;
 	og_image?: string;
+}
+
+interface HomeApiResponse {
+	status: string;
+	data: HomeData;
 }
 
 // ----------------------------------------------------------------------
@@ -141,7 +154,30 @@ function getMappedHomeFallback(): HomeData {
 		meta_description:
 			fallbackHomeData.metadata?.description ||
 			"Rasakan masa depan mobilitas bersama Apollo Global Interactive.",
-		og_image: fallbackHomeData.metadata?.og_image || "",
+			og_image: fallbackHomeData.metadata?.og_image || "",
+		};
+	}
+
+function isPartnerSectionReady(
+	partners: PartnerItem[] | undefined,
+): partners is PartnerItem[] {
+	return Array.isArray(partners) && partners.length >= 2;
+}
+
+function resolvePartnersData(
+	apiPartners: Partial<HomePartnersData> | undefined,
+	fallbackPartners: HomePartnersData,
+): HomePartnersData {
+	return {
+		badge: apiPartners?.badge || fallbackPartners.badge,
+		title: apiPartners?.title || fallbackPartners.title,
+		desc: apiPartners?.desc || fallbackPartners.desc,
+		partnersFunding: isPartnerSectionReady(apiPartners?.partnersFunding)
+			? apiPartners.partnersFunding
+			: fallbackPartners.partnersFunding,
+		partnersInsurance: isPartnerSectionReady(apiPartners?.partnersInsurance)
+			? apiPartners.partnersInsurance
+			: fallbackPartners.partnersInsurance,
 	};
 }
 
@@ -152,8 +188,10 @@ function getMappedHomeFallback(): HomeData {
 async function fetchHomeContent(
 	lang: string,
 ): Promise<{ data: HomeData; isFallback: boolean }> {
+	const fallbackData = getMappedHomeFallback();
+
 	try {
-		const res = await dbFetch<{ data: HomeData }>(`client/home?lang=${lang}`, {
+		const res = await dbFetch<HomeApiResponse>(`client/home?lang=${lang}`, {
 			next: { tags: ["home"], revalidate: false },
 		});
 
@@ -161,13 +199,19 @@ async function fetchHomeContent(
 			throw new Error("Invalid Home API Response Structure");
 		}
 
-		return { data: res.data, isFallback: false };
+		return {
+			data: {
+				...res.data,
+				partners: resolvePartnersData(res.data.partners, fallbackData.partners),
+			},
+			isFallback: false,
+		};
 	} catch (error) {
 		console.error(
 			`[SSR] Home fetch failed for lang '${lang}'. Using English/ID fallback.`,
 			error,
 		);
-		return { data: getMappedHomeFallback(), isFallback: true };
+		return { data: fallbackData, isFallback: true };
 	}
 }
 

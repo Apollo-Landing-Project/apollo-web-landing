@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 
 type Partner = {
-    id: number;
+    id: string | number;
     name: string;
     image: string; // URL placeholder
 };
@@ -141,8 +141,8 @@ export default function Partners({ lang, data }: { lang: string, data: any }) {
 
                 {/* Content Sections */}
                 <div className="flex flex-col gap-16">
-                    <CarouselSection title={labels.insurance} partners={data.partnersFunding} />
-                    <CarouselSection title={labels.funding} partners={data.partnersInsurance} />
+                    <CarouselSection title={labels.insurance} partners={data.partnersInsurance} />
+                    <CarouselSection title={labels.funding} partners={data.partnersFunding} />
                 </div>
 
             </div>
