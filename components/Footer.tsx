@@ -10,6 +10,8 @@ import {
 	Twitter,
 	Facebook,
 	MessageCircle,
+	Phone,
+	Mail,
 } from "lucide-react";
 
 interface FooterProps {
@@ -132,7 +134,24 @@ const Footer = ({ lang = "en" }: FooterProps) => {
 							</a>
 						</div>
 					</div>
-
+					<div className="flex flex-col gap-6 max-w-xs">
+						<h4 className="text-lg font-medium text-white/80">Kontak Kami</h4>
+						<a
+							href={`mailto:cs@apolloglobalinteractive.com`}
+							className="flex items-center gap-3 text-white transition-colors "
+						>
+							<div className="flex h-6 w-6 items-center justify-center rounded  bg-[#5a80b9]/10">
+								<Mail className="h-4 w-4 text-white" />
+							</div>
+							<span>cs@apolloglobalinteractive.com</span>
+						</a>
+						<div className="flex items-center gap-3 text-white">
+							<div className="flex h-6 w-6 items-center justify-center rounded bg-[#5a80b9]/10">
+								<Phone className="h-4 w-4 text-white" />
+							</div>
+							<span>(P) 6287838699568</span>
+						</div>
+					</div>
 					{/* Right Column: Back to Top */}
 					<div className="hidden lg:block">
 						<button
@@ -159,7 +178,7 @@ const Footer = ({ lang = "en" }: FooterProps) => {
 						Tbk. {t.rights}
 					</p>
 
-					{/* Right: Socials */}
+					{/* Right: Socials
 					<div className="flex gap-6 justify-center lg:justify-end w-full">
 						{socialLinks.map((social, index) => (
 							<a
@@ -170,7 +189,7 @@ const Footer = ({ lang = "en" }: FooterProps) => {
 								<social.icon className="w-6 h-6" />
 							</a>
 						))}
-					</div>
+					</div> */}
 				</div>
 
 				{/* Mobile Back To Top (Visible only on smaller screens) */}

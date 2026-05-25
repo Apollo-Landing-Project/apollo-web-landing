@@ -2,7 +2,10 @@
 
 import React from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
-import { getShareSnapshot, type NormalizedShareRecord } from "@/lib/share-utils";
+import {
+	getShareSnapshot,
+	type NormalizedShareRecord,
+} from "@/lib/share-utils";
 
 interface ShareItem {
 	id: string;
@@ -43,7 +46,8 @@ const StakeholderCharts = ({
 		}
 
 		if (share.normalizedCategory === "MAJORITY") {
-			return isId ? "Pemegang Saham Mayoritas" : "Majority Stakeholder";
+			// return isId ? "Pemegang Saham Mayoritas" : "Majority Stakeholder";
+			return "GX Archipelago Pte.Ltd";
 		}
 
 		if (share.normalizedCategory === "PUBLIC") {
@@ -60,9 +64,7 @@ const StakeholderCharts = ({
 			? Number(((majorityValue / totalValue) * 100).toFixed(1))
 			: 0;
 	const publicPercent =
-		totalValue > 0
-			? Number(((publicValue / totalValue) * 100).toFixed(1))
-			: 0;
+		totalValue > 0 ? Number(((publicValue / totalValue) * 100).toFixed(1)) : 0;
 
 	// Format numbers with dots
 	const formatNumber = (num: number) => num.toLocaleString("id-ID"); // 'id-ID' uses dots for thousands
@@ -166,7 +168,8 @@ const StakeholderCharts = ({
 									{majorityPercent}%
 								</span>
 								<span className="text-xs text-gray-500 font-medium uppercase tracking-wider mt-1">
-									{isId ? "Mayoritas" : "Majority"}
+									{/* {isId ? "Mayoritas" : "Majority"} */}
+									Pengendali
 								</span>
 							</div>
 						</div>

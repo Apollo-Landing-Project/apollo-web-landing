@@ -122,7 +122,7 @@ export default async function AboutPage({
 						overlayImageSrc={data.vision.imageChild}
 						additionalContent={
 							<>
-								<ul className="mt-2 space-y-[6px]">
+								{/* <ul className="mt-2 space-y-[6px]">
 									{data.vision.list.map((item: string, i: number) => (
 										<li key={i} className="flex items-start gap-3">
 											<span className="mt-1.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#5a80b9] text-[10px] text-white">
@@ -131,7 +131,7 @@ export default async function AboutPage({
 											<span>{item}</span>
 										</li>
 									))}
-								</ul>
+								</ul> */}
 								<p className="mt-4 italic text-gray-500">
 									&quot;{data.vision.quote}&quot;
 								</p>
@@ -151,7 +151,7 @@ export default async function AboutPage({
 						overlayImageSrc={data.mission.imageChild}
 						additionalContent={
 							<>
-								<ul className="mt-2 space-y-2">
+								{/* <ul className="mt-2 space-y-2">
 									{data.mission.list.map((item: string, i: number) => (
 										<li key={i} className="flex items-start gap-3">
 											<span className="mt-1.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#5a80b9] text-[10px] text-white">
@@ -160,7 +160,7 @@ export default async function AboutPage({
 											<span>{item}</span>
 										</li>
 									))}
-								</ul>
+								</ul> */}
 								<p className="mt-4 italic text-gray-500">
 									&quot;{data.mission.quote}&quot;
 								</p>
@@ -195,7 +195,7 @@ export default async function AboutPage({
 					/>
 
 					{/* BOC */}
-					{/* <TeamSection
+					<TeamSection
 						tag={data.boc.badge}
 						tagClassName="bg-[#f2f7ff] border border-[#5a80b9]/15 rounded-full px-4 py-1.5 text-[#5a80b9]"
 						title={data.boc.title}
@@ -206,7 +206,7 @@ export default async function AboutPage({
 							image: m.photo,
 							verified: true,
 						}))}
-					/> */}
+					/>
 
 					{/* BOD */}
 					<TeamSection

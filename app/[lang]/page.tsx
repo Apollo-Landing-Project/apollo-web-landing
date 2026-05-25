@@ -39,6 +39,7 @@ interface HomePartnersData {
 	desc: string;
 	partnersFunding: PartnerItem[];
 	partnersInsurance: PartnerItem[];
+	partnersDealers: PartnerItem[];
 }
 
 interface HomeData {
@@ -71,6 +72,7 @@ interface HomeData {
 		desc: string;
 		partnersFunding: PartnerItem[];
 		partnersInsurance: PartnerItem[];
+		partnersDealers: PartnerItem[];
 	};
 	contact: {
 		title: string;
@@ -139,6 +141,11 @@ function getMappedHomeFallback(): HomeData {
 				name: p.name,
 				image: p.image,
 			})),
+			partnersDealers: (fb.partners?.partnersDealers || []).map((p) => ({
+				id: p.id,
+				name: p.name,
+				image: p.image,
+			})),
 		},
 		contact: {
 			title: fb.contact?.title || "Apakah Anda punya pertanyaan?",
@@ -178,6 +185,9 @@ function resolvePartnersData(
 		partnersInsurance: isPartnerSectionReady(apiPartners?.partnersInsurance)
 			? apiPartners.partnersInsurance
 			: fallbackPartners.partnersInsurance,
+		partnersDealers: isPartnerSectionReady(apiPartners?.partnersDealers)
+			? apiPartners.partnersDealers
+			: fallbackPartners.partnersDealers,
 	};
 }
 

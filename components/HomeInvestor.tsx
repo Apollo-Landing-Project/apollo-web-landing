@@ -54,7 +54,8 @@ export default function HomeInvestor({ lang, data }: HomeInvestorProps) {
 		download: isId ? "Unduh" : "Download",
 		seeAllReports: isId ? "Lihat Semua Laporan" : "See All Reports",
 		stockSymbol: "IDX: BOGA",
-		majority: isId ? "Pemegang Saham Mayoritas" : "Majority Stakeholder",
+		// majority: isId ? "Pemegang Saham Mayoritas" : "Majority Stakeholder",
+		majority: "GX Archipelago Pte.Ltd",
 		public: isId ? "Publik" : "Public",
 	};
 
@@ -96,7 +97,8 @@ export default function HomeInvestor({ lang, data }: HomeInvestorProps) {
 		const normalizedCategory = normalizeShareCategory(category);
 
 		if (normalizedCategory === "MAJORITY") {
-			return isId ? "Pemegang Saham Mayoritas" : "Majority Stakeholder";
+			// return isId ? "Pemegang Saham Mayoritas" : "Majority Stakeholder";
+			return "GX Archipelago Pte.Ltd";
 		}
 
 		if (normalizedCategory === "PUBLIC") {
@@ -178,13 +180,17 @@ export default function HomeInvestor({ lang, data }: HomeInvestorProps) {
 											<span className="text-xl font-bold text-[#323441]">
 												{formatNumber(share.numericValue)}
 											</span>
-											<span className="text-sm text-gray-400 mb-0.5">Shares</span>
+											<span className="text-sm text-gray-400 mb-0.5">
+												Shares
+											</span>
 										</div>
 									</div>
 								))
 							) : (
 								<div className="flex grow items-center justify-center rounded-2xl border border-gray-100 bg-gray-50 p-4 text-sm italic text-gray-400">
-									{isId ? "Data saham belum tersedia" : "Share data is not available yet"}
+									{isId
+										? "Data saham belum tersedia"
+										: "Share data is not available yet"}
 								</div>
 							)}
 						</div>
@@ -231,9 +237,9 @@ export default function HomeInvestor({ lang, data }: HomeInvestorProps) {
 												: "Official company report")}
 									</p>
 								</div>
-										<div className="mt-auto pt-4 flex items-center justify-between border-top border-gray-50">
-											<span className={`text-sm ${reportStyles.year}`}>
-												{new Date(lastReport.published_at).toLocaleDateString(
+								<div className="mt-auto pt-4 flex items-center justify-between border-top border-gray-50">
+									<span className={`text-sm ${reportStyles.year}`}>
+										{new Date(lastReport.published_at).toLocaleDateString(
 											isId ? "id-ID" : "en-US",
 											{
 												year: "numeric",
@@ -242,18 +248,18 @@ export default function HomeInvestor({ lang, data }: HomeInvestorProps) {
 											},
 										)}
 									</span>
-										<a
-											href={lastReport.download_url || lastReport.file_url}
-											target="_blank"
-											rel="noopener noreferrer"
-											className={reportStyles.download}
-										>
-											{labels.download}
-											<ArrowRight className="w-4 h-4" />
-										</a>
-									</div>
+									<a
+										href={lastReport.download_url || lastReport.file_url}
+										target="_blank"
+										rel="noopener noreferrer"
+										className={reportStyles.download}
+									>
+										{labels.download}
+										<ArrowRight className="w-4 h-4" />
+									</a>
 								</div>
-							) : (
+							</div>
+						) : (
 							<div className="flex grow items-center justify-center text-gray-400 italic">
 								{isId ? "Tidak ada dokumen tersedia" : "No documents available"}
 							</div>
