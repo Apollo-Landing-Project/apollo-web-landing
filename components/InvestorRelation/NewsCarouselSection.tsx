@@ -29,6 +29,7 @@ export default function NewsCarouselSection({
 	items = [],
 	lang = "id",
 }: NewsCarouselSectionProps) {
+	const dragThreshold = 8;
 	const containerRef = useRef<HTMLDivElement>(null);
 	const pointerStateRef = useRef({
 		active: false,
@@ -84,7 +85,7 @@ export default function NewsCarouselSection({
 
 	const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
 		const container = containerRef.current;
-		if (!container) {
+		if (!container || (event.pointerType === "mouse" && event.button !== 0)) {
 			return;
 		}
 
@@ -94,8 +95,7 @@ export default function NewsCarouselSection({
 			scrollLeft: container.scrollLeft,
 		};
 		didDragRef.current = false;
-		setIsDragging(true);
-		event.currentTarget.setPointerCapture(event.pointerId);
+		setIsDragging(false);
 	};
 
 	const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -105,9 +105,16 @@ export default function NewsCarouselSection({
 		}
 
 		const deltaX = event.clientX - pointerStateRef.current.startX;
-		if (Math.abs(deltaX) > 6) {
-			didDragRef.current = true;
+		if (!didDragRef.current && Math.abs(deltaX) <= dragThreshold) {
+			return;
 		}
+
+		if (!didDragRef.current) {
+			didDragRef.current = true;
+			setIsDragging(true);
+			event.currentTarget.setPointerCapture(event.pointerId);
+		}
+
 		container.scrollLeft = pointerStateRef.current.scrollLeft - deltaX;
 	};
 
