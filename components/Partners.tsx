@@ -108,7 +108,7 @@ const DealerCarousel = ({
 								{/* Image Container */}
 								<div className="relative h-[240px] md:h-[320px] lg:h-[450px] w-full overflow-hidden">
 									<Image
-										src={dealer.image}
+										src={(dealer.image && dealer.image.trim() !== "") ? dealer.image : "/assets/news/news-1.png"}
 										alt={dealer.name}
 										fill
 										className="object-cover transition-transform duration-700 group-hover:scale-110"

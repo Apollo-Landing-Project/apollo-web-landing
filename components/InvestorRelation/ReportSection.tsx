@@ -81,7 +81,7 @@ const ReportSection = ({
 
     // Derived data for filters
     const processedReports = useMemo(() => {
-        const items = reportItems || [];
+        const items = (reportItems || []).filter((item: any) => !item?.news_id);
         return items.map(item => ({
             ...item,
             year: item.published_at ? new Date(item.published_at).getFullYear().toString() : 'N/A',
@@ -213,11 +213,6 @@ const ReportSection = ({
                                                     <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${theme.pill}`}>
                                                         {report.categoryLabel}
                                                     </span>
-                                                    {report.news_id && !report.isNewsCategory && (
-                                                        <span className="inline-flex items-center rounded-md bg-orange-50 px-2 py-1 text-xs font-medium text-orange-700 ring-1 ring-inset ring-orange-700/10">
-                                                            {isId ? "Detail" : "Details"}
-                                                        </span>
-                                                    )}
                                                 </div>
                                                 <div className="flex items-center gap-2 mt-1">
                                                     <span className={`text-xs font-semibold uppercase tracking-wider ${theme.year}`}>{report.year}</span>
@@ -229,17 +224,6 @@ const ReportSection = ({
 
                                         {/* Actions */}
                                         <div className="mt-6 flex flex-col gap-2">
-                                            {/* View Details Button (Only if news_id exists) */}
-                                            {report.news_id && (
-                                                <Link
-                                                    href={`/${lang}/investor-relation/${report.news_id}`}
-                                                    className={`flex items-center justify-between w-full py-2.5 px-4 rounded-lg border text-sm font-medium transition-all duration-300 ${theme.detail}`}
-                                                >
-                                                    <span>{isId ? "Lihat Detail" : "View Details"}</span>
-                                                    <ArrowRight className="w-4 h-4" />
-                                                </Link>
-                                            )}
-
                                             {/* Download Button (Always visible) */}
                                             <a
                                                 href={report.download_url || report.file_url}

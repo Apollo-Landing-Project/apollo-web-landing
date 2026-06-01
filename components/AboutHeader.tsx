@@ -14,10 +14,21 @@ interface AboutHeaderProps {
 export default function AboutHeader({
     title = "Learn More About Apollo Global Interactive",
     subtitle = "PT Apollo Global Interactive Tbk (The Company) is a multidimensional automotive company dedicated to serving you through innovation, superior service, and sustainable growth.",
-    backgroundImage = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop", // Placeholder building image
+    backgroundImage,
     targetId = "our-vision",
     badge = "About Us"
 }: AboutHeaderProps) {
+    const defaultBg = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop";
+    
+    // Ensure we have a valid src for Next.js Image
+    let finalBgImage: string = defaultBg;
+    if (typeof backgroundImage === 'string' && backgroundImage.trim() !== "") {
+        finalBgImage = backgroundImage;
+    } else if (backgroundImage && typeof backgroundImage !== 'string') {
+        // If it's an object (like StaticImageData), use it directly
+        finalBgImage = backgroundImage as any;
+    }
+
     const scrollToTarget = () => {
         const targetSection = document.getElementById(targetId);
         if (targetSection) {
@@ -31,7 +42,7 @@ export default function AboutHeader({
                 {/* Background Image */}
                 <div className="absolute inset-0">
                     <Image
-                        src={backgroundImage}
+                        src={finalBgImage}
                         alt="About Header Background"
                         fill
                         className="object-cover"

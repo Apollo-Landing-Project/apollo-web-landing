@@ -8,19 +8,22 @@ const InvestorHero = ({
     badge = "Investor Relations",
     title = "Transparent Growth & Sustainable Value.",
     desc = "We are committed to delivering long-term value to our shareholders through transparent governance and sustainable business practices.",
-    background = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2670&auto=format&fit=crop"
+    background
 }: {
     badge?: string;
     title?: string;
     desc?: string;
     background?: string;
 }) => {
+    const defaultBg = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2670&auto=format&fit=crop";
+    const finalBg = (background && background.trim() !== "") ? background : defaultBg;
+
     return (
         <section className="relative w-full h-[500px] md:h-[600px] mt-24 md:mt-0">
             {/* Background Image */}
             <div className="absolute inset-0 w-full h-full">
                 <Image
-                    src={background}
+                    src={finalBg}
                     alt="Investor Relations"
                     fill
                     className="object-cover"

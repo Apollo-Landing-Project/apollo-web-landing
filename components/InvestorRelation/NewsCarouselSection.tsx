@@ -1,9 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+	ArrowRight,
+	CalendarDays,
+	ChevronLeft,
+	ChevronRight,
+	Download,
+	FileText,
+} from "lucide-react";
+import useEmblaCarousel from "embla-carousel-react";
 
 interface InvestorNewsItem {
 	id: string;
@@ -12,6 +20,9 @@ interface InvestorNewsItem {
 	image: string;
 	publishedAt: string;
 	href: string;
+	has_report?: boolean;
+	report_id?: string;
+	download_url?: string;
 }
 
 interface NewsCarouselSectionProps {
@@ -29,115 +40,39 @@ export default function NewsCarouselSection({
 	items = [],
 	lang = "id",
 }: NewsCarouselSectionProps) {
-	const dragThreshold = 8;
-	const containerRef = useRef<HTMLDivElement>(null);
-	const pointerStateRef = useRef({
-		active: false,
-		startX: 0,
-		scrollLeft: 0,
+	const [emblaRef, emblaApi] = useEmblaCarousel({
+		align: "start",
+		containScroll: "trimSnaps",
+		dragFree: false,
+		slidesToScroll: 1,
+		skipSnaps: false,
 	});
-	const didDragRef = useRef(false);
 
-	const [isDragging, setIsDragging] = useState(false);
 	const [canScrollLeft, setCanScrollLeft] = useState(false);
 	const [canScrollRight, setCanScrollRight] = useState(items.length > 1);
-
 	const isId = lang === "id";
 
+	const onSelect = useCallback(() => {
+		if (!emblaApi) return;
+		setCanScrollLeft(emblaApi.canScrollPrev());
+		setCanScrollRight(emblaApi.canScrollNext());
+	}, [emblaApi]);
+
 	useEffect(() => {
-		const container = containerRef.current;
-		if (!container) {
-			return;
-		}
+		if (!emblaApi) return;
 
-		const updateScrollState = () => {
-			const maxScrollLeft = container.scrollWidth - container.clientWidth;
-			setCanScrollLeft(container.scrollLeft > 4);
-			setCanScrollRight(maxScrollLeft - container.scrollLeft > 4);
-		};
-
-		updateScrollState();
-		container.addEventListener("scroll", updateScrollState, { passive: true });
-		window.addEventListener("resize", updateScrollState);
+		onSelect();
+		emblaApi.on("select", onSelect);
+		emblaApi.on("reInit", onSelect);
 
 		return () => {
-			container.removeEventListener("scroll", updateScrollState);
-			window.removeEventListener("resize", updateScrollState);
+			emblaApi.off("select", onSelect);
+			emblaApi.off("reInit", onSelect);
 		};
-	}, [items.length]);
+	}, [emblaApi, onSelect]);
 
-	const scrollByCard = (direction: number) => {
-		const container = containerRef.current;
-		if (!container) {
-			return;
-		}
-
-		const firstCard = container.querySelector<HTMLElement>("[data-news-card]");
-		const cardWidth = firstCard
-			? firstCard.getBoundingClientRect().width + 24
-			: container.clientWidth * 0.9;
-
-		container.scrollBy({
-			left: direction * cardWidth,
-			behavior: "smooth",
-		});
-	};
-
-	const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
-		const container = containerRef.current;
-		if (!container || (event.pointerType === "mouse" && event.button !== 0)) {
-			return;
-		}
-
-		pointerStateRef.current = {
-			active: true,
-			startX: event.clientX,
-			scrollLeft: container.scrollLeft,
-		};
-		didDragRef.current = false;
-		setIsDragging(false);
-	};
-
-	const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-		const container = containerRef.current;
-		if (!container || !pointerStateRef.current.active) {
-			return;
-		}
-
-		const deltaX = event.clientX - pointerStateRef.current.startX;
-		if (!didDragRef.current && Math.abs(deltaX) <= dragThreshold) {
-			return;
-		}
-
-		if (!didDragRef.current) {
-			didDragRef.current = true;
-			setIsDragging(true);
-			event.currentTarget.setPointerCapture(event.pointerId);
-		}
-
-		container.scrollLeft = pointerStateRef.current.scrollLeft - deltaX;
-	};
-
-	const finishDragging = (event: React.PointerEvent<HTMLDivElement>) => {
-		if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-			event.currentTarget.releasePointerCapture(event.pointerId);
-		}
-
-		pointerStateRef.current.active = false;
-		setIsDragging(false);
-		window.setTimeout(() => {
-			didDragRef.current = false;
-		}, 0);
-	};
-
-	const preventClickAfterDrag = (event: React.MouseEvent<HTMLAnchorElement>) => {
-		if (!didDragRef.current) {
-			return;
-		}
-
-		event.preventDefault();
-		event.stopPropagation();
-	};
+	const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
+	const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
 
 	return (
 		<section className="w-full bg-[linear-gradient(180deg,#f8fafc_0%,#eef4fb_100%)] py-16 md:py-20">
@@ -157,12 +92,14 @@ export default function NewsCarouselSection({
 
 					<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between md:justify-end">
 						<p className="max-w-xs text-sm font-medium leading-6 text-[#70819a] sm:max-w-none">
-							{isId ? "Geser atau klik panah untuk melihat berita lain." : "Drag or use the arrows to browse more news."}
+							{isId ?
+								"Geser kartu atau gunakan panah untuk melihat berita lain."
+							:	"Drag the cards or use the arrows to browse more news."}
 						</p>
 						<div className="flex items-center gap-3">
 							<button
 								type="button"
-								onClick={() => scrollByCard(-1)}
+								onClick={scrollPrev}
 								disabled={!canScrollLeft}
 								className="flex h-12 w-12 items-center justify-center rounded-full border border-[#cdd8e7] bg-white text-[#4d6485] shadow-sm transition-all hover:-translate-y-0.5 hover:border-[#5a80b9] hover:text-[#5a80b9] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
 								aria-label={isId ? "Berita sebelumnya" : "Previous news"}
@@ -171,7 +108,7 @@ export default function NewsCarouselSection({
 							</button>
 							<button
 								type="button"
-								onClick={() => scrollByCard(1)}
+								onClick={scrollNext}
 								disabled={!canScrollRight}
 								className="flex h-12 w-12 items-center justify-center rounded-full border border-[#cdd8e7] bg-white text-[#4d6485] shadow-sm transition-all hover:-translate-y-0.5 hover:border-[#5a80b9] hover:text-[#5a80b9] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
 								aria-label={isId ? "Berita berikutnya" : "Next news"}
@@ -184,68 +121,106 @@ export default function NewsCarouselSection({
 
 				{items.length > 0 ? (
 					<div
-						ref={containerRef}
-						onPointerDown={handlePointerDown}
-						onPointerMove={handlePointerMove}
-						onPointerUp={finishDragging}
-						onPointerCancel={finishDragging}
-						className={`flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
-						style={{ touchAction: "pan-y" }}
+						ref={emblaRef}
+						className="overflow-hidden touch-pan-y select-none"
 					>
-						{items.map((item) => {
-							const imageSrc = item.image || "/assets/news/news-1.png";
+						<div className="-ml-6 flex">
+							{items.map((item) => {
+								const imageSrc = (item.image && item.image.trim() !== "") ? item.image : "/assets/news/news-1.png";
+								const hasDownload = Boolean(item.download_url);
 
-							return (
-								<Link
-									key={item.id}
-									href={item.href}
-									onClickCapture={preventClickAfterDrag}
-									className="group block min-w-[272px] snap-start sm:min-w-[340px] lg:min-w-[400px]"
-									data-news-card
-								>
-									<article className="flex h-full min-h-[430px] flex-col overflow-hidden rounded-[28px] border border-white/60 bg-white shadow-[0_24px_60px_rgba(43,71,111,0.08)] transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_28px_70px_rgba(43,71,111,0.14)] md:min-h-[480px]">
-										<div className="relative h-[210px] overflow-hidden md:h-[240px]">
-											<Image
-												src={imageSrc}
-												alt={item.title}
-												fill
-												sizes="(max-width: 640px) 290px, (max-width: 1024px) 340px, 400px"
-												className="object-cover transition-transform duration-500 group-hover:scale-105"
-											/>
-											<div className="absolute inset-0 bg-gradient-to-t from-[#0f172a]/50 via-transparent to-transparent" />
-										</div>
+								return (
+									<div
+										key={item.id}
+										className="min-w-0 flex-[0_0_88%] pl-6 sm:flex-[0_0_60%] lg:flex-[0_0_42%]"
+									>
+										<article className="flex h-full min-h-[470px] flex-col overflow-hidden rounded-[30px] border border-white/70 bg-white shadow-[0_28px_70px_rgba(43,71,111,0.10)] transition-shadow duration-300 hover:shadow-[0_32px_80px_rgba(43,71,111,0.16)] md:min-h-[520px]">
+											<Link
+												href={item.href}
+												className="group block"
+											>
+												<div className="relative h-[220px] overflow-hidden md:h-[260px]">
+													<Image
+														src={imageSrc}
+														alt={item.title}
+														fill
+														draggable={false}
+														sizes="(max-width: 640px) 88vw, (max-width: 1024px) 60vw, 42vw"
+														className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+													/>
+													<div className="absolute inset-0 bg-gradient-to-t from-[#0f172a]/45 via-[#0f172a]/5 to-transparent" />
 
-										<div className="flex flex-1 flex-col gap-5 p-6">
-											<div className="flex items-center gap-2 text-sm font-medium text-[#5a80b9]">
-												<CalendarDays className="h-4 w-4" />
-												<span>{item.publishedAt}</span>
+													{item.has_report && (
+														<div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full border border-orange-200/70 bg-white/95 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.18em] text-orange-600 shadow-lg backdrop-blur-sm">
+															<FileText className="h-3.5 w-3.5" />
+															<span>{isId ? "Dokumen Tersedia" : "Document Available"}</span>
+														</div>
+													)}
+												</div>
+											</Link>
+
+											<div className="flex flex-1 flex-col gap-5 p-6 md:p-7">
+												<div className="flex items-center gap-2 text-sm font-medium text-[#5a80b9]">
+													<CalendarDays className="h-4 w-4" />
+													<span>{item.publishedAt}</span>
+												</div>
+
+												<div className="space-y-3">
+													<Link
+														href={item.href}
+														className="group/title inline-block"
+													>
+														<h3 className="text-2xl font-bold leading-tight text-[#323441] transition-colors group-hover/title:text-[#355f8d]">
+															{item.title}
+														</h3>
+													</Link>
+													<p className="line-clamp-4 text-base leading-7 text-[#667085]">
+														{item.description}
+													</p>
+												</div>
+
+												{item.has_report && (
+													<div className="rounded-2xl border border-orange-100 bg-[#fff6eb] px-4 py-3 text-sm font-medium text-[#b86210]">
+														{isId ?
+															"Berita ini terhubung dengan dokumen investor dan bisa langsung diunduh."
+														:	"This article is linked to an investor document and can be downloaded directly."}
+													</div>
+												)}
+
+												<div className="mt-auto flex flex-col gap-3 border-t border-[#edf2f7] pt-5">
+													<Link
+														href={item.href}
+														className="inline-flex items-center justify-between rounded-2xl border border-[#d9e5f2] bg-[#f7fbff] px-5 py-3.5 text-sm font-semibold text-[#355f8d] transition-all hover:border-[#5a80b9] hover:bg-[#edf5ff]"
+													>
+														<span>{isId ? "Lihat Berita" : "View Article"}</span>
+														<ArrowRight className="h-4 w-4" />
+													</Link>
+
+													{hasDownload && (
+														<a
+															href={item.download_url}
+															target="_blank"
+															rel="noopener noreferrer"
+															className="inline-flex items-center justify-between rounded-2xl border border-orange-500 bg-orange-500 px-5 py-3.5 text-sm font-semibold text-white transition-all hover:bg-orange-600 hover:border-orange-600"
+														>
+															<span>{isId ? "Unduh Dokumen" : "Download Document"}</span>
+															<Download className="h-4 w-4" />
+														</a>
+													)}
+												</div>
 											</div>
-
-											<div className="space-y-3">
-												<h3 className="text-2xl font-bold leading-tight text-[#323441] transition-colors group-hover:text-[#355f8d]">
-													{item.title}
-												</h3>
-												<p className="line-clamp-4 text-base leading-7 text-[#667085]">
-													{item.description}
-												</p>
-											</div>
-
-											<div className="mt-auto flex items-center justify-between border-t border-[#edf2f7] pt-5 text-sm font-semibold text-[#355f8d]">
-												<span>{isId ? "Baca selengkapnya" : "Read more"}</span>
-												<span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#eef4fb] text-[#355f8d] transition-colors group-hover:bg-[#5a80b9] group-hover:text-white">
-													<ArrowUpRight className="h-4 w-4" />
-												</span>
-											</div>
-										</div>
-									</article>
-								</Link>
-							);
-						})}
+										</article>
+									</div>
+								);
+							})}
+						</div>
 					</div>
 				) : (
 					<div className="rounded-[28px] border border-dashed border-[#cdd8e7] bg-white/75 px-6 py-16 text-center text-[#70819a]">
 						<p className="text-base font-medium">
-							{isId ? "Belum ada berita yang tersedia saat ini." : "There are no news articles available right now."}
+							{isId ?
+								"Belum ada berita yang tersedia saat ini."
+							:	"There are no news articles available right now."}
 						</p>
 					</div>
 				)}

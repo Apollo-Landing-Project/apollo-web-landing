@@ -20,6 +20,8 @@ interface NewsDetailApi {
     content: string; // HTML or Markdown content
     relatedNews?: any[];
     attachment?: string; // URL to related document/report
+    report_id?: string;
+    download_url?: string;
     metadata?: {
         title: string;
         description: string;
@@ -57,7 +59,7 @@ function formatDate(dateString: string, lang: string): string {
 async function getNewsDetail(slug: string, lang: string) {
     try {
         const res: ApiResponse = await dbFetch(`client/news/article/${slug}?lang=${lang}`, {
-            next: { tags: ['investor_relation_post', slug], revalidate: 3600 } // fallback revalidate
+            next: { tags: ['investor_relation_post', slug], revalidate: 60 }
         });
 
         if (res?.status === "success" && res?.data) {
@@ -72,29 +74,6 @@ async function getNewsDetail(slug: string, lang: string) {
         throw error;
     }
 }
-
-// Helper to search for file in investor data
-async function getRelatedFile(slug: string, lang: string): Promise<string | null> {
-    try {
-        const res = await dbFetch(`client/investor?lang=${lang}`, {
-            next: { revalidate: 60 }
-        });
-
-        // We need to typecase or safely access the structure since it might be complex
-        // Based on investor page structure: res.data.report.reportItems
-        const data: any = res?.data;
-
-        if (data?.report?.reportItems && Array.isArray(data.report.reportItems)) {
-            const report = data.report.reportItems.find((item: any) => item.news_id === slug);
-            return report ? buildReportDownloadUrl(report.id) : null;
-        }
-        return null;
-    } catch (error) {
-        console.error("Error fetching related file:", error);
-        return null;
-    }
-}
-
 
 // --- Metadata ---
 
@@ -149,19 +128,16 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
 export default async function InvestorRelationDetailPage({ params }: { params: Promise<{ lang: string; slug: string }> }) {
     const { lang, slug } = await params;
 
-    let data;
+    let data: NewsDetailApi;
     let attachmentUrl = null;
 
     try {
-        // Fetch news detail and look for related file in investor data concurrently
-        const [newsData, fileUrl] = await Promise.all([
-            getNewsDetail(slug, lang),
-            getRelatedFile(slug, lang)
-        ]);
-
-        data = newsData;
-        attachmentUrl = fileUrl || data.attachment; // Use found file URL, or fallback if News API provided one
-
+        data = await getNewsDetail(slug, lang);
+        attachmentUrl =
+            data.download_url ||
+            (data as any).file_url ||
+            data.attachment ||
+            (data.report_id ? buildReportDownloadUrl(data.report_id) : null);
     } catch (error) {
         // Handle error state gracefully or let standard error.tsx catch it
         throw error;
