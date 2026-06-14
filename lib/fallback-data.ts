@@ -323,22 +323,22 @@ export const fallbackHomeData: HomeApiResponse = {
         {
           id: "dealer-1",
           name: "Dealer Malang",
-          image: "/assets/stakeholder/placeholder.png",
+          image: "/assets/dealer/dealer-malang.jpeg",
         },
         {
           id: "dealer-2",
           name: "Dealer Klaten",
-          image: "/assets/stakeholder/placeholder.png",
+          image: "/assets/dealer/dealer-klaten.jpeg",
         },
         {
           id: "dealer-3",
           name: "Dealer Madiun",
-          image: "/assets/stakeholder/placeholder.png",
+          image: "/assets/dealer/dealer-madiun.jpeg",
         },
         {
           id: "dealer-4",
           name: "Dealer Probolinggo",
-          image: "/assets/stakeholder/placeholder.png",
+          image: "/assets/dealer/dealer-probolinggo.jpeg",
         },
         {
           id: "dealer-5",

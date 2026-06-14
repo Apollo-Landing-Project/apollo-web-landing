@@ -134,10 +134,10 @@ export default async function InvestorRelationDetailPage({ params }: { params: P
     try {
         data = await getNewsDetail(slug, lang);
         attachmentUrl =
+            (data.report_id ? buildReportDownloadUrl(data.report_id) : null) ||
             data.download_url ||
             (data as any).file_url ||
-            data.attachment ||
-            (data.report_id ? buildReportDownloadUrl(data.report_id) : null);
+            data.attachment;
     } catch (error) {
         // Handle error state gracefully or let standard error.tsx catch it
         throw error;
